@@ -1,0 +1,36 @@
+package com.agriflow.app.features.auth
+
+import com.agriflow.app.features.auth.AuthResponseDto
+import com.agriflow.app.features.auth.LoginRequestDto
+import com.agriflow.app.features.auth.RegisterRequestDto
+import retrofit2.Response
+import retrofit2.http.Body
+import retrofit2.http.POST
+import retrofit2.http.GET
+
+interface AuthApi {
+    @POST("auth/login")
+    suspend fun login(
+        @Body request: LoginRequestDto
+    ): Response<AuthResponseDto>
+
+    @POST("auth/register")
+    suspend fun register(
+        @Body request: RegisterRequestDto
+    ): Response<AuthResponseDto>
+
+    @POST("businesses/register")
+    suspend fun upgradeRole(
+        @Body request: UpgradeRoleRequestDto
+    ): Response<AuthResponseDto>
+
+    @GET("businesses/me")
+    suspend fun getBusinessDetails(): Response<BusinessDetailsResponseDto>
+}
+
+data class UpgradeRoleRequestDto(
+    val role: String,
+    val businessName: String,
+    val businessEmail: String,
+    val phoneNumber: String
+)
