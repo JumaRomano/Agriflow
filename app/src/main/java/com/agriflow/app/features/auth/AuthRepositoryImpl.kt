@@ -91,6 +91,54 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun sendOtp(
+        email: String,
+        type: OtpType
+    ): EmptyResult<DataError.Network> {
+        return safeApiCall {
+            authApi.sendOtp(
+                SendOtpRequestDto(
+                    email = email.trim(),
+                    type = type
+                )
+            )
+        }
+    }
+
+    override suspend fun verifyOtp(
+        email: String,
+        otpCode: String,
+        type: OtpType
+    ): Result<VerifyOtpResponseDto, DataError.Network> {
+        return safeApiCall {
+            authApi.verifyOtp(
+                VerifyOtpRequestDto(
+                    email = email.trim(),
+                    otpCode = otpCode.trim(),
+                    type = type
+                )
+            )
+        }
+    }
+
+    override suspend fun passwordReset(
+        email: String,
+        newPassword: String,
+        confirmPassword: String,
+        resetToken: String
+    ): EmptyResult<DataError.Network> {
+        return safeApiCall {
+            authApi.passwordReset(
+                PasswordResetRequestDto(
+                    email = email.trim(),
+                    newPassword = newPassword,
+                    confirmPassword = confirmPassword,
+                    resetToken = resetToken
+                )
+            )
+        }
+    }
+
     private fun Result<com.agriflow.app.features.auth.AuthResponseDto, DataError.Network>.toAuthSessionResult():
         Result<AuthSession, DataError.Network> {
         // DTO -> domain mapping happens here. If the backend response shape changes, update the mapper.

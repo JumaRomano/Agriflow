@@ -78,7 +78,6 @@ fun HomeRoute(
                 HomeEvent.NavigateToMarketplace -> onNavigateToMarketplace()
                 HomeEvent.NavigateToCart -> onNavigateToCart()
                 HomeEvent.NavigateToNotification -> onNavigateToNotification()
-                HomeEvent.NavigateToChat -> onNavigateToChat()
                 is HomeEvent.NavigateToProductDetails -> onNavigateToProductDetails(event.productId)
                 is HomeEvent.ShowMessage -> snackbarHostState.showSnackbar(event.message)
             }

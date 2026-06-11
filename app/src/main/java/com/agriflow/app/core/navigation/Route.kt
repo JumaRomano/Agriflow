@@ -84,4 +84,10 @@ sealed interface Route {
     data object HelpCenter : Route
     @Serializable
     data object MyProducts : Route
+
+    @Serializable
+    data class OtpVerificationRoute(val email: String, val type: String) : Route
+
+    @Serializable
+    data class CreateNewPasswordRoute(val email: String, val resetToken: String) : Route
 }

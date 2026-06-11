@@ -32,14 +32,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
 @Composable
-fun ForgotPasswordRoute(
-    onNavigateToOtp: (String, String) -> Unit,
+fun CreateNewPasswordRoute(
+    onResetSuccess: () -> Unit,
     onNavigateBack: () -> Unit,
-    viewModel: ForgotPasswordViewModel = hiltViewModel()
+    viewModel: CreateNewPasswordViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -47,17 +48,17 @@ fun ForgotPasswordRoute(
     LaunchedEffect(viewModel) {
         viewModel.events.collect { event ->
             when (event) {
-                is ForgotPasswordEvent.NavigateToOtp -> {
-                    onNavigateToOtp(event.email, event.type)
+                is CreateNewPasswordEvent.NavigateToLogin -> {
+                    onResetSuccess()
                 }
-                is ForgotPasswordEvent.ShowMessage -> {
+                is CreateNewPasswordEvent.ShowMessage -> {
                     snackbarHostState.showSnackbar(event.message)
                 }
             }
         }
     }
 
-    ForgotPasswordScreen(
+    CreateNewPasswordScreen(
         state = state,
         snackbarHostState = snackbarHostState,
         onAction = viewModel::onAction,
@@ -67,10 +68,10 @@ fun ForgotPasswordRoute(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ForgotPasswordScreen(
-    state: ForgotPasswordState,
+fun CreateNewPasswordScreen(
+    state: CreateNewPasswordState,
     snackbarHostState: SnackbarHostState,
-    onAction: (ForgotPasswordAction) -> Unit,
+    onAction: (CreateNewPasswordAction) -> Unit,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -106,11 +107,11 @@ fun ForgotPasswordScreen(
             horizontalAlignment = Alignment.Start
         ) {
             Text(
-                text = "Forgot Password?",
+                text = "New Password",
                 style = MaterialTheme.typography.headlineMedium
             )
             Text(
-                text = "Enter your email address and we will send you an OTP code to verify your identity.",
+                text = "Please enter your new secure password to reset your login credentials.",
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -118,22 +119,43 @@ fun ForgotPasswordScreen(
             Spacer(modifier = Modifier.height(32.dp))
 
             OutlinedTextField(
-                value = state.email,
-                onValueChange = { onAction(ForgotPasswordAction.OnEmailChanged(it)) },
-                label = { Text("Email Address") },
+                value = state.newPassword,
+                onValueChange = { onAction(CreateNewPasswordAction.OnNewPasswordChanged(it)) },
+                label = { Text("New Password") },
                 singleLine = true,
                 enabled = !state.isLoading,
-                isError = state.emailError != null,
-                supportingText = state.emailError?.let { { Text(it) } },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 modifier = Modifier.fillMaxWidth()
             )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value = state.confirmPassword,
+                onValueChange = { onAction(CreateNewPasswordAction.OnConfirmPasswordChanged(it)) },
+                label = { Text("Confirm Password") },
+                singleLine = true,
+                enabled = !state.isLoading,
+                visualTransformation = PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            state.error?.let { error ->
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = error,
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
 
             Spacer(modifier = Modifier.height(24.dp))
 
             Button(
-                onClick = { onAction(ForgotPasswordAction.SendOtpClicked) },
-                enabled = !state.isLoading && state.email.isNotBlank(),
+                onClick = { onAction(CreateNewPasswordAction.SubmitClicked) },
+                enabled = !state.isLoading && state.newPassword.isNotBlank() && state.confirmPassword.isNotBlank(),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 if (state.isLoading) {
@@ -142,7 +164,7 @@ fun ForgotPasswordScreen(
                         modifier = Modifier.size(20.dp)
                     )
                 } else {
-                    Text("Send OTP Verification")
+                    Text("Reset Password")
                 }
             }
         }

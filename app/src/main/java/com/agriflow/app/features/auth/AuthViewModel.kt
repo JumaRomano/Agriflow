@@ -134,8 +134,17 @@ class AuthViewModel @Inject constructor(
                 )
             ) {
                 is Result.Success -> {
-                    _state.update { it.copy(isLoading = false) }
-                    _events.send(AuthEvent.NavigateToMain)
+                    when (val otpResult = authRepository.sendOtp(currentState.registerEmail, OtpType.REGISTRATION)) {
+                        is Result.Success -> {
+                            _state.update { it.copy(isLoading = false) }
+                            _events.send(AuthEvent.NavigateToOtp(currentState.registerEmail, OtpType.REGISTRATION.name))
+                        }
+                        is Result.Error -> {
+                            val message = otpResult.error.toMessage()
+                            _state.update { it.copy(isLoading = false, errorMessage = message) }
+                            _events.send(AuthEvent.ShowMessage(message))
+                        }
+                    }
                 }
 
                 is Result.Error -> {

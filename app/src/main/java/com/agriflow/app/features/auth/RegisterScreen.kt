@@ -43,6 +43,7 @@ import com.agriflow.app.ui.theme.AgriflowTheme
 
 @Composable
 fun RegisterRoute(
+    onNavigateToOtp: (String, String) -> Unit,
     onRegisterSuccess: () -> Unit,
     onLoginClick: () -> Unit,
     viewModel: AuthViewModel = hiltViewModel()
@@ -53,6 +54,7 @@ fun RegisterRoute(
     LaunchedEffect(viewModel) {
         viewModel.events.collect { event ->
             when (event) {
+                is AuthEvent.NavigateToOtp -> onNavigateToOtp(event.email, event.type)
                 AuthEvent.NavigateToMain -> onRegisterSuccess()
                 is AuthEvent.ShowMessage -> snackbarHostState.showSnackbar(event.message)
             }

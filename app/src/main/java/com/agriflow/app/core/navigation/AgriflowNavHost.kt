@@ -47,6 +47,8 @@ import com.agriflow.app.features.profile.ProfileRoute
 import com.agriflow.app.features.marketplace.MyStore.sellerdashboard.MyStoreRoute
 import com.agriflow.app.features.addproduct.AddProductRoute
 import com.agriflow.app.features.auth.ForgotPasswordRoute
+import com.agriflow.app.features.auth.OtpVerificationRoute
+import com.agriflow.app.features.auth.CreateNewPasswordRoute
 import com.agriflow.app.features.marketplace.MyStore.myproducts.MyProductsRoute
 import com.agriflow.app.features.cart.presentation.CartRoute
 import com.agriflow.app.features.payment.PaymentRoute
@@ -240,6 +242,11 @@ fun AgriflowNavHost(
 
                 composable<Route.Register> {
                     RegisterRoute(
+                        onNavigateToOtp = { email, type ->
+                            navController.navigate(Route.OtpVerificationRoute(email, type)) {
+                                launchSingleTop = true
+                            }
+                        },
                         onRegisterSuccess = {
                             navController.navigate(Route.MainGraph) {
                                 popUpTo<Route.AuthGraph> {
@@ -255,7 +262,52 @@ fun AgriflowNavHost(
                 }
 
                 composable<Route.Forget> {
-                    ForgotPasswordRoute (
+                    ForgotPasswordRoute(
+                        onNavigateToOtp = { email, type ->
+                            navController.navigate(Route.OtpVerificationRoute(email, type)) {
+                                launchSingleTop = true
+                            }
+                        },
+                        onNavigateBack = {
+                            navController.popBackStack()
+                        }
+                    )
+                }
+
+                composable<Route.OtpVerificationRoute> {
+                    OtpVerificationRoute(
+                        onNavigateToResetPassword = { email, token ->
+                            navController.navigate(Route.CreateNewPasswordRoute(email, token)) {
+                                popUpTo(Route.OtpVerificationRoute::class) {
+                                    inclusive = true
+                                }
+                                launchSingleTop = true
+                            }
+                        },
+                        onNavigateToLogin = {
+                            navController.navigate(Route.Login) {
+                                popUpTo(Route.AuthGraph) {
+                                    inclusive = true
+                                }
+                                launchSingleTop = true
+                            }
+                        },
+                        onNavigateBack = {
+                            navController.popBackStack()
+                        }
+                    )
+                }
+
+                composable<Route.CreateNewPasswordRoute> {
+                    CreateNewPasswordRoute(
+                        onResetSuccess = {
+                            navController.navigate(Route.Login) {
+                                popUpTo(Route.AuthGraph) {
+                                    inclusive = true
+                                }
+                                launchSingleTop = true
+                            }
+                        },
                         onNavigateBack = {
                             navController.popBackStack()
                         }

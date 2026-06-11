@@ -42,6 +42,7 @@ fun LoginRoute(
         viewModel.events.collect { event ->
             when (event) {
                 AuthEvent.NavigateToMain -> onLoginSuccess()
+                is AuthEvent.NavigateToOtp -> { /* Not applicable to Login screen */ }
                 is AuthEvent.ShowMessage -> snackbarHostState.showSnackbar(event.message)
             }
         }

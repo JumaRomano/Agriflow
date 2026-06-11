@@ -30,4 +30,22 @@ interface AuthRepository {
     suspend fun getBusinessDetails(): Result<BusinessDetailsResponseDto, DataError.Network>
 
     suspend fun logout(): EmptyResult<DataError.Local>
+
+    suspend fun sendOtp(
+        email: String,
+        type: OtpType
+    ): EmptyResult<DataError.Network>
+
+    suspend fun verifyOtp(
+        email: String,
+        otpCode: String,
+        type: OtpType
+    ): Result<VerifyOtpResponseDto, DataError.Network>
+
+    suspend fun passwordReset(
+        email: String,
+        newPassword: String,
+        confirmPassword: String,
+        resetToken: String
+    ): EmptyResult<DataError.Network>
 }

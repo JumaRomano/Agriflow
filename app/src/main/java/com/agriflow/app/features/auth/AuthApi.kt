@@ -26,6 +26,21 @@ interface AuthApi {
 
     @GET("businesses/me")
     suspend fun getBusinessDetails(): Response<BusinessDetailsResponseDto>
+
+    @POST("notifications/otp/send")
+    suspend fun sendOtp(
+        @Body request: SendOtpRequestDto
+    ): Response<Unit>
+
+    @POST("notifications/otp/verify")
+    suspend fun verifyOtp(
+        @Body request: VerifyOtpRequestDto
+    ): Response<VerifyOtpResponseDto>
+
+    @POST("auth/password-reset")
+    suspend fun passwordReset(
+        @Body request: PasswordResetRequestDto
+    ): Response<Unit>
 }
 
 data class UpgradeRoleRequestDto(
