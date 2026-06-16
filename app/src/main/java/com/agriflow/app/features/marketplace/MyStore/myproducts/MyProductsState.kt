@@ -1,3 +1,6 @@
+/**
+ * UI State definition representing the screen state for MyProducts.
+ */
 package com.agriflow.app.features.marketplace.MyStore.myproducts
 
 data class MyProductsState(

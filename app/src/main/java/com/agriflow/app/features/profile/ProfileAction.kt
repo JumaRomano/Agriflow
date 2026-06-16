@@ -1,3 +1,6 @@
+/**
+ * Sealed interface representing user actions and UI events for the Profile flow.
+ */
 package com.agriflow.app.features.profile
 
 sealed interface ProfileAction {

@@ -1,3 +1,6 @@
+/**
+ * Represents the class [AuthSession] providing core functionality within the application.
+ */
 package com.agriflow.app.features.auth
 
 data class AuthSession(

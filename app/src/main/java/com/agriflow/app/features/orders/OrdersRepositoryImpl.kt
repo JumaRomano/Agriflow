@@ -1,3 +1,6 @@
+/**
+ * Repository implementation of [OrdersRepository] managing remote and local data operations.
+ */
 package com.agriflow.app.features.orders
 
 import com.agriflow.app.core.network.safeApiCall

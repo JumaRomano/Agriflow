@@ -1,3 +1,6 @@
+/**
+ * Sealed interface representing user actions and UI events for the AddProduct flow.
+ */
 package com.agriflow.app.features.addproduct
 
 import android.net.Uri

@@ -1,3 +1,6 @@
+/**
+ * ViewModel managing the business logic and UI state for the AddProduct feature.
+ */
 package com.agriflow.app.features.addproduct
 
 import android.net.Uri
@@ -37,92 +40,6 @@ class AddProductViewModel @Inject constructor(
 
     init {
         fetchCategories()
-        val routeArgs = savedStateHandle.toRoute<Route.AddProduct>()
-        val productId = routeArgs.productId
-        if (productId != null) {
-            val mockProduct = getMockProductById(productId)
-            if (mockProduct != null) {
-                _state.update {
-                    it.copy(
-                        productId = productId,
-                        name = mockProduct.name,
-                        description = when (mockProduct.id) {
-                            "prod-001" -> "High-yield Premium White Maize. Hand-sorted and dried to optimum moisture level."
-                            "prod-002" -> "Export-quality fresh Hass Avocados, direct from orchards. Rich, creamy texture."
-                            "prod-003" -> "Plump and juicy vine-ripened organic tomatoes. Grown with eco-friendly practices."
-                            "prod-004" -> "Balanced NPK fertilizer 17-17-17 formulation. Perfect for crop establishment and root development."
-                            "prod-005" -> "Organic eco-friendly biopesticide spray. Effective against major pests without harming pollinators."
-                            else -> "Premium agricultural product. High-grade and ready for delivery."
-                        },
-                        price = mockProduct.price.toString(),
-                        quantity = mockProduct.stockQuantity.toString(),
-                        selectedCategoryId = when (mockProduct.id) {
-                            "prod-001" -> "cat-grains"
-                            "prod-002" -> "cat-fruits"
-                            "prod-003" -> "cat-vegetables"
-                            "prod-004" -> "cat-inputs"
-                            "prod-005" -> "cat-chemicals"
-                            else -> null
-                        },
-                        selectedUnit = mockProduct.unit,
-                        selectedImageUris = if (mockProduct.imageUrl.isNotEmpty()) {
-                            listOf(Uri.parse(mockProduct.imageUrl))
-                        } else emptyList()
-                    )
-                }
-            }
-        }
-    }
-
-    private fun getMockProductById(id: String): ListedProduct? {
-        val mockProducts = listOf(
-            ListedProduct(
-                id = "prod-001",
-                name = "Premium White Maize",
-                price = 3200.0,
-                stockQuantity = 150,
-                unit = "bag",
-                imageUrl = "https://picsum.photos/id/1080/200/200",
-                status = ProductStatus.ACTIVE
-            ),
-            ListedProduct(
-                id = "prod-002",
-                name = "Fresh Hass Avocados",
-                price = 800.0,
-                stockQuantity = 50,
-                unit = "kg",
-                imageUrl = "https://picsum.photos/id/106/200/200",
-                status = ProductStatus.ACTIVE
-            ),
-            ListedProduct(
-                id = "prod-003",
-                name = "Organic Tomatoes",
-                price = 1500.0,
-                stockQuantity = 0,
-                unit = "crate",
-                imageUrl = "https://picsum.photos/id/429/200/200",
-                status = ProductStatus.OUT_OF_STOCK
-            ),
-            ListedProduct(
-                id = "prod-004",
-                name = "NPK Fertilizer 50kg",
-                price = 4500.0,
-                stockQuantity = 500,
-                unit = "bag",
-                imageUrl = "https://picsum.photos/id/1080/200/200",
-                status = ProductStatus.ACTIVE
-            ),
-            ListedProduct(
-                id = "prod-005",
-                name = "Bio-Pesticide Eco-Spray",
-                price = 1150.0,
-                stockQuantity = 12,
-                unit = "liter",
-                imageUrl = "https://picsum.photos/id/106/200/200",
-                status = ProductStatus.UNDER_REVIEW
-            )
-        )
-        return mockProducts.find { it.id == id }
     }
 
     fun onAction(action: AddProductAction) {
@@ -280,8 +197,7 @@ class AddProductViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
             
-            // --- STEP 1: Upload Raw Image Uris to Backend ---
-            val isEditMode = currentState.productId != null
+            // uploads raw images to backend
 
             val (uploadedUrls, uploadFailed) = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
                 val urls = mutableListOf<String>()
@@ -328,7 +244,7 @@ class AddProductViewModel @Inject constructor(
             // Log final collection of URLs
             android.util.Log.d("AddProductViewModel", "Uploaded image URLs: $uploadedUrls")
 
-            // --- STEP 2: Submit final JSON payload to Product API ---
+            //  Submit final JSON payload to Product API ---
             val request = ProductUploadRequest(
                 productName = currentState.name,
                 description = currentState.description,
@@ -339,18 +255,13 @@ class AddProductViewModel @Inject constructor(
                 images = uploadedUrls
             )
 
-            val apiResult = if (isEditMode) {
-                marketplaceRepository.updateProduct(currentState.productId!!, request)
-            } else {
-                marketplaceRepository.createProduct(request)
-            }
+            val apiResult = marketplaceRepository.createProduct(request)
 
             _state.update { it.copy(isLoading = false) }
 
             when (apiResult) {
                 is Result.Success -> {
-                    val successMessage = if (isEditMode) "Product updated successfully!" else "Product successfully added to the marketplace!"
-                    _events.send(AddProductEvent.ShowSnackbar(successMessage))
+                    _events.send(AddProductEvent.ShowSnackbar("Product successfully added to the marketplace!"))
                     _events.send(AddProductEvent.MapsBack)
                 }
                 is Result.Error -> {

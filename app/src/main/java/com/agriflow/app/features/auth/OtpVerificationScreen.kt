@@ -1,3 +1,6 @@
+/**
+ * Jetpack Compose UI screen components for the OtpVerification screen.
+ */
 package com.agriflow.app.features.auth
 
 import androidx.compose.foundation.layout.Arrangement
@@ -156,6 +159,14 @@ fun OtpVerificationScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            Text(
+                text = "The OTP expires in 5 minutes",
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
             TextButton(
                 onClick = { onAction(OtpAction.ResendClicked) },
                 enabled = !state.isLoading,
@@ -166,6 +177,9 @@ fun OtpVerificationScreen(
                     textAlign = TextAlign.Center
                 )
             }
+
+
         }
     }
 }
+

@@ -1,3 +1,6 @@
+/**
+ * Jetpack Compose UI screen components for the Register screen.
+ */
 package com.agriflow.app.features.auth
 
 import androidx.compose.foundation.layout.Arrangement
@@ -82,7 +85,7 @@ fun RegisterScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         modifier = modifier
     ) { paddingValues ->
-        // verticalScroll keeps this simple form usable on small phones and when the keyboard is open.
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -97,7 +100,7 @@ fun RegisterScreen(
                 style = MaterialTheme.typography.headlineMedium
             )
             Text(
-                text = "Join Agriflow and start trading securely.",
+                text = "Join Agriflow the future of Agriculture.",
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -232,19 +235,4 @@ fun RegisterScreen(
 
 
 
-@Preview(showBackground = true)
-@Composable
-private fun RegisterScreenPreview() {
-    AgriflowTheme {
-        RegisterScreen(
-            state = AuthState(
-                registerusername = "",
-                registerfirstName = "",
-                registersurName = ""
-            ),
-            snackbarHostState = SnackbarHostState(),
-            onAction = {},
-            onLoginClick = {}
-        )
-    }
-}
+

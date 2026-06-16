@@ -1,3 +1,6 @@
+/**
+ * Core helper component: CartMappers.
+ */
 package com.agriflow.app.features.cart.data
 
 import android.util.Log

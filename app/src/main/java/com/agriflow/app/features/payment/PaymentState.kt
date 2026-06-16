@@ -1,3 +1,6 @@
+/**
+ * UI State definition representing the screen state for Payment.
+ */
 package com.agriflow.app.features.payment
 
 data class PaymentState(

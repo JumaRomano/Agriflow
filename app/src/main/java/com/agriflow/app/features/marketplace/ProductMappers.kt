@@ -1,3 +1,6 @@
+/**
+ * Core helper component: ProductMappers.
+ */
 package com.agriflow.app.features.marketplace
 
 import com.agriflow.app.features.marketplace.ProductEntity

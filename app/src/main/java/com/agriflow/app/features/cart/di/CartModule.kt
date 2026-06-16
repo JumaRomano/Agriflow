@@ -1,3 +1,6 @@
+/**
+ * Dagger Hilt dependency injection module providing component bindings and providers.
+ */
 package com.agriflow.app.features.cart.di
 
 import com.agriflow.app.features.cart.data.CartApi

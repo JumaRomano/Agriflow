@@ -1,3 +1,6 @@
+/**
+ * Room Data Access Object (DAO) defining local database operations.
+ */
 package com.agriflow.app.features.marketplace
 
 import androidx.room.Dao

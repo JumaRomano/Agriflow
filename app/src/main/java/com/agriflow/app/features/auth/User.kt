@@ -1,3 +1,6 @@
+/**
+ * Represents the class [User] providing core functionality within the application.
+ */
 package com.agriflow.app.features.auth
 
 data class User(

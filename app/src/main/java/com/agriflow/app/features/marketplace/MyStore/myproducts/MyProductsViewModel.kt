@@ -1,3 +1,6 @@
+/**
+ * ViewModel managing the business logic and UI state for the MyProducts feature.
+ */
 package com.agriflow.app.features.marketplace.MyStore.myproducts
 
 import androidx.lifecycle.ViewModel

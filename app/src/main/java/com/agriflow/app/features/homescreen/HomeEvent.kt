@@ -1,3 +1,6 @@
+/**
+ * Sealed interface representing one-shot UI events emitted by the Home ViewModel.
+ */
 package com.agriflow.app.features.homescreen
 
 /**
@@ -8,6 +11,7 @@ sealed interface HomeEvent {
     data object NavigateToCart : HomeEvent
     data class ShowMessage(val message: String) : HomeEvent
     data object NavigateToNotification : HomeEvent
+    data object NavigateToWallet : HomeEvent
 
     data class NavigateToProductDetails(val productId: String) : HomeEvent
 }

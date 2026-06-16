@@ -1,3 +1,6 @@
+/**
+ * Repository implementation of [CartRepository] managing remote and local data operations.
+ */
 package com.agriflow.app.features.cart.data
 
 import com.agriflow.app.core.network.safeApiCall

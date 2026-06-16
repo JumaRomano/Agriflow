@@ -1,3 +1,6 @@
+/**
+ * Sealed interface representing user actions and UI events for the Marketplace flow.
+ */
 package com.agriflow.app.features.marketplace
 
 sealed interface MarketplaceAction {

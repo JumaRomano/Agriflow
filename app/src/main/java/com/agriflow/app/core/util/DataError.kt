@@ -1,3 +1,6 @@
+/**
+ * Represents the interface [DataError] providing core functionality within the application.
+ */
 package com.agriflow.app.core.util
 
 sealed interface DataError : Error {

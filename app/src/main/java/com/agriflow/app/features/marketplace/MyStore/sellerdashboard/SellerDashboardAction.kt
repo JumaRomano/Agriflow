@@ -1,3 +1,6 @@
+/**
+ * Sealed interface representing user actions and UI events for the SellerDashboard flow.
+ */
 package com.agriflow.app.features.marketplace.MyStore.sellerdashboard
 
 sealed interface SellerDashboardAction {

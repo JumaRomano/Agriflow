@@ -1,3 +1,6 @@
+/**
+ * Retrofit API interface defining network endpoints for the Payment service.
+ */
 package com.agriflow.app.features.payment
 
 import retrofit2.Response

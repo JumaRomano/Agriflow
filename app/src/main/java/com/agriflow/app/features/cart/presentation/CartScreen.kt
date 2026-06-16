@@ -1,3 +1,6 @@
+/**
+ * Jetpack Compose UI screen components for the Cart screen.
+ */
 package com.agriflow.app.features.cart.presentation
 
 import androidx.compose.foundation.background

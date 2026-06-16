@@ -1,3 +1,6 @@
+/**
+ * ViewModel managing the business logic and UI state for the Home feature.
+ */
 package com.agriflow.app.features.homescreen
 
 import androidx.lifecycle.ViewModel
@@ -87,6 +90,11 @@ class HomeViewModel @Inject constructor(
             HomeAction.NotificationsClicked -> {
                 viewModelScope.launch {
                     _events.send(HomeEvent.NavigateToNotification)
+                }
+            }
+            HomeAction.WalletClicked -> {
+                viewModelScope.launch {
+                    _events.send(HomeEvent.NavigateToWallet)
                 }
             }
 

@@ -1,3 +1,6 @@
+/**
+ * Represents the class [MainActivity] providing core functionality within the application.
+ */
 package com.agriflow.app
 
 import android.os.Bundle

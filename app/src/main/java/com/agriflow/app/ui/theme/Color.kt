@@ -1,11 +1,14 @@
+/**
+ * Core helper component: Color.
+ */
 package com.agriflow.app.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
 // --- BRAND LIGHT THEME COLOR PALETTE ---
-val AgriflowPrimaryLight = Color(0xFF006C49)
+val AgriflowPrimaryLight = Color(0xFF4CAF50)
 val AgriflowOnPrimaryLight = Color(0xFFFFFFFF)
-val AgriflowPrimaryContainerLight = Color(0xFF10B981)
+val AgriflowPrimaryContainerLight = Color(0xFF4CAF50)
 val AgriflowSecondaryLight = Color(0xFF555F6F)
 val AgriflowTertiaryLight = Color(0xFFA43A3A)
 val AgriflowBackgroundLight = Color(0xFFF4FBF4)
@@ -15,10 +18,10 @@ val AgriflowOnSurfaceLight = Color(0xFF161D19)
 val AgriflowErrorLight = Color(0xFFBA1A1A)
 
 // --- BRAND DARK THEME COLOR PALETTE (ACCESSIBLE EQUIVALENTS) ---
-val AgriflowPrimaryDark = Color(0xFF70DCB0)
+val AgriflowPrimaryDark = Color(0xFF4CAF50)
 val AgriflowOnPrimaryDark = Color(0xFF003824)
 val AgriflowPrimaryContainerDark = Color(0xFF005237)
-val AgriflowOnPrimaryContainerDark = Color(0xFF8DF9CB)
+val AgriflowOnPrimaryContainerDark = Color(0xFF4CAF50)
 val AgriflowSecondaryDark = Color(0xFFBDC7D8)
 val AgriflowOnSecondaryDark = Color(0xFF273140)
 val AgriflowTertiaryDark = Color(0xFFFFB3B3)

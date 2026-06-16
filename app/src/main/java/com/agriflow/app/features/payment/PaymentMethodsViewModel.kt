@@ -1,3 +1,6 @@
+/**
+ * ViewModel managing the business logic and UI state for the PaymentMethods feature.
+ */
 package com.agriflow.app.features.payment
 
 import android.content.Context

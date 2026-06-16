@@ -1,3 +1,6 @@
+/**
+ * Jetpack Compose UI screen components for the Marketplace screen.
+ */
 package com.agriflow.app.features.marketplace
 
 import androidx.compose.foundation.background

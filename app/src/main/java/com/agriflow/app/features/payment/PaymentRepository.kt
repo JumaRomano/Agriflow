@@ -1,3 +1,6 @@
+/**
+ * Repository interface for managing data transactions related to Payment.
+ */
 package com.agriflow.app.features.payment
 
 import com.agriflow.app.core.util.DataError

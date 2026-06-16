@@ -1,3 +1,6 @@
+/**
+ * UI State definition representing the screen state for ProductDetails.
+ */
 package com.agriflow.app.features.marketplace.productdetails
 
 import com.agriflow.app.features.auth.UserRole

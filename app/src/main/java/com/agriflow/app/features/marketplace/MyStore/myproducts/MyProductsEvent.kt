@@ -1,3 +1,6 @@
+/**
+ * Sealed interface representing one-shot UI events emitted by the MyProducts ViewModel.
+ */
 package com.agriflow.app.features.marketplace.MyStore.myproducts
 
 sealed interface MyProductsEvent {

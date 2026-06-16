@@ -1,3 +1,6 @@
+/**
+ * Jetpack Compose UI screen components for the ProductDetails screen.
+ */
 package com.agriflow.app.features.marketplace.productdetails
 
 import androidx.compose.foundation.background

@@ -1,3 +1,6 @@
+/**
+ * Core helper component: AuthMappers.
+ */
 package com.agriflow.app.features.auth
 
 import com.agriflow.app.features.auth.AuthResponseDto

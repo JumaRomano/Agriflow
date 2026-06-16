@@ -1,3 +1,6 @@
+/**
+ * ViewModel managing the business logic and UI state for the RoleUpgrade feature.
+ */
 package com.agriflow.app.features.profile.roleUpgrade
 
 import androidx.lifecycle.ViewModel

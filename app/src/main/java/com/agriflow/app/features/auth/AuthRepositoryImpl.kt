@@ -1,3 +1,6 @@
+/**
+ * Repository implementation of [AuthRepository] managing remote and local data operations.
+ */
 package com.agriflow.app.features.auth
 
 import com.agriflow.app.core.security.TokenRepository
@@ -137,6 +140,21 @@ class AuthRepositoryImpl @Inject constructor(
                 )
             )
         }
+    }
+
+    override suspend fun updateProfile(
+        username: String,
+        phoneNumber: String?
+    ): Result<AuthSession, DataError.Network> {
+        return safeApiCall {
+            authApi.updateProfile(
+                request = UpdateProfileRequestDto(
+                    username = username.trim(),
+                    phoneNumber = phoneNumber?.trim()?.takeIf(String::isNotBlank)
+                )
+            )
+        }.toAuthSessionResult()
+            .also { result -> result.saveTokensIfSuccessful() }
     }
 
     private fun Result<com.agriflow.app.features.auth.AuthResponseDto, DataError.Network>.toAuthSessionResult():

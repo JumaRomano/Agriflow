@@ -1,3 +1,6 @@
+/**
+ * Represents the class [ProductStatus] providing core functionality within the application.
+ */
 package com.agriflow.app.features.marketplace.MyStore.myproducts
 
 enum class ProductStatus {

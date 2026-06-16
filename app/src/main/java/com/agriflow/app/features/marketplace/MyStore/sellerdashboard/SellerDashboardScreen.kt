@@ -1,3 +1,6 @@
+/**
+ * Jetpack Compose UI screen components for the SellerDashboard screen.
+ */
 package com.agriflow.app.features.marketplace.MyStore.sellerdashboard
 
 import androidx.compose.foundation.clickable

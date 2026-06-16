@@ -1,3 +1,6 @@
+/**
+ * OkHttp network interceptor for injecting auth tokens or managing logging.
+ */
 package com.agriflow.app.core.network
 
 import com.agriflow.app.core.security.TokenRepository

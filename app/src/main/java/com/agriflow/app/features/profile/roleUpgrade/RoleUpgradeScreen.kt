@@ -1,3 +1,6 @@
+/**
+ * Jetpack Compose UI screen components for the RoleUpgrade screen.
+ */
 package com.agriflow.app.features.profile.roleUpgrade
 
 import androidx.compose.foundation.BorderStroke

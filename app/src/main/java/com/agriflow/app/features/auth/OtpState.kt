@@ -1,3 +1,6 @@
+/**
+ * UI State definition representing the screen state for Otp.
+ */
 package com.agriflow.app.features.auth
 
 data class OtpState(

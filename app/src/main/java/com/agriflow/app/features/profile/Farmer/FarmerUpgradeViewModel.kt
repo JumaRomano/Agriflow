@@ -1,3 +1,6 @@
+/**
+ * ViewModel managing the business logic and UI state for the FarmerUpgrade feature.
+ */
 package com.agriflow.app.features.profile.Farmer
 
 import com.agriflow.app.features.profile.roleUpgrade.RoleUpgradeState

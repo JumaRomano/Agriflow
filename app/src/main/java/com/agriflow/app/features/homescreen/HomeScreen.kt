@@ -1,3 +1,6 @@
+/**
+ * Jetpack Compose UI screen components for the Home screen.
+ */
 package com.agriflow.app.features.homescreen
 
 import android.R
@@ -19,9 +22,11 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Wallet
 import com.agriflow.app.features.auth.UserRole
 import com.agriflow.app.features.marketplace.ProductGridItem
 import androidx.compose.material3.Button
@@ -65,7 +70,7 @@ fun HomeRoute(
     onNavigateToMarketplace: () -> Unit,
     onNavigateToCart: () -> Unit,
     onNavigateToNotification: () -> Unit,
-    onNavigateToChat: () -> Unit,
+    onNavigateToWallet: () -> Unit,
     onNavigateToProductDetails: (String) -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
@@ -78,6 +83,7 @@ fun HomeRoute(
                 HomeEvent.NavigateToMarketplace -> onNavigateToMarketplace()
                 HomeEvent.NavigateToCart -> onNavigateToCart()
                 HomeEvent.NavigateToNotification -> onNavigateToNotification()
+                HomeEvent.NavigateToWallet -> onNavigateToWallet()
                 is HomeEvent.NavigateToProductDetails -> onNavigateToProductDetails(event.productId)
                 is HomeEvent.ShowMessage -> snackbarHostState.showSnackbar(event.message)
             }
@@ -112,6 +118,10 @@ fun HomeScreen(
                     }
                     IconButton(onClick = { onAction(HomeAction.NotificationsClicked) }) {
                         Icon(imageVector = Icons.Default.Notifications, contentDescription = "Notifications")
+                    }
+                    if (state.userRole == UserRole.SUPPLIER || state.userRole == UserRole.FARMER )
+                    IconButton(onClick = { onAction(HomeAction.WalletClicked) }) {
+                        Icon(imageVector =  Icons.Default.AccountBalanceWallet, contentDescription = "Wallet")
                     }
 
                 },

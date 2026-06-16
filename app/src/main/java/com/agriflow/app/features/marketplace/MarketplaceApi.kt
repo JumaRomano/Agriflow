@@ -1,3 +1,6 @@
+/**
+ * Retrofit API interface defining network endpoints for the Marketplace service.
+ */
 package com.agriflow.app.features.marketplace
 
 import com.agriflow.app.features.marketplace.ProductDto
@@ -9,6 +12,7 @@ import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.PUT
+import retrofit2.http.PATCH
 import retrofit2.http.Path
 
 import retrofit2.http.Query
@@ -34,10 +38,15 @@ interface MarketplaceApi {
         @Body request: ProductUploadRequest
     ): Response<Unit>
 
-    @PUT("products/{id}")
+    @PATCH("products/{id}")
     suspend fun updateProduct(
         @Path("id") id: String,
-        @Body request: ProductUploadRequest
+        @Body request: ProductUpdateRequest
+    ): Response<Unit>
+
+    @PATCH("products/{id}/out-of-stock")
+    suspend fun markAsOutOfStock(
+        @Path("id") id: String
     ): Response<Unit>
 
     @GET("products/my-products")

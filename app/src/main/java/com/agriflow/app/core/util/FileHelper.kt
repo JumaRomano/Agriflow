@@ -1,3 +1,6 @@
+/**
+ * Represents the class [FileHelper] providing core functionality within the application.
+ */
 package com.agriflow.app.core.util
 
 import android.content.Context

@@ -1,3 +1,6 @@
+/**
+ * Represents the class [DefaultTimeProvider] providing core functionality within the application.
+ */
 package com.agriflow.app.core.util
 
 import javax.inject.Inject

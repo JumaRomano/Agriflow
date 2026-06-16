@@ -1,3 +1,6 @@
+/**
+ * Repository implementation of [PaymentRepository] managing remote and local data operations.
+ */
 package com.agriflow.app.features.payment
 
 import com.agriflow.app.core.network.safeApiCall

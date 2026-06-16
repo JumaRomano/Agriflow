@@ -1,3 +1,6 @@
+/**
+ * Jetpack Compose UI screen components for the MyProducts screen.
+ */
 package com.agriflow.app.features.marketplace.MyStore.myproducts
 
 import androidx.compose.foundation.background
@@ -182,7 +185,7 @@ fun MyProductsScreen(
             if (state.isLoading) {
                 CircularProgressIndicator()
             } else if (state.products.isEmpty()) {
-                // --- EMPTY STATE ---
+
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -249,86 +252,99 @@ private fun ListedProductCard(
         ),
         shape = RoundedCornerShape(12.dp)
     ) {
-        ListItem(
-            leadingContent = {
-                // Square Image
-                Box(
-                    modifier = Modifier
-                        .size(80.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(MaterialTheme.colorScheme.surfaceVariant),
-                    contentAlignment = Alignment.Center
-                ) {
-                    if (product.imageUrl.isNotBlank()) {
-                        AsyncImage(
-                            model = product.imageUrl,
-                            contentDescription = "Product image",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    } else {
-                        Icon(
-                            imageVector = Icons.Default.Image,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-                            modifier = Modifier.size(32.dp)
-                        )
-                    }
+        // Replaced ListItem with a Custom Row
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            // 1. Leading Content (Image)
+            Box(
+                modifier = Modifier
+                    .size(80.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
+                contentAlignment = Alignment.Center
+            ) {
+                if (product.imageUrl.isNotBlank()) {
+                    AsyncImage(
+                        model = product.imageUrl,
+                        contentDescription = "Product image",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Default.Image,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                        modifier = Modifier.size(32.dp)
+                    )
                 }
-            },
-            headlineContent = {
+            }
+
+            // 2. Middle Content (Uses weight(1f) to take available space safely)
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
                 Text(
                     text = product.name,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 1,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                 )
-            },
-            supportingContent = {
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text(
-                        text = "KES ${"%,.2f".format(product.price)} / ${product.unit}",
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Text(
-                            text = "Stock: ${product.stockQuantity}",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        StatusBadge(status = product.status)
-                    }
-                }
-            },
-            trailingContent = {
+
+                Text(
+                    text = "KES ${"%,.2f".format(product.price)} / ${product.unit}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.primary,
+                    maxLines = 1,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                )
+
                 Row(
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    IconButton(onClick = onEditClick) {
-                        Icon(
-                            imageVector = Icons.Default.Edit,
-                            contentDescription = "Edit product listing",
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                    IconButton(onClick = onDeleteClick) {
-                        Icon(
-                            imageVector = Icons.Default.Delete,
-                            contentDescription = "Delete product listing",
-                            tint = MaterialTheme.colorScheme.error
-                        )
-                    }
+                    Text(
+                        text = "Stock: ${product.stockQuantity}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                        // This allows the stock text to shrink and add '...' if space is tight, protecting the badge
+                        modifier = Modifier.weight(1f, fill = false)
+                    )
+                    StatusBadge(status = product.status)
                 }
-            },
-            colors = ListItemDefaults.colors(
-                containerColor = Color.Transparent
-            )
-        )
+            }
+
+            // 3. Trailing Content (Action Icons)
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = onEditClick) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Edit product listing",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                IconButton(onClick = onDeleteClick) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Delete product listing",
+                        tint = MaterialTheme.colorScheme.error
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -337,34 +353,44 @@ private fun ListedProductCard(
  */
 @Composable
 private fun StatusBadge(status: ProductStatus) {
-    val (bgColor, textColor) = when (status) {
-        ProductStatus.ACTIVE -> MaterialTheme.colorScheme.primaryContainer to MaterialTheme.colorScheme.onPrimaryContainer
-        ProductStatus.INACTIVE -> MaterialTheme.colorScheme.surfaceVariant to MaterialTheme.colorScheme.onSurfaceVariant
-        ProductStatus.OUT_OF_STOCK -> MaterialTheme.colorScheme.errorContainer to MaterialTheme.colorScheme.onErrorContainer
-        ProductStatus.UNDER_REVIEW -> MaterialTheme.colorScheme.tertiaryContainer to MaterialTheme.colorScheme.onTertiaryContainer
+    // 1. Evaluate the enum exactly once to grab all UI properties
+    val (bgColor, textColor, label) = when (status) {
+        ProductStatus.ACTIVE -> Triple(
+            MaterialTheme.colorScheme.primaryContainer,
+            MaterialTheme.colorScheme.onPrimaryContainer,
+            "Active"
+        )
+        ProductStatus.INACTIVE -> Triple(
+            MaterialTheme.colorScheme.surfaceVariant,
+            MaterialTheme.colorScheme.onSurfaceVariant,
+            "Inactive"
+        )
+        ProductStatus.OUT_OF_STOCK -> Triple(
+            MaterialTheme.colorScheme.errorContainer,
+            MaterialTheme.colorScheme.onErrorContainer,
+            "Out of Stock"
+        )
+        ProductStatus.UNDER_REVIEW -> Triple(
+            MaterialTheme.colorScheme.tertiaryContainer,
+            MaterialTheme.colorScheme.onTertiaryContainer,
+            "In Review"
+        )
     }
 
     Surface(
         shape = RoundedCornerShape(8.dp),
         color = bgColor,
         contentColor = textColor,
-        modifier = Modifier
-            .padding(vertical = 2.dp)
-            .width(IntrinsicSize.Max)
+        modifier = Modifier.padding(vertical = 2.dp)
     ) {
         Text(
-            text = when (status) {
-                ProductStatus.ACTIVE -> "Active"
-                ProductStatus.INACTIVE -> "Inactive"
-                ProductStatus.OUT_OF_STOCK -> "Out of Stock"
-                ProductStatus.UNDER_REVIEW -> "In Review"
-            },
+            text = label,
             style = MaterialTheme.typography.labelSmall,
-
             fontWeight = FontWeight.Bold,
+            maxLines = 1,
+            softWrap = false,
             modifier = Modifier.padding(horizontal = 7.dp, vertical = 2.dp)
         )
     }
 }
-
 

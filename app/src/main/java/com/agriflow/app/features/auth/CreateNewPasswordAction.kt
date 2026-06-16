@@ -1,3 +1,6 @@
+/**
+ * Sealed interface representing user actions and UI events for the CreateNewPassword flow.
+ */
 package com.agriflow.app.features.auth
 
 sealed interface CreateNewPasswordAction {

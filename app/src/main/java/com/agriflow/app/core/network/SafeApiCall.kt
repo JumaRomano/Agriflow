@@ -1,3 +1,6 @@
+/**
+ * Core helper component: SafeApiCall.
+ */
 package com.agriflow.app.core.network
 
 import com.agriflow.app.core.util.DataError

@@ -1,3 +1,6 @@
+/**
+ * UI State definition representing the screen state for Marketplace.
+ */
 package com.agriflow.app.features.marketplace
 
 import com.agriflow.app.features.auth.UserRole

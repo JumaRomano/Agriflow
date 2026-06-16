@@ -1,7 +1,8 @@
+/**
+ * Dagger Hilt dependency injection module providing component bindings and providers.
+ */
 package com.agriflow.app.features.marketplace
 
-import com.agriflow.app.core.database.AgriflowDatabase
-import com.agriflow.app.features.marketplace.ProductDao
 import com.agriflow.app.features.marketplace.MarketplaceApi
 import com.agriflow.app.features.marketplace.OfflineFirstMarketplaceRepositoryImpl
 import com.agriflow.app.features.marketplace.MarketplaceRepository
@@ -24,12 +25,6 @@ abstract class MarketplaceModule {
     ): MarketplaceRepository
 
     companion object {
-        @Provides
-        @Singleton
-        fun provideProductDao(database: AgriflowDatabase): ProductDao {
-            return database.productDao()
-        }
-
         @Provides
         @Singleton
         fun provideMarketplaceApi(retrofit: Retrofit): MarketplaceApi {

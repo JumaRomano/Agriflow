@@ -1,3 +1,6 @@
+/**
+ * Jetpack Compose UI screen components for the EnterpriseUpgrade screen.
+ */
 package com.agriflow.app.features.profile.Enterprise
 
 import com.agriflow.app.features.profile.roleUpgrade.RoleUpgradeState
@@ -45,6 +48,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

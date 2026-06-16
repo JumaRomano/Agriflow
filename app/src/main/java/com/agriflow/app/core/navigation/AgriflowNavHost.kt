@@ -1,3 +1,6 @@
+/**
+ * Application navigation routing, graphs, and destination definitions.
+ */
 package com.agriflow.app.core.navigation
 
 import androidx.compose.foundation.layout.Box
@@ -44,8 +47,10 @@ import com.agriflow.app.features.marketplace.MarketplaceRoute
 import com.agriflow.app.features.homescreen.HomeRoute
 import com.agriflow.app.features.marketplace.productdetails.ProductDetailsRoute
 import com.agriflow.app.features.profile.ProfileRoute
+import com.agriflow.app.features.profile.EditProfileRoute
 import com.agriflow.app.features.marketplace.MyStore.sellerdashboard.MyStoreRoute
 import com.agriflow.app.features.addproduct.AddProductRoute
+import com.agriflow.app.features.editproduct.EditProductRoute
 import com.agriflow.app.features.auth.ForgotPasswordRoute
 import com.agriflow.app.features.auth.OtpVerificationRoute
 import com.agriflow.app.features.auth.CreateNewPasswordRoute
@@ -54,6 +59,7 @@ import com.agriflow.app.features.cart.presentation.CartRoute
 import com.agriflow.app.features.payment.PaymentRoute
 import com.agriflow.app.features.payment.PaymentMethodsRoute
 import com.agriflow.app.features.orders.OrdersRoute
+import com.agriflow.app.features.wallet.WalletRoute
 
 
 
@@ -341,8 +347,8 @@ fun AgriflowNavHost(
                                 launchSingleTop = true
                             }
                         },
-                        onNavigateToChat =  {
-                            navController.navigate(Route.Chat) {
+                        onNavigateToWallet =  {
+                            navController.navigate(Route.Wallet) {
                                 launchSingleTop = true
                             }
                         },
@@ -391,7 +397,12 @@ fun AgriflowNavHost(
                 composable<Route.MyProducts> {
                     MyProductsRoute(
                         onNavigateToAddProduct = { productId ->
-                            navController.navigate(Route.AddProduct(productId)) {
+                            val dest = if (productId != null) {
+                                Route.EditProduct(productId)
+                            } else {
+                                Route.AddProduct
+                            }
+                            navController.navigate(dest) {
                                 launchSingleTop = true
                             }
                         },
@@ -408,6 +419,14 @@ fun AgriflowNavHost(
 
                 composable<Route.AddProduct> {
                     AddProductRoute(
+                        onNavigateBack = {
+                            navController.popBackStack()
+                        }
+                    )
+                }
+
+                composable<Route.EditProduct> {
+                    EditProductRoute(
                         onNavigateBack = {
                             navController.popBackStack()
                         }
@@ -448,8 +467,8 @@ fun AgriflowNavHost(
                                 launchSingleTop = true
                             }
                         },
-                        onNavigateToHelpCenter = {
-                            navController.navigate(Route.HelpCenter) {
+                        onNavigateToWallet = {
+                            navController.navigate(Route.Wallet) {
                                 launchSingleTop = true
                             }
                         }
@@ -545,17 +564,30 @@ fun AgriflowNavHost(
                     )
                 }
 
+                composable<Route.EditProfile>{
+                    EditProfileRoute(
+                        onNavigateBack = {
+                            navController.popBackStack()
+                        }
+                    )
+                }
+
                 composable<Route.Notification>{
                     DummyScreen("Notifications")
                 }
                 composable<Route.Chat>{
                     DummyScreen("Chat")
                 }
-                composable<Route.EditProfile>{
-                    DummyScreen("Edit Profile")
-                }
+
                 composable<Route.HelpCenter>{
                     DummyScreen("Help Center")
+                }
+                composable<Route.Wallet> {
+                    WalletRoute(
+                        onNavigateBack = {
+                            navController.popBackStack()
+                        }
+                    )
                 }
 
 

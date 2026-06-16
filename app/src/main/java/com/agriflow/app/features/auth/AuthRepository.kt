@@ -1,3 +1,6 @@
+/**
+ * Repository interface for managing data transactions related to Auth.
+ */
 package com.agriflow.app.features.auth
 
 import com.agriflow.app.core.util.DataError
@@ -48,4 +51,9 @@ interface AuthRepository {
         confirmPassword: String,
         resetToken: String
     ): EmptyResult<DataError.Network>
+
+    suspend fun updateProfile(
+        username: String,
+        phoneNumber: String?
+    ): Result<AuthSession, DataError.Network>
 }

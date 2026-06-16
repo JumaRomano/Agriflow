@@ -1,3 +1,6 @@
+/**
+ * Repository interface for managing data transactions related to Token.
+ */
 package com.agriflow.app.core.security
 
 import com.agriflow.app.features.auth.User

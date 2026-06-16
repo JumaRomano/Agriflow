@@ -1,3 +1,6 @@
+/**
+ * UI State definition representing the screen state for Profile.
+ */
 package com.agriflow.app.features.profile
 
 import com.agriflow.app.features.auth.UserRole

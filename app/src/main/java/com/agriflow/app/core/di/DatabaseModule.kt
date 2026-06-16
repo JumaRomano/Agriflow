@@ -2,19 +2,25 @@ package com.agriflow.app.core.di
 
 import android.content.Context
 import androidx.room.Room
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.agriflow.app.core.database.AgriflowDatabase
+import com.agriflow.app.features.auth.UserDao
+import com.agriflow.app.features.cart.data.CartDao
+import com.agriflow.app.features.marketplace.ProductDao
+import com.agriflow.app.features.orders.OrderDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object LocalModule {
+object DatabaseModule {
+
+    private const val DATABASE_NAME = "agriflow.db"
 
     @Provides
     @Singleton
@@ -27,11 +33,33 @@ object LocalModule {
             name = DATABASE_NAME
         )
             .addMigrations(MIGRATION_1_2)
-            .fallbackToDestructiveMigration()
+            .fallbackToDestructiveMigration(dropAllTables = true)
             .build()
     }
 
-    private const val DATABASE_NAME = "agriflow.db"
+    @Provides
+    @Singleton
+    fun provideUserDao(database: AgriflowDatabase): UserDao {
+        return database.userDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideProductDao(database: AgriflowDatabase): ProductDao {
+        return database.productDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideCartDao(database: AgriflowDatabase): CartDao {
+        return database.cartDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideOrderDao(database: AgriflowDatabase): OrderDao {
+        return database.orderDao()
+    }
 
     private val MIGRATION_1_2 = object : Migration(1, 2) {
         override fun migrate(db: SupportSQLiteDatabase) {

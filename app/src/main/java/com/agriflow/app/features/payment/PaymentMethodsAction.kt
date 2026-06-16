@@ -1,3 +1,6 @@
+/**
+ * Sealed interface representing user actions and UI events for the PaymentMethods flow.
+ */
 package com.agriflow.app.features.payment
 
 sealed interface PaymentMethodsAction {

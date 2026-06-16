@@ -1,3 +1,6 @@
+/**
+ * Represents the class [CartItem] providing core functionality within the application.
+ */
 package com.agriflow.app.features.cart.domain
 
 data class CartItem(

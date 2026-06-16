@@ -1,3 +1,6 @@
+/**
+ * Dagger Hilt dependency injection module providing component bindings and providers.
+ */
 package com.agriflow.app.features.auth
 
 import com.agriflow.app.core.security.EncryptedTokenRepositoryImpl

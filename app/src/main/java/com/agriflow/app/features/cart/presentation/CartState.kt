@@ -1,3 +1,6 @@
+/**
+ * UI State definition representing the screen state for Cart.
+ */
 package com.agriflow.app.features.cart.presentation
 
 import com.agriflow.app.features.cart.domain.CartItem

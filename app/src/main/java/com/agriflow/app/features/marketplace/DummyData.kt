@@ -1,3 +1,6 @@
+/**
+ * Represents the object [DummyData] providing core functionality within the application.
+ */
 package com.agriflow.app.features.marketplace
 
 object DummyData {

@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.ksp)
    // alias(libs.plugins.google.services) apply false uncomment after adding google play
     alias(libs.plugins.kotlinSerialization)
+
+
 }
 
 android {
@@ -21,9 +23,9 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "BASE_URL", "\"https://hallie-unshirked-sharolyn.ngrok-free.dev/api/\"")
 
-        ksp {
-            arg("room.schemaLocation", "$projectDir/schemas")
-        }
+        //ksp {
+          //  arg("room.schemaLocation", "$projectDir/schemas")
+        //}
     }
 
     buildTypes {
@@ -44,6 +46,9 @@ android {
         compose = true
         buildConfig = true
     }
+    //kotlinOptions {
+      // jvmTarget = "11"
+    //}
 }
 
 dependencies {
@@ -63,6 +68,7 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
+    //implementation(libs.core.ktx)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.material3)
     implementation("androidx.compose.material:material-icons-extended")
@@ -110,4 +116,6 @@ dependencies {
 
     // Debug
     debugImplementation(libs.androidx.ui.tooling)
+
+
 }

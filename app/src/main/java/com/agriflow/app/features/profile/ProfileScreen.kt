@@ -1,3 +1,6 @@
+/**
+ * Jetpack Compose UI screen components for the Profile screen.
+ */
 package com.agriflow.app.features.profile
 
 import androidx.compose.foundation.background
@@ -21,6 +24,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.History
@@ -61,7 +65,7 @@ fun ProfileRoute(
     onNavigateToEditProfile: () -> Unit,
     onNavigateToPaymentMethods: () -> Unit,
     onNavigateToOrders: () -> Unit,
-    onNavigateToHelpCenter: () -> Unit,
+    onNavigateToWallet: () -> Unit,
     viewModel: ProfileViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
@@ -82,7 +86,7 @@ fun ProfileRoute(
         onEditProfileClick = onNavigateToEditProfile,
         onPaymentMethodsClick = onNavigateToPaymentMethods,
         onOrdersClick = onNavigateToOrders,
-        onHelpCenterClick = onNavigateToHelpCenter
+        onWalletClick = onNavigateToWallet
     )
 }
 @OptIn(ExperimentalMaterial3Api::class)
@@ -94,7 +98,7 @@ fun ProfileScreen(
     onEditProfileClick: () -> Unit,
     onPaymentMethodsClick: () -> Unit,
     onOrdersClick: () -> Unit,
-    onHelpCenterClick: () -> Unit
+    onWalletClick: () -> Unit
 ) {
     val scrollState = rememberScrollState()
 
@@ -194,7 +198,9 @@ fun ProfileScreen(
                             add(Triple("Edit Profile", Icons.Default.Edit, onEditProfileClick))
                             add(Triple("Payment Methods", Icons.Default.CreditCard, onPaymentMethodsClick))
                             add(Triple("Order History", Icons.Default.History, onOrdersClick))
-                            add(Triple("Help Center", Icons.AutoMirrored.Filled.HelpOutline, onHelpCenterClick))
+                            if (state.role == UserRole.FARMER || state.role == UserRole.SUPPLIER) {
+                                add(Triple("Wallet", Icons.Default.AccountBalanceWallet , onWalletClick))
+                            }
                         }
                     }
 

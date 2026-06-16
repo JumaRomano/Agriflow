@@ -1,3 +1,6 @@
+/**
+ * UI State definition representing the screen state for Auth.
+ */
 package com.agriflow.app.features.auth
 
 import com.agriflow.app.features.auth.UserRole

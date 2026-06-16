@@ -1,3 +1,6 @@
+/**
+ * Retrofit API interface defining network endpoints for the Orders service.
+ */
 package com.agriflow.app.features.orders
 
 import retrofit2.Response

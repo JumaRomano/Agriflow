@@ -1,3 +1,6 @@
+/**
+ * UI State definition representing the screen state for SellerDashboard.
+ */
 package com.agriflow.app.features.marketplace.MyStore.sellerdashboard
 
 data class SellerDashboardState(

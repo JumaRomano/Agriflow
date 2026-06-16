@@ -1,3 +1,6 @@
+/**
+ * Retrofit API interface defining network endpoints for the Auth service.
+ */
 package com.agriflow.app.features.auth
 
 import com.agriflow.app.features.auth.AuthResponseDto
@@ -7,6 +10,7 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST
 import retrofit2.http.GET
+import retrofit2.http.PUT
 
 interface AuthApi {
     @POST("auth/login")
@@ -41,6 +45,11 @@ interface AuthApi {
     suspend fun passwordReset(
         @Body request: PasswordResetRequestDto
     ): Response<Unit>
+
+    @PUT("users/profile")
+    suspend fun updateProfile(
+        @Body request: UpdateProfileRequestDto
+    ): Response<AuthResponseDto>
 }
 
 data class UpgradeRoleRequestDto(

@@ -1,3 +1,6 @@
+/**
+ * UI State definition representing the screen state for ForgotPassword.
+ */
 package com.agriflow.app.features.auth
 
 data class ForgotPasswordState(

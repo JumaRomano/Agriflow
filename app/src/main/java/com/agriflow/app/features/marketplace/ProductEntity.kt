@@ -1,3 +1,6 @@
+/**
+ * Database entity class representing a record in the local database.
+ */
 package com.agriflow.app.features.marketplace
 
 import androidx.room.Entity

@@ -1,3 +1,6 @@
+/**
+ * Repository implementation of [OfflineFirstMarketplaceRepository] managing remote and local data operations.
+ */
 package com.agriflow.app.features.marketplace
 
 import com.agriflow.app.core.network.safeApiCall
@@ -72,9 +75,15 @@ class OfflineFirstMarketplaceRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun updateProduct(id: String, request: ProductUploadRequest): Result<Unit, DataError.Network> {
+    override suspend fun updateProduct(id: String, request: ProductUpdateRequest): Result<Unit, DataError.Network> {
         return safeApiCall {
             marketplaceApi.updateProduct(id, request)
+        }
+    }
+
+    override suspend fun markAsOutOfStock(id: String): Result<Unit, DataError.Network> {
+        return safeApiCall {
+            marketplaceApi.markAsOutOfStock(id)
         }
     }
 

@@ -1,3 +1,6 @@
+/**
+ * ViewModel managing the business logic and UI state for the ProductDetails feature.
+ */
 package com.agriflow.app.features.marketplace.productdetails
 
 import androidx.lifecycle.SavedStateHandle

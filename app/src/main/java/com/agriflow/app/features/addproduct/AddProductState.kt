@@ -1,3 +1,6 @@
+/**
+ * UI State definition representing the screen state for AddProduct.
+ */
 package com.agriflow.app.features.addproduct
 
 import android.net.Uri
@@ -15,7 +18,7 @@ data class AddProductState(
     val isLoading: Boolean = false,
     val isFetchingCategories: Boolean = false,
     
-    // Master data
+
     val categories: List<CategoryDto> = emptyList(),
     val units: List<String> = listOf("kg", "ton", "bag", "liter", "crate"),
     

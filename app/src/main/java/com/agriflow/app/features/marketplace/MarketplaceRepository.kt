@@ -1,3 +1,6 @@
+/**
+ * Repository interface for managing data transactions related to Marketplace.
+ */
 package com.agriflow.app.features.marketplace
 
 import com.agriflow.app.core.util.DataError
@@ -20,6 +23,7 @@ interface MarketplaceRepository {
 
     suspend fun createProduct(request: ProductUploadRequest): Result<Unit, DataError.Network>
 
-    suspend fun updateProduct(id: String, request: ProductUploadRequest): Result<Unit, DataError.Network>
+    suspend fun updateProduct(id: String, request: ProductUpdateRequest): Result<Unit, DataError.Network>
+    suspend fun markAsOutOfStock(id: String): Result<Unit, DataError.Network>
     suspend fun getMyProducts(): Result<List<Product>, DataError.Network>
 }

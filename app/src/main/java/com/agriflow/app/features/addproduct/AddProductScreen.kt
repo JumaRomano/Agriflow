@@ -1,3 +1,6 @@
+/**
+ * Jetpack Compose UI screen components for the AddProduct screen.
+ */
 package com.agriflow.app.features.addproduct
 
 import android.net.Uri

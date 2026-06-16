@@ -1,3 +1,6 @@
+/**
+ * Sealed interface representing user actions and UI events for the Auth flow.
+ */
 package com.agriflow.app.features.auth
 
 import com.agriflow.app.features.auth.UserRole

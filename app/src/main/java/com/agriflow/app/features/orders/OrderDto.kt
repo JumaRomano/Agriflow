@@ -1,3 +1,6 @@
+/**
+ * Data Transfer Object (DTO) used for network request/response serialization.
+ */
 package com.agriflow.app.features.orders
 
 import com.google.gson.annotations.SerializedName

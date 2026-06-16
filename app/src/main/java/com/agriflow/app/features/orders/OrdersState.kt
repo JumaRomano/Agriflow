@@ -1,3 +1,6 @@
+/**
+ * UI State definition representing the screen state for Orders.
+ */
 package com.agriflow.app.features.orders
 
 import com.agriflow.app.features.auth.UserRole

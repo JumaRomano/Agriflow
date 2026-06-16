@@ -1,3 +1,6 @@
+/**
+ * Represents the class [CachedAccount] providing core functionality within the application.
+ */
 package com.agriflow.app.core.security
 
 import com.agriflow.app.features.auth.UserRole

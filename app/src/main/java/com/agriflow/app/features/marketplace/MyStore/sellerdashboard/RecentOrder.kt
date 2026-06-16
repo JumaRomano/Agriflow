@@ -1,3 +1,6 @@
+/**
+ * Represents the class [OrderStatus] providing core functionality within the application.
+ */
 package com.agriflow.app.features.marketplace.MyStore.sellerdashboard
 
 enum class OrderStatus {

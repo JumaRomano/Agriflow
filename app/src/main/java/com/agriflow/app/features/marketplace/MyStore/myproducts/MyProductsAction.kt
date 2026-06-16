@@ -1,3 +1,6 @@
+/**
+ * Sealed interface representing user actions and UI events for the MyProducts flow.
+ */
 package com.agriflow.app.features.marketplace.MyStore.myproducts
 
 sealed interface MyProductsAction {

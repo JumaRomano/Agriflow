@@ -1,3 +1,6 @@
+/**
+ * Jetpack Compose UI screen components for the ForgotPassword screen.
+ */
 package com.agriflow.app.features.auth
 
 import androidx.compose.foundation.layout.Arrangement

@@ -1,3 +1,6 @@
+/**
+ * Application navigation routing, graphs, and destination definitions.
+ */
 package com.agriflow.app.core.navigation
 
 import kotlinx.serialization.Serializable
@@ -69,10 +72,16 @@ sealed interface Route {
     data object Chat : Route
     @Serializable
     data object Notification : Route
+
+    @Serializable
+    data object Wallet : Route
     @Serializable
     data object MyStore : Route
     @Serializable
-    data class AddProduct(val productId: String? = null) : Route
+    data object AddProduct : Route
+
+    @Serializable
+    data class EditProduct(val productId: String) : Route
 
     @Serializable
     data object EditProfile : Route

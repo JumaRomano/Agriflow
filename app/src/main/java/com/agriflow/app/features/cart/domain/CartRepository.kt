@@ -1,3 +1,6 @@
+/**
+ * Repository interface for managing data transactions related to Cart.
+ */
 package com.agriflow.app.features.cart.domain
 
 import com.agriflow.app.core.util.DataError

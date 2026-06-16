@@ -1,0 +1,233 @@
+kotlin version: 2.2.10
+error message: java.lang.RuntimeException: Exception while generating code for:
+FUN name:login visibility:public modality:OPEN returnType:kotlin.Any? [suspend]
+  VALUE_PARAMETER kind:DispatchReceiver name:<this> index:0 type:com.agriflow.app.features.auth.AuthRepositoryImpl
+  VALUE_PARAMETER kind:Regular name:email index:1 type:kotlin.String
+  VALUE_PARAMETER kind:Regular name:password index:2 type:kotlin.String
+  VALUE_PARAMETER CONTINUATION_CLASS kind:Regular name:$completion index:3 type:kotlin.coroutines.Continuation<com.agriflow.app.core.util.Result<com.agriflow.app.features.auth.AuthSession, com.agriflow.app.core.util.DataError.Network>>
+  overridden:
+    public abstract fun login (email: kotlin.String, password: kotlin.String, $completion: kotlin.coroutines.Continuation<com.agriflow.app.core.util.Result<com.agriflow.app.features.auth.AuthSession, com.agriflow.app.core.util.DataError.Network>>): kotlin.Any? [suspend] declared in com.agriflow.app.features.auth.AuthRepository
+  BLOCK_BODY
+    CLASS CONTINUATION_CLASS CLASS name:<Continuation> modality:FINAL visibility:public/*package*/ superTypes:[kotlin.coroutines.jvm.internal.ContinuationImpl]
+      thisReceiver: VALUE_PARAMETER INSTANCE_RECEIVER kind:DispatchReceiver name:<this> type:com.agriflow.app.features.auth.AuthRepositoryImpl.login.<Continuation>
+      FIELD CONTINUATION_CLASS_RESULT_FIELD name:result type:kotlin.Result<kotlin.Any?> visibility:public/*package*/
+      FIELD FIELD_FOR_OUTER_THIS name:this$0 type:com.agriflow.app.features.auth.AuthRepositoryImpl visibility:public/*package*/ [final]
+      FIELD name:label type:kotlin.Int visibility:public/*package*/
+      CONSTRUCTOR visibility:public/*package*/ returnType:com.agriflow.app.features.auth.AuthRepositoryImpl.login.<Continuation> [primary]
+        VALUE_PARAMETER kind:Regular name:this$0 index:0 type:com.agriflow.app.features.auth.AuthRepositoryImpl
+        VALUE_PARAMETER kind:Regular name:$completion index:1 type:kotlin.coroutines.Continuation<com.agriflow.app.features.auth.AuthRepositoryImpl.login.<Continuation>>?
+        BLOCK_BODY
+          SET_FIELD 'FIELD FIELD_FOR_OUTER_THIS name:this$0 type:com.agriflow.app.features.auth.AuthRepositoryImpl visibility:public/*package*/ [final] declared in com.agriflow.app.features.auth.AuthRepositoryImpl.login.<Continuation>' type=kotlin.Unit origin=null
+            receiver: GET_VAR '<this>: com.agriflow.app.features.auth.AuthRepositoryImpl.login.<Continuation> declared in com.agriflow.app.features.auth.AuthRepositoryImpl.login.<Continuation>' type=com.agriflow.app.features.auth.AuthRepositoryImpl.login.<Continuation> origin=null
+            value: GET_VAR 'this$0: com.agriflow.app.features.auth.AuthRepositoryImpl declared in com.agriflow.app.features.auth.AuthRepositoryImpl.login.<Continuation>.<init>' type=com.agriflow.app.features.auth.AuthRepositoryImpl origin=null
+          DELEGATING_CONSTRUCTOR_CALL 'public constructor <init> ($completion: kotlin.coroutines.Continuation<kotlin.Any?>?) declared in kotlin.coroutines.jvm.internal.ContinuationImpl'
+            ARG $completion: GET_VAR '$completion: kotlin.coroutines.Continuation<com.agriflow.app.features.auth.AuthRepositoryImpl.login.<Continuation>>? declared in com.agriflow.app.features.auth.AuthRepositoryImpl.login.<Continuation>.<init>' type=kotlin.coroutines.Continuation<com.agriflow.app.features.auth.AuthRepositoryImpl.login.<Continuation>>? origin=null
+      FUN name:invokeSuspend visibility:public modality:FINAL returnType:kotlin.Any?
+        VALUE_PARAMETER INSTANCE_RECEIVER kind:DispatchReceiver name:<this> index:0 type:com.agriflow.app.features.auth.AuthRepositoryImpl.login.<Continuation>
+        VALUE_PARAMETER kind:Regular name:$result index:1 type:kotlin.Result<kotlin.Any?>
+        overridden:
+          public abstract fun invokeSuspend ($result: kotlin.Result<kotlin.Any?>): kotlin.Any? declared in kotlin.coroutines.jvm.internal.ContinuationImpl
+        BLOCK_BODY
+          SET_FIELD 'FIELD CONTINUATION_CLASS_RESULT_FIELD name:result type:kotlin.Result<kotlin.Any?> visibility:public/*package*/ declared in com.agriflow.app.features.auth.AuthRepositoryImpl.login.<Continuation>' type=kotlin.Unit origin=null
+            receiver: GET_VAR '<this>: com.agriflow.app.features.auth.AuthRepositoryImpl.login.<Continuation> declared in com.agriflow.app.features.auth.AuthRepositoryImpl.login.<Continuation>.invokeSuspend' type=com.agriflow.app.features.auth.AuthRepositoryImpl.login.<Continuation> origin=null
+            value: GET_VAR '$result: kotlin.Result<kotlin.Any?> declared in com.agriflow.app.features.auth.AuthRepositoryImpl.login.<Continuation>.invokeSuspend' type=kotlin.Result<kotlin.Any?> origin=null
+          SET_FIELD 'FIELD name:label type:kotlin.Int visibility:public/*package*/ declared in com.agriflow.app.features.auth.AuthRepositoryImpl.login.<Continuation>' type=kotlin.Unit origin=null
+            receiver: GET_VAR '<this>: com.agriflow.app.features.auth.AuthRepositoryImpl.login.<Continuation> declared in com.agriflow.app.features.auth.AuthRepositoryImpl.login.<Continuation>.invokeSuspend' type=com.agriflow.app.features.auth.AuthRepositoryImpl.login.<Continuation> origin=null
+            value: CALL 'public final fun or (other: kotlin.Int): kotlin.Int [infix] declared in kotlin.Int' type=kotlin.Int origin=null
+              ARG <this>: GET_FIELD 'FIELD name:label type:kotlin.Int visibility:public/*package*/ declared in com.agriflow.app.features.auth.AuthRepositoryImpl.login.<Continuation>' type=kotlin.Int origin=null
+                receiver: GET_VAR '<this>: com.agriflow.app.features.auth.AuthRepositoryImpl.login.<Continuation> declared in com.agriflow.app.features.auth.AuthRepositoryImpl.login.<Continuation>.invokeSuspend' type=com.agriflow.app.features.auth.AuthRepositoryImpl.login.<Continuation> origin=null
+              ARG other: CONST Int type=kotlin.Int value=-2147483648
+          RETURN type=kotlin.Nothing from='public final fun invokeSuspend ($result: kotlin.Result<kotlin.Any?>): kotlin.Any? declared in com.agriflow.app.features.auth.AuthRepositoryImpl.login.<Continuation>'
+            CALL 'public open fun login (email: kotlin.String, password: kotlin.String, $completion: kotlin.coroutines.Continuation<com.agriflow.app.core.util.Result<com.agriflow.app.features.auth.AuthSession, com.agriflow.app.core.util.DataError.Network>>): kotlin.Any? [suspend] declared in com.agriflow.app.features.auth.AuthRepositoryImpl' type=kotlin.Any? origin=null
+              ARG <this>: GET_FIELD 'FIELD FIELD_FOR_OUTER_THIS name:this$0 type:com.agriflow.app.features.auth.AuthRepositoryImpl visibility:public/*package*/ [final] declared in com.agriflow.app.features.auth.AuthRepositoryImpl.login.<Continuation>' type=com.agriflow.app.features.auth.AuthRepositoryImpl origin=null
+                receiver: GET_VAR '<this>: com.agriflow.app.features.auth.AuthRepositoryImpl.login.<Continuation> declared in com.agriflow.app.features.auth.AuthRepositoryImpl.login.<Continuation>.invokeSuspend' type=com.agriflow.app.features.auth.AuthRepositoryImpl.login.<Continuation> origin=null
+              ARG email: CONST Null type=kotlin.String? value=null
+              ARG password: CONST Null type=kotlin.String? value=null
+              ARG $completion: GET_VAR '<this>: com.agriflow.app.features.auth.AuthRepositoryImpl.login.<Continuation> declared in com.agriflow.app.features.auth.AuthRepositoryImpl.login.<Continuation>.invokeSuspend' type=com.agriflow.app.features.auth.AuthRepositoryImpl.login.<Continuation> origin=null
+    RETURN type=kotlin.Nothing from='public open fun login (email: kotlin.String, password: kotlin.String, $completion: kotlin.coroutines.Continuation<com.agriflow.app.core.util.Result<com.agriflow.app.features.auth.AuthSession, com.agriflow.app.core.util.DataError.Network>>): kotlin.Any? [suspend] declared in com.agriflow.app.features.auth.AuthRepositoryImpl'
+      CALL 'public final fun also <T> (<this>: T of kotlin.StandardKt.also, block: kotlin.Function1<T of kotlin.StandardKt.also, kotlin.Unit>): T of kotlin.StandardKt.also [inline] declared in kotlin.StandardKt' type=com.agriflow.app.core.util.Result<com.agriflow.app.features.auth.AuthSession, com.agriflow.app.core.util.DataError.Network> origin=null
+        TYPE_ARG T: com.agriflow.app.core.util.Result<com.agriflow.app.features.auth.AuthSession, com.agriflow.app.core.util.DataError.Network>
+        ARG <this>: CALL 'private final fun toAuthSessionResult (<this>: com.agriflow.app.core.util.Result<com.agriflow.app.features.auth.AuthResponseDto, com.agriflow.app.core.util.DataError.Network>): com.agriflow.app.core.util.Result<com.agriflow.app.features.auth.AuthSession, com.agriflow.app.core.util.DataError.Network> declared in com.agriflow.app.features.auth.AuthRepositoryImpl' type=com.agriflow.app.core.util.Result<com.agriflow.app.features.auth.AuthSession, com.agriflow.app.core.util.DataError.Network> origin=null
+          ARG <this>(index:0): GET_VAR '<this>: com.agriflow.app.features.auth.AuthRepositoryImpl declared in com.agriflow.app.features.auth.AuthRepositoryImpl.login' type=com.agriflow.app.features.auth.AuthRepositoryImpl origin=IMPLICIT_ARGUMENT
+          ARG <this>(index:1): CALL 'public final fun safeApiCall <T> (execute: kotlin.coroutines.SuspendFunction0<retrofit2.Response<T of com.agriflow.app.core.network.SafeApiCallKt.safeApiCall>>, $completion: kotlin.coroutines.Continuation<com.agriflow.app.core.util.Result<T of com.agriflow.app.core.network.SafeApiCallKt.safeApiCall, com.agriflow.app.core.util.DataError.Network>>): kotlin.Any? [inline,suspend] declared in com.agriflow.app.core.network.SafeApiCallKt' type=com.agriflow.app.core.util.Result<com.agriflow.app.features.auth.AuthResponseDto, com.agriflow.app.core.util.DataError.Network> origin=null
+            TYPE_ARG T: com.agriflow.app.features.auth.AuthResponseDto
+            ARG execute: BLOCK type=kotlin.coroutines.SuspendFunction0<retrofit2.Response<com.agriflow.app.features.auth.AuthResponseDto>> origin=LAMBDA
+              COMPOSITE type=kotlin.Unit origin=null
+              FUNCTION_REFERENCE 'private final fun login$lambda$0 (this$0: com.agriflow.app.features.auth.AuthRepositoryImpl, $email: kotlin.String, $password: kotlin.String, $completion: kotlin.coroutines.Continuation<retrofit2.Response<com.agriflow.app.features.auth.AuthResponseDto>>): kotlin.Any? [suspend] declared in com.agriflow.app.features.auth.AuthRepositoryImpl' type=kotlin.coroutines.SuspendFunction0<retrofit2.Response<com.agriflow.app.features.auth.AuthResponseDto>> origin=INLINE_LAMBDA reflectionTarget=null
+                ARG this$0: GET_VAR '<this>: com.agriflow.app.features.auth.AuthRepositoryImpl declared in com.agriflow.app.features.auth.AuthRepositoryImpl.login' type=com.agriflow.app.features.auth.AuthRepositoryImpl origin=null
+                ARG $email: GET_VAR 'email: kotlin.String declared in com.agriflow.app.features.auth.AuthRepositoryImpl.login' type=kotlin.String origin=null
+                ARG $password: GET_VAR 'password: kotlin.String declared in com.agriflow.app.features.auth.AuthRepositoryImpl.login' type=kotlin.String origin=null
+            ARG $completion: GET_VAR '$completion: kotlin.coroutines.Continuation<com.agriflow.app.core.util.Result<com.agriflow.app.features.auth.AuthSession, com.agriflow.app.core.util.DataError.Network>> declared in com.agriflow.app.features.auth.AuthRepositoryImpl.login' type=kotlin.coroutines.Continuation<com.agriflow.app.core.util.Result<com.agriflow.app.features.auth.AuthSession, com.agriflow.app.core.util.DataError.Network>> origin=null
+        ARG block: BLOCK type=kotlin.Function1<com.agriflow.app.core.util.Result<com.agriflow.app.features.auth.AuthSession, com.agriflow.app.core.util.DataError.Network>, kotlin.Unit> origin=LAMBDA
+          COMPOSITE type=kotlin.Unit origin=null
+          FUNCTION_REFERENCE 'private final fun login$lambda$1 (this$0: com.agriflow.app.features.auth.AuthRepositoryImpl, result: com.agriflow.app.core.util.Result<com.agriflow.app.features.auth.AuthSession, com.agriflow.app.core.util.DataError.Network>): kotlin.Unit declared in com.agriflow.app.features.auth.AuthRepositoryImpl' type=kotlin.Function1<com.agriflow.app.core.util.Result<com.agriflow.app.features.auth.AuthSession, com.agriflow.app.core.util.DataError.Network>, kotlin.Unit> origin=INLINE_LAMBDA reflectionTarget=null
+            ARG this$0: GET_VAR '<this>: com.agriflow.app.features.auth.AuthRepositoryImpl declared in com.agriflow.app.features.auth.AuthRepositoryImpl.login' type=com.agriflow.app.features.auth.AuthRepositoryImpl origin=null
+
+	at org.jetbrains.kotlin.backend.jvm.codegen.FunctionCodegen.generate(FunctionCodegen.kt:50)
+	at org.jetbrains.kotlin.backend.jvm.codegen.FunctionCodegen.generate$default(FunctionCodegen.kt:43)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ClassCodegen.generateMethodNode(ClassCodegen.kt:422)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ClassCodegen.generateMethod(ClassCodegen.kt:439)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ClassCodegen.generate(ClassCodegen.kt:164)
+	at org.jetbrains.kotlin.backend.jvm.JvmIrCodegenFactory.generateFile(JvmIrCodegenFactory.kt:419)
+	at org.jetbrains.kotlin.backend.jvm.JvmIrCodegenFactory.invokeCodegen(JvmIrCodegenFactory.kt:388)
+	at org.jetbrains.kotlin.cli.jvm.compiler.KotlinToJVMBytecodeCompiler.runCodegen$cli(KotlinToJVMBytecodeCompiler.kt:431)
+	at org.jetbrains.kotlin.cli.pipeline.jvm.JvmBackendPipelinePhase.executePhase(JvmBackendPipelinePhase.kt:95)
+	at org.jetbrains.kotlin.cli.pipeline.jvm.JvmBackendPipelinePhase.executePhase(JvmBackendPipelinePhase.kt:36)
+	at org.jetbrains.kotlin.cli.pipeline.jvm.JvmBackendPipelinePhase.executePhase(JvmBackendPipelinePhase.kt:29)
+	at org.jetbrains.kotlin.cli.pipeline.PipelinePhase.phaseBody(PipelinePhase.kt:68)
+	at org.jetbrains.kotlin.cli.pipeline.PipelinePhase.phaseBody(PipelinePhase.kt:58)
+	at org.jetbrains.kotlin.config.phaser.NamedCompilerPhase.invoke(CompilerPhase.kt:102)
+	at org.jetbrains.kotlin.backend.common.phaser.CompositePhase.invoke(PhaseBuilders.kt:22)
+	at org.jetbrains.kotlin.config.phaser.CompilerPhaseKt.invokeToplevel(CompilerPhase.kt:53)
+	at org.jetbrains.kotlin.cli.pipeline.AbstractCliPipeline.runPhasedPipeline(AbstractCliPipeline.kt:109)
+	at org.jetbrains.kotlin.cli.pipeline.AbstractCliPipeline.execute(AbstractCliPipeline.kt:68)
+	at org.jetbrains.kotlin.cli.jvm.K2JVMCompiler.doExecutePhased(K2JVMCompiler.kt:78)
+	at org.jetbrains.kotlin.cli.jvm.K2JVMCompiler.doExecutePhased(K2JVMCompiler.kt:44)
+	at org.jetbrains.kotlin.cli.common.CLICompiler.execImpl(CLICompiler.kt:90)
+	at org.jetbrains.kotlin.cli.common.CLICompiler.exec(CLICompiler.kt:352)
+	at org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunnerBase.runCompiler(IncrementalJvmCompilerRunnerBase.kt:175)
+	at org.jetbrains.kotlin.incremental.IncrementalJvmCompilerRunnerBase.runCompiler(IncrementalJvmCompilerRunnerBase.kt:38)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.doCompile(IncrementalCompilerRunner.kt:504)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.compileImpl(IncrementalCompilerRunner.kt:421)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.tryCompileIncrementally$lambda$10$compile(IncrementalCompilerRunner.kt:254)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.tryCompileIncrementally(IncrementalCompilerRunner.kt:272)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.compile(IncrementalCompilerRunner.kt:124)
+	at org.jetbrains.kotlin.daemon.CompileServiceImplBase.execIncrementalCompiler(CompileServiceImpl.kt:679)
+	at org.jetbrains.kotlin.daemon.CompileServiceImplBase.access$execIncrementalCompiler(CompileServiceImpl.kt:93)
+	at org.jetbrains.kotlin.daemon.CompileServiceImpl.compile(CompileServiceImpl.kt:1806)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.rmi/sun.rmi.server.UnicastServerRef.dispatch(UnicastServerRef.java:360)
+	at java.rmi/sun.rmi.transport.Transport$1.run(Transport.java:200)
+	at java.rmi/sun.rmi.transport.Transport$1.run(Transport.java:197)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:714)
+	at java.rmi/sun.rmi.transport.Transport.serviceCall(Transport.java:196)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport.handleMessages(TCPTransport.java:598)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run0(TCPTransport.java:844)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.lambda$run$0(TCPTransport.java:721)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:400)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run(TCPTransport.java:720)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Caused by: org.jetbrains.kotlin.codegen.CompilationException: Back-end (JVM) Internal error: Couldn't inline method call: CALL 'public final fun safeApiCall <T> (execute: kotlin.coroutines.SuspendFunction0<retrofit2.Response<T of com.agriflow.app.core.network.SafeApiCallKt.safeApiCall>>, $completion: kotlin.coroutines.Continuation<com.agriflow.app.core.util.Result<T of com.agriflow.app.core.network.SafeApiCallKt.safeApiCall, com.agriflow.app.core.util.DataError.Network>>): kotlin.Any? [inline,suspend] declared in com.agriflow.app.core.network.SafeApiCallKt' type=com.agriflow.app.core.util.Result<com.agriflow.app.features.auth.AuthResponseDto, com.agriflow.app.core.util.DataError.Network> origin=null
+Method: null
+File is unknown
+The root cause java.io.FileNotFoundException was thrown at: java.base/java.io.FileInputStream.open0(Native Method)
+	at org.jetbrains.kotlin.backend.jvm.codegen.IrInlineCodegen.genInlineCall(IrInlineCodegen.kt:82)
+	at org.jetbrains.kotlin.backend.jvm.codegen.IrInlineCallGenerator.genCall(IrInlineCallGenerator.kt:36)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitCall(ExpressionCodegen.kt:586)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitCall(ExpressionCodegen.kt:135)
+	at org.jetbrains.kotlin.ir.expressions.IrCall.accept(IrCall.kt:24)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.gen(ExpressionCodegen.kt:214)
+	at org.jetbrains.kotlin.backend.jvm.codegen.IrCallGenerator.genValueAndPut(IrCallGenerator.kt:48)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitCall$handleParameter(ExpressionCodegen.kt:564)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitCall(ExpressionCodegen.kt:577)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitCall(ExpressionCodegen.kt:135)
+	at org.jetbrains.kotlin.ir.expressions.IrCall.accept(IrCall.kt:24)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.gen(ExpressionCodegen.kt:214)
+	at org.jetbrains.kotlin.backend.jvm.codegen.IrInlineCodegen.genValueAndPut(IrInlineCodegen.kt:174)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitCall$handleParameter(ExpressionCodegen.kt:564)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitCall(ExpressionCodegen.kt:577)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitCall(ExpressionCodegen.kt:135)
+	at org.jetbrains.kotlin.ir.expressions.IrCall.accept(IrCall.kt:24)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitReturn(ExpressionCodegen.kt:999)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitReturn(ExpressionCodegen.kt:135)
+	at org.jetbrains.kotlin.ir.expressions.IrReturn.accept(IrReturn.kt:24)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitStatementContainer(ExpressionCodegen.kt:527)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitBlockBody(ExpressionCodegen.kt:532)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.visitBlockBody(ExpressionCodegen.kt:135)
+	at org.jetbrains.kotlin.ir.expressions.IrBlockBody.accept(IrBlockBody.kt:20)
+	at org.jetbrains.kotlin.backend.jvm.codegen.ExpressionCodegen.generate(ExpressionCodegen.kt:233)
+	at org.jetbrains.kotlin.backend.jvm.codegen.FunctionCodegen.doGenerate(FunctionCodegen.kt:126)
+	at org.jetbrains.kotlin.backend.jvm.codegen.FunctionCodegen.generate(FunctionCodegen.kt:47)
+	... 46 more
+Caused by: java.io.FileNotFoundException: C:\Users\USER\AndroidStudioProjects\Agriflow2\app\build\intermediates\built_in_kotlinc\debug\compileDebugKotlin\classes\com\agriflow\app\core\network\SafeApiCallKt.class (The system cannot find the path specified)
+	at java.base/java.io.FileInputStream.open0(Native Method)
+	at java.base/java.io.FileInputStream.open(FileInputStream.java:213)
+	at java.base/java.io.FileInputStream.<init>(FileInputStream.java:152)
+	at org.jetbrains.kotlin.com.intellij.openapi.util.io.FileUtil.loadFileBytes(FileUtil.java:187)
+	at org.jetbrains.kotlin.cli.common.localfs.KotlinLocalVirtualFile.contentsToByteArray(KotlinLocalVirtualFile.kt:108)
+	at org.jetbrains.kotlin.codegen.inline.SourceCompilerForInlineKt.loadCompiledInlineFunction$lambda$2$lambda$1(SourceCompilerForInline.kt:95)
+	at org.jetbrains.kotlin.codegen.inline.InlineCache.computeClassBytes(InlineCache.kt:82)
+	at org.jetbrains.kotlin.codegen.inline.SourceCompilerForInlineKt.loadCompiledInlineFunction$lambda$2(SourceCompilerForInline.kt:94)
+	at org.jetbrains.kotlin.codegen.inline.InlineCache.computeMethodBytes(InlineCache.kt:90)
+	at org.jetbrains.kotlin.codegen.inline.SourceCompilerForInlineKt.loadCompiledInlineFunction(SourceCompilerForInline.kt:93)
+	at org.jetbrains.kotlin.backend.jvm.codegen.IrSourceCompilerForInline.compileInlineFunction(IrSourceCompilerForInline.kt:96)
+	at org.jetbrains.kotlin.backend.jvm.codegen.IrInlineCodegen.genInlineCall(IrInlineCodegen.kt:65)
+	... 72 more
+
+
+error message: Daemon compilation failed: null
+java.lang.Exception
+	at org.jetbrains.kotlin.daemon.common.CompileService$CallResult$Error.get(CompileService.kt:69)
+	at org.jetbrains.kotlin.daemon.common.CompileService$CallResult$Error.get(CompileService.kt:65)
+	at org.jetbrains.kotlin.compilerRunner.GradleKotlinCompilerWork.compileWithDaemon(GradleKotlinCompilerWork.kt:240)
+	at org.jetbrains.kotlin.compilerRunner.GradleKotlinCompilerWork.compileWithDaemonOrFallbackImpl(GradleKotlinCompilerWork.kt:159)
+	at org.jetbrains.kotlin.compilerRunner.GradleKotlinCompilerWork.run(GradleKotlinCompilerWork.kt:111)
+	at org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction.execute(GradleCompilerRunnerWithWorkers.kt:74)
+	at org.gradle.workers.internal.DefaultWorkerServer.execute(DefaultWorkerServer.java:68)
+	at org.gradle.workers.internal.NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:64)
+	at org.gradle.workers.internal.NoIsolationWorkerFactory$1$1.create(NoIsolationWorkerFactory.java:61)
+	at org.gradle.internal.classloader.ClassLoaderUtils.executeInClassloader(ClassLoaderUtils.java:102)
+	at org.gradle.workers.internal.NoIsolationWorkerFactory$1.lambda$execute$0(NoIsolationWorkerFactory.java:61)
+	at org.gradle.workers.internal.AbstractWorker$1.call(AbstractWorker.java:44)
+	at org.gradle.workers.internal.AbstractWorker$1.call(AbstractWorker.java:41)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:210)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$CallableBuildOperationWorker.execute(DefaultBuildOperationRunner.java:205)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:67)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner$2.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:167)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.execute(DefaultBuildOperationRunner.java:60)
+	at org.gradle.internal.operations.DefaultBuildOperationRunner.call(DefaultBuildOperationRunner.java:54)
+	at org.gradle.workers.internal.AbstractWorker.executeWrappedInBuildOperation(AbstractWorker.java:41)
+	at org.gradle.workers.internal.NoIsolationWorkerFactory$1.execute(NoIsolationWorkerFactory.java:58)
+	at org.gradle.workers.internal.DefaultWorkerExecutor.lambda$submitWork$0(DefaultWorkerExecutor.java:176)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.runExecution(DefaultConditionalExecutionQueue.java:194)
+	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.access$700(DefaultConditionalExecutionQueue.java:127)
+	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner$1.run(DefaultConditionalExecutionQueue.java:169)
+	at org.gradle.internal.Factories$1.create(Factories.java:30)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.lambda$withLocksAcquired$0(DefaultWorkerLeaseService.java:275)
+	at org.gradle.internal.work.ResourceLockStatistics$1.measure(ResourceLockStatistics.java:43)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.withLocksAcquired(DefaultWorkerLeaseService.java:273)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.withLocks(DefaultWorkerLeaseService.java:265)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:128)
+	at org.gradle.internal.work.DefaultWorkerLeaseService.runAsWorkerThread(DefaultWorkerLeaseService.java:133)
+	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.runBatch(DefaultConditionalExecutionQueue.java:164)
+	at org.gradle.internal.work.DefaultConditionalExecutionQueue$ExecutionRunner.run(DefaultConditionalExecutionQueue.java:133)
+	at java.base/java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:572)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at org.gradle.internal.concurrent.ExecutorPolicy$CatchAndRecordFailures.onExecute(ExecutorPolicy.java:64)
+	at org.gradle.internal.concurrent.AbstractManagedExecutor$1.run(AbstractManagedExecutor.java:47)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1144)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1583)
+Caused by: java.nio.file.NoSuchFileException: C:\Users\USER\AppData\Local\Temp\kotlin-backups6119811702700706844\9.backup -> C:\Users\USER\AndroidStudioProjects\Agriflow2\app\build\intermediates\built_in_kotlinc\debug\compileDebugKotlin\classes\com\agriflow\app\features\auth\AuthRepositoryImpl$register$1.class
+	at java.base/sun.nio.fs.WindowsException.translateToIOException(WindowsException.java:85)
+	at java.base/sun.nio.fs.WindowsException.rethrowAsIOException(WindowsException.java:103)
+	at java.base/sun.nio.fs.WindowsFileCopy.move(WindowsFileCopy.java:414)
+	at java.base/sun.nio.fs.WindowsFileSystemProvider.move(WindowsFileSystemProvider.java:291)
+	at java.base/java.nio.file.Files.move(Files.java:1430)
+	at org.jetbrains.kotlin.incremental.RecoverableCompilationTransaction.revertChanges(CompilationTransaction.kt:231)
+	at org.jetbrains.kotlin.incremental.RecoverableCompilationTransaction.close(CompilationTransaction.kt:256)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.tryCompileIncrementally(IncrementalCompilerRunner.kt:740)
+	at org.jetbrains.kotlin.incremental.IncrementalCompilerRunner.compile(IncrementalCompilerRunner.kt:124)
+	at org.jetbrains.kotlin.daemon.CompileServiceImplBase.execIncrementalCompiler(CompileServiceImpl.kt:679)
+	at org.jetbrains.kotlin.daemon.CompileServiceImplBase.access$execIncrementalCompiler(CompileServiceImpl.kt:93)
+	at org.jetbrains.kotlin.daemon.CompileServiceImpl.compile(CompileServiceImpl.kt:1806)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at java.rmi/sun.rmi.server.UnicastServerRef.dispatch(UnicastServerRef.java:360)
+	at java.rmi/sun.rmi.transport.Transport$1.run(Transport.java:200)
+	at java.rmi/sun.rmi.transport.Transport$1.run(Transport.java:197)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:714)
+	at java.rmi/sun.rmi.transport.Transport.serviceCall(Transport.java:196)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport.handleMessages(TCPTransport.java:598)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run0(TCPTransport.java:844)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.lambda$run$0(TCPTransport.java:721)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:400)
+	at java.rmi/sun.rmi.transport.tcp.TCPTransport$ConnectionHandler.run(TCPTransport.java:720)
+	... 3 more
+
+

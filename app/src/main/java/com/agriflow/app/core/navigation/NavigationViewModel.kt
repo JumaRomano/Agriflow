@@ -1,3 +1,6 @@
+/**
+ * ViewModel managing the business logic and UI state for the Navigation feature.
+ */
 package com.agriflow.app.core.navigation
 
 import androidx.lifecycle.ViewModel

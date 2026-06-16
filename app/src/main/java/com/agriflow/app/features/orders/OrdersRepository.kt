@@ -1,3 +1,6 @@
+/**
+ * Repository interface for managing data transactions related to Orders.
+ */
 package com.agriflow.app.features.orders
 
 import com.agriflow.app.core.util.DataError

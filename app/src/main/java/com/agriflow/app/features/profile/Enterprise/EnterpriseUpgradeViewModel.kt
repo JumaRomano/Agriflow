@@ -1,3 +1,6 @@
+/**
+ * ViewModel managing the business logic and UI state for the EnterpriseUpgrade feature.
+ */
 package com.agriflow.app.features.profile.Enterprise
 
 import com.agriflow.app.features.profile.roleUpgrade.RoleUpgradeState
@@ -103,7 +106,7 @@ class EnterpriseUpgradeViewModel @Inject constructor(
                     _events.send(RoleUpgradeEvent.UpgradeSuccess)
                 }
                 is Result.Error -> {
-                    val message = "Upgrade to Enterprise failed. Please try again."
+                    val message = "Registering your Enterprise failed. Please try again."
                     _state.update { it.copy(isLoading = false, errorMessage = message) }
                     _events.send(RoleUpgradeEvent.ShowError(message))
                 }
@@ -115,8 +118,8 @@ class EnterpriseUpgradeViewModel @Inject constructor(
         return when {
             state.businessName.isBlank() -> "Enterprise Name is required"
             state.businessEmail.isBlank() -> "Enterprise Email is required"
-            !state.businessEmail.contains("@") -> "Enter a valid enterprise email address"
-            state.businessPhone.isBlank() -> "Enterprise Phone Number is required"
+            !state.businessEmail.contains("@") -> "Enter a valid email address"
+            state.businessPhone.isBlank() -> "A Phone Number is required"
             else -> null
         }
     }
