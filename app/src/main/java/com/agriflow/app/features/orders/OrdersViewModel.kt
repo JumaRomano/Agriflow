@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.agriflow.app.core.security.TokenRepository
 import com.agriflow.app.core.util.Result
 import com.agriflow.app.features.auth.UserRole
+import com.agriflow.app.features.marketplace.MarketplaceEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -51,6 +52,11 @@ class OrdersViewModel @Inject constructor(
             }
             is OrdersAction.UpdateShipmentStatus -> {
                 updateOrderStatus(action.orderId, action.status, action.trackingNumber, action.carrier)
+            }
+            is OrdersAction.WalletClicked -> {
+                viewModelScope.launch {
+                    _events.send(OrdersEvent.NavigateToWallet)
+                }
             }
         }
     }

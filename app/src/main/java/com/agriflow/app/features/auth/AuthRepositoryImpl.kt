@@ -36,7 +36,7 @@ class AuthRepositoryImpl @Inject constructor(
                 )
             )
         }.toAuthSessionResult()
-            .also { result -> result.saveTokensIfSuccessful() }
+            .also { result -> result.saveTokensIfSuccessful(email) }
     }
 
     override suspend fun register(
@@ -60,7 +60,7 @@ class AuthRepositoryImpl @Inject constructor(
                 )
             )
         }.toAuthSessionResult()
-            .also { result -> result.saveTokensIfSuccessful() }
+            .also { result -> result.saveTokensIfSuccessful(email) }
     }
 
     override suspend fun upgradeRole(
@@ -173,12 +173,13 @@ class AuthRepositoryImpl @Inject constructor(
         }
     }
 
-    private fun Result<AuthSession, DataError.Network>.saveTokensIfSuccessful() {
+    private fun Result<AuthSession, DataError.Network>.saveTokensIfSuccessful(email: String? = null) {
         if (this is Result.Success) {
             // Persist tokens only after the response has been validated and mapped into AuthSession.
             tokenRepository.saveTokens(
                 accessToken = data.tokens.accessToken,
-                refreshToken = data.tokens.refreshToken
+                refreshToken = data.tokens.refreshToken,
+                email = email ?: data.user.email.takeIf { it.isNotBlank() }
             )
         }
     }

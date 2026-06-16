@@ -10,5 +10,6 @@ data class OrdersState(
     val orders: List<OrderDto> = emptyList(),
     val activeRole: UserRole = UserRole.UNKNOWN,
     val expandedOrderId: String? = null,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val userRole: UserRole = UserRole.UNKNOWN
 )

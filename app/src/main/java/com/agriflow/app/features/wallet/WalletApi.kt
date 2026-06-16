@@ -19,7 +19,6 @@ interface WalletApi {
     suspend fun withdraw(
         @Body request: WalletWithdrawRequestDto
     ): Response<WithdrawResponseDto>
-
     @GET("wallet/transactions")
     suspend fun getTransactions(): Response<List<WalletTransactionDto>>
 }

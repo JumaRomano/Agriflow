@@ -32,6 +32,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import java.text.SimpleDateFormat
 import java.util.*
+import androidx.compose.material.icons.filled.ArrowCircleDown
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -209,8 +210,8 @@ fun BalanceCard(
                 .background(
                     Brush.linearGradient(
                         colors = listOf(
-                            Color(0xFF1B4332), // Deep forest green
-                            Color(0xFF2D6A4F)  // Rich emerald green
+                            Color(0xFF4CAF50), // Deep forest green
+                            Color(0xFF4CAF50)  // Rich emerald green
                         )
                     )
                 )
@@ -234,6 +235,7 @@ fun BalanceCard(
                     tint = Color.White.copy(alpha = 0.9f),
                     modifier = Modifier.size(24.dp)
                 )
+
             }
 
             Spacer(modifier = Modifier.height(4.dp))
@@ -244,12 +246,25 @@ fun BalanceCard(
                 style = MaterialTheme.typography.headlineLarge.copy(fontSize = 32.sp),
                 fontWeight = FontWeight.ExtraBold
             )
+            Button(
+                onClick = onWithdrawClick,
+                colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+                shape = RoundedCornerShape(10.dp),
+                contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp)
+            ) {
+                Text(
+                    text = "Withdraw",
+                    color = Color(0xFF1B4332),
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.labelLarge
+                )
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
             HorizontalDivider(color = Color.White.copy(alpha = 0.15f))
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Pending Balance & Withdraw Button row
+            // Pending Balance
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -271,19 +286,7 @@ fun BalanceCard(
                     )
                 }
 
-                Button(
-                    onClick = onWithdrawClick,
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-                    shape = RoundedCornerShape(12.dp),
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
-                ) {
-                    Text(
-                        text = "Withdraw",
-                        color = Color(0xFF1B4332),
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.labelLarge
-                    )
-                }
+
             }
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -333,11 +336,8 @@ fun TransactionItem(transaction: WalletTransaction) {
                 modifier = Modifier.weight(1f)
             ) {
                 // Color-coded Icon badge
-                val (badgeIcon, badgeColor) = if (transaction.type == TransactionType.REVENUE) {
-                    Icons.AutoMirrored.Filled.TrendingUp to Color(0xFF2D6A4F)
-                } else {
-                    Icons.AutoMirrored.Filled.TrendingDown to Color(0xFFD32F2F)
-                }
+                val badgeIcon = Icons.Filled.ArrowCircleDown
+                val badgeColor = Color(0xFFD32F2F)
                 Box(
                     modifier = Modifier
                         .size(40.dp)
@@ -404,73 +404,169 @@ fun WithdrawalDialog(
                     .fillMaxWidth()
                     .padding(20.dp)
             ) {
-                Text(
-                    text = "Withdraw to M-Pesa",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "Withdrawal limit: Min KES 10.00",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Spacer(modifier = Modifier.height(16.dp))
+                if (state.isOtpSent) {
+                    Text(
+                        text = "Verify Withdrawal",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "An OTP has been sent to your registered email. Enter it below to complete the withdrawal of KES ${state.withdrawAmount} to M-Pesa ${state.withdrawMpesaNumber}.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                // Amount Input
-                OutlinedTextField(
-                    value = state.withdrawAmount,
-                    onValueChange = { onAction(WalletAction.WithdrawAmountChanged(it)) },
-                    label = { Text("Amount (KES)") },
-                    isError = state.withdrawAmountError != null,
-                    supportingText = { state.withdrawAmountError?.let { Text(it) } ?: Text("Minimum: KES 10.00") },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
-                )
-                Spacer(modifier = Modifier.height(8.dp))
+                    // OTP Input
+                    OutlinedTextField(
+                        value = state.otpCode,
+                        onValueChange = { onAction(WalletAction.OtpCodeChanged(it)) },
+                        label = { Text("Verification Code") },
+                        placeholder = { Text("Enter 6-digit OTP") },
+                        isError = state.otpError != null,
+                        supportingText = { state.otpError?.let { Text(it) } },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
 
-                // M-Pesa Phone Number Input
-                OutlinedTextField(
-                    value = state.withdrawMpesaNumber,
-                    onValueChange = { onAction(WalletAction.WithdrawMpesaNumberChanged(it)) },
-                    label = { Text("M-Pesa Phone Number") },
-                    placeholder = { Text("e.g. 0712345678") },
-                    isError = state.withdrawMpesaNumberError != null,
-                    supportingText = { state.withdrawMpesaNumberError?.let { Text(it) } },
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
-                )
-                Spacer(modifier = Modifier.height(20.dp))
-
-                // Actions
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    TextButton(
-                        onClick = { onAction(WalletAction.ShowWithdrawDialog(false)) },
-                        enabled = !state.isLoading
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("Cancel")
+                        TextButton(
+                            onClick = { onAction(WalletAction.ResendOtp) },
+                            enabled = !state.isLoading
+                        ) {
+                            Text("Resend OTP")
+                        }
                     }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Button(
-                        onClick = { onAction(WalletAction.SubmitWithdrawal) },
-                        enabled = !state.isLoading,
-                        shape = RoundedCornerShape(8.dp)
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // Actions
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        if (state.isLoading) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(18.dp),
-                                strokeWidth = 2.dp,
-                                color = MaterialTheme.colorScheme.onPrimary
+                        TextButton(
+                            onClick = { onAction(WalletAction.GoBackToWithdrawDetails) },
+                            enabled = !state.isLoading
+                        ) {
+                            Text("Back")
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Button(
+                            onClick = { onAction(WalletAction.VerifyAndWithdraw) },
+                            enabled = !state.isLoading,
+                            shape = RoundedCornerShape(8.dp)
+                        ) {
+                            if (state.isLoading) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(18.dp),
+                                    strokeWidth = 2.dp,
+                                    color = MaterialTheme.colorScheme.onPrimary
+                                )
+                            } else {
+                                Text("Verify & Withdraw")
+                            }
+                        }
+                    }
+                } else {
+                    Text(
+                        text = "Withdraw to M-Pesa",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Withdrawal limit: Min KES 10.00",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Amount Input
+                    OutlinedTextField(
+                        value = state.withdrawAmount,
+                        onValueChange = { onAction(WalletAction.WithdrawAmountChanged(it)) },
+                        label = { Text("Amount (KES)") },
+                        isError = state.withdrawAmountError != null,
+                        supportingText = { state.withdrawAmountError?.let { Text(it) } ?: Text("Minimum: KES 10.00") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // M-Pesa Phone Number Input
+                    if (state.defaultMpesaNumber != null) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp)
+                        ) {
+                            Checkbox(
+                                checked = state.useDefaultMpesa,
+                                onCheckedChange = { onAction(WalletAction.ToggleUseDefaultMpesa(it)) }
                             )
-                        } else {
-                            Text("Withdraw")
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "Use default M-Pesa number (${state.defaultMpesaNumber})",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+
+                    OutlinedTextField(
+                        value = state.withdrawMpesaNumber,
+                        onValueChange = { onAction(WalletAction.WithdrawMpesaNumberChanged(it)) },
+                        label = { Text("M-Pesa Phone Number") },
+                        placeholder = { Text("e.g. 0712345678") },
+                        enabled = !state.useDefaultMpesa,
+                        isError = state.withdrawMpesaNumberError != null,
+                        supportingText = { state.withdrawMpesaNumberError?.let { Text(it) } },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    // Actions
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        TextButton(
+                            onClick = { onAction(WalletAction.ShowWithdrawDialog(false)) },
+                            enabled = !state.isLoading
+                        ) {
+                            Text("Cancel")
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Button(
+                            onClick = { onAction(WalletAction.SubmitWithdrawal) },
+                            enabled = !state.isLoading,
+                            shape = RoundedCornerShape(8.dp)
+                        ) {
+                            if (state.isLoading) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(18.dp),
+                                    strokeWidth = 2.dp,
+                                    color = MaterialTheme.colorScheme.onPrimary
+                                )
+                            } else {
+                                Text("Withdraw")
+                            }
                         }
                     }
                 }

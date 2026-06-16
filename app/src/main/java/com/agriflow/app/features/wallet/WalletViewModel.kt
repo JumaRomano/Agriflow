@@ -1,24 +1,36 @@
 package com.agriflow.app.features.wallet
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.agriflow.app.core.security.TokenRepository
 import com.agriflow.app.core.util.Result
+import com.agriflow.app.core.util.DataError
+import com.agriflow.app.features.auth.AuthRepository
+import com.agriflow.app.features.auth.OtpType
+import com.agriflow.app.features.payment.PaymentMethod
+import com.agriflow.app.features.payment.PaymentMethodType
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
 class WalletViewModel @Inject constructor(
     private val walletRepository: WalletRepository,
-    private val tokenRepository: TokenRepository
+    private val tokenRepository: TokenRepository,
+    private val authRepository: AuthRepository,
+    @param:ApplicationContext private val context: Context
 ) : ViewModel() {
+
+    private val paymentSharedPreferences = context.getSharedPreferences("agriflow_payment_methods_prefs", Context.MODE_PRIVATE)
 
     private val _state = MutableStateFlow(WalletState())
     val state = _state.asStateFlow()
@@ -34,13 +46,34 @@ class WalletViewModel @Inject constructor(
         when (action) {
             WalletAction.RefreshWallet -> loadWalletData()
             is WalletAction.ShowWithdrawDialog -> {
-                _state.value = _state.value.copy(
-                    isWithdrawDialogVisible = action.visible,
-                    withdrawAmount = "",
-                    withdrawMpesaNumber = "",
-                    withdrawAmountError = null,
-                    withdrawMpesaNumberError = null
-                )
+                if (action.visible) {
+                    val defaultMpesa = loadDefaultMpesaNumber()
+                    _state.value = _state.value.copy(
+                        isWithdrawDialogVisible = true,
+                        withdrawAmount = "",
+                        withdrawMpesaNumber = defaultMpesa ?: "",
+                        withdrawAmountError = null,
+                        withdrawMpesaNumberError = null,
+                        isOtpSent = false,
+                        otpCode = "",
+                        otpError = null,
+                        defaultMpesaNumber = defaultMpesa,
+                        useDefaultMpesa = defaultMpesa != null
+                    )
+                } else {
+                    _state.value = _state.value.copy(
+                        isWithdrawDialogVisible = false,
+                        withdrawAmount = "",
+                        withdrawMpesaNumber = "",
+                        withdrawAmountError = null,
+                        withdrawMpesaNumberError = null,
+                        isOtpSent = false,
+                        otpCode = "",
+                        otpError = null,
+                        defaultMpesaNumber = null,
+                        useDefaultMpesa = false
+                    )
+                }
             }
             is WalletAction.WithdrawAmountChanged -> {
                 _state.value = _state.value.copy(
@@ -55,6 +88,29 @@ class WalletViewModel @Inject constructor(
                 )
             }
             WalletAction.SubmitWithdrawal -> submitWithdrawal()
+            is WalletAction.OtpCodeChanged -> {
+                _state.value = _state.value.copy(
+                    otpCode = action.code,
+                    otpError = null
+                )
+            }
+            WalletAction.VerifyAndWithdraw -> verifyAndWithdraw()
+            WalletAction.ResendOtp -> resendOtp()
+            WalletAction.GoBackToWithdrawDetails -> {
+                _state.value = _state.value.copy(
+                    isOtpSent = false,
+                    otpCode = "",
+                    otpError = null
+                )
+            }
+            is WalletAction.ToggleUseDefaultMpesa -> {
+                val defaultNum = _state.value.defaultMpesaNumber
+                _state.value = _state.value.copy(
+                    useDefaultMpesa = action.use,
+                    withdrawMpesaNumber = if (action.use) defaultNum ?: "" else "",
+                    withdrawMpesaNumberError = null
+                )
+            }
             WalletAction.NavigateBack -> {
                 viewModelScope.launch {
                     _events.send(WalletEvent.NavigateBack)
@@ -170,28 +226,157 @@ class WalletViewModel @Inject constructor(
                 return@launch
             }
 
-            val result = walletRepository.withdrawFunds(
-                ownerId = user.id,
-                amount = amount!!,
-                phoneNumber = mpesaNumber,
-                accountName = user.username,
-                payoutMethod = "MPESA"
-            )
-            
-            when (result) {
+            when (val otpResult = authRepository.sendOtp(user.email, OtpType.WITHDRAWAL)) {
                 is Result.Success -> {
-                    _events.send(WalletEvent.ShowToast("Withdrawal of KES $amount processed successfully."))
                     _state.value = _state.value.copy(
-                        isWithdrawDialogVisible = false
+                        isLoading = false,
+                        isOtpSent = true,
+                        otpCode = "",
+                        otpError = null
                     )
-                    loadWalletData()
+                    _events.send(WalletEvent.ShowToast("Verification OTP sent to ${user.email}"))
                 }
                 is Result.Error -> {
-                    _state.value = _state.value.copy(isLoading = false)
-                    _events.send(WalletEvent.ShowToast("Withdrawal failed. Please check network/balance."))
+                    val message = otpResult.error.toMessage()
+                    _state.value = _state.value.copy(
+                        isLoading = false,
+                        otpError = message
+                    )
+                    _events.send(WalletEvent.ShowToast("Failed to send OTP: $message"))
                 }
             }
         }
+    }
+
+    private fun verifyAndWithdraw() {
+        val currentState = _state.value
+        val otpCode = currentState.otpCode.trim()
+
+        if (otpCode.isBlank()) {
+            _state.value = currentState.copy(otpError = "OTP code is required")
+            return
+        }
+
+        val amount = currentState.withdrawAmount.toDoubleOrNull()
+        val mpesaNumber = currentState.withdrawMpesaNumber.trim()
+
+        if (amount == null || amount <= 0 || mpesaNumber.isBlank()) {
+            _state.value = currentState.copy(otpError = "Withdrawal details are invalid. Please restart.")
+            return
+        }
+
+        viewModelScope.launch {
+            _state.value = _state.value.copy(isLoading = true)
+            val user = tokenRepository.getUserFlow().first()
+            if (user == null) {
+                _state.value = _state.value.copy(isLoading = false)
+                _events.send(WalletEvent.ShowToast("User session not found."))
+                return@launch
+            }
+
+            when (val verifyResult = authRepository.verifyOtp(user.email, otpCode, OtpType.WITHDRAWAL)) {
+                is Result.Success -> {
+                    // OTP verified, proceed with withdrawal
+                    val result = walletRepository.withdrawFunds(
+                        ownerId = user.id,
+                        amount = amount,
+                        phoneNumber = mpesaNumber,
+                        accountName = user.username,
+                        payoutMethod = "MPESA"
+                    )
+                    
+                    when (result) {
+                        is Result.Success -> {
+                            _events.send(WalletEvent.ShowToast("Withdrawal of KES $amount processed successfully."))
+                            _state.value = _state.value.copy(
+                                isWithdrawDialogVisible = false,
+                                isOtpSent = false,
+                                otpCode = "",
+                                otpError = null,
+                                withdrawAmount = "",
+                                withdrawMpesaNumber = ""
+                            )
+                            loadWalletData()
+                        }
+                        is Result.Error -> {
+                            val errorMessage = result.error.toMessage()
+                            _state.value = _state.value.copy(
+                                isLoading = false,
+                                otpError = errorMessage
+                            )
+                            _events.send(WalletEvent.ShowToast("Withdrawal failed: $errorMessage"))
+                        }
+                    }
+                }
+                is Result.Error -> {
+                    val errorMessage = verifyResult.error.toMessage()
+                    _state.value = _state.value.copy(
+                        isLoading = false,
+                        otpError = errorMessage
+                    )
+                    _events.send(WalletEvent.ShowToast("Verification failed: $errorMessage"))
+                }
+            }
+        }
+    }
+
+    private fun resendOtp() {
+        val currentState = _state.value
+        viewModelScope.launch {
+            _state.value = _state.value.copy(isLoading = true)
+            val user = tokenRepository.getUserFlow().first()
+            if (user == null) {
+                _state.value = _state.value.copy(isLoading = false)
+                _events.send(WalletEvent.ShowToast("User session not found."))
+                return@launch
+            }
+
+            when (val otpResult = authRepository.sendOtp(user.email, OtpType.WITHDRAWAL)) {
+                is Result.Success -> {
+                    _state.value = _state.value.copy(
+                        isLoading = false,
+                        otpCode = "",
+                        otpError = null
+                    )
+                    _events.send(WalletEvent.ShowToast("A new OTP has been sent to ${user.email}"))
+                }
+                is Result.Error -> {
+                    val message = otpResult.error.toMessage()
+                    _state.value = _state.value.copy(
+                        isLoading = false,
+                        otpError = message
+                    )
+                    _events.send(WalletEvent.ShowToast("Failed to resend OTP: $message"))
+                }
+            }
+        }
+    }
+
+    private fun DataError.Network.toMessage(): String {
+        return when (this) {
+            DataError.Network.REQUEST_TIMEOUT -> "The request timed out. Check your connection and try again."
+            DataError.Network.UNAUTHORIZED -> "Invalid OTP verification code or unauthorized session."
+            DataError.Network.CONFLICT -> "Insufficient funds or invalid withdrawal details."
+            DataError.Network.TOO_MANY_REQUESTS -> "Too many attempts. Try again shortly."
+            DataError.Network.NO_INTERNET -> "No internet connection."
+            DataError.Network.PAYLOAD_TOO_LARGE -> "The request is too large."
+            DataError.Network.SERVER_ERROR -> "The server is unavailable. Try again later."
+            DataError.Network.SERIALIZATION -> "The server response was not in the expected format."
+            DataError.Network.UNKNOWN -> "Something went wrong. Try again."
+        }
+    }
+
+    private fun loadDefaultMpesaNumber(): String? {
+        val methodsJson = paymentSharedPreferences.getString("saved_payment_methods", null)
+        if (!methodsJson.isNullOrBlank()) {
+            try {
+                val methods = Json.decodeFromString<List<PaymentMethod>>(methodsJson)
+                return methods.find { it.isDefault && it.type == PaymentMethodType.MPESA }?.detail
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+        return null
     }
 
     private fun parseCreatedAtToMillis(dateStr: String): Long {

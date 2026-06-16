@@ -30,11 +30,13 @@ import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.LocalShipping
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.automirrored.filled.Notes
+import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -78,6 +80,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.agriflow.app.features.auth.UserRole
+import com.agriflow.app.features.marketplace.MarketplaceAction
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -94,6 +97,9 @@ fun OrdersRoute(
             when (event) {
                 is OrdersEvent.ShowSnackbar -> {
                     snackbarHostState.showSnackbar(event.message)
+                }
+                is OrdersEvent.NavigateToWallet -> {
+                    OrdersEvent.NavigateToWallet
                 }
             }
         }
@@ -131,6 +137,14 @@ fun OrdersScreen(
                 actions = {
                     IconButton(onClick = { onAction(OrdersAction.RefreshOrders) }) {
                         Icon(imageVector = Icons.Default.Refresh, contentDescription = "Refresh")
+                    }
+                    if (state.userRole == UserRole.SUPPLIER || state.userRole == UserRole.FARMER) {
+                        IconButton(onClick = { onAction(OrdersAction.WalletClicked) }) {
+                            Icon(
+                                imageVector = Icons.Default.AccountBalanceWallet,
+                                contentDescription = "Wallet"
+                            )
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(

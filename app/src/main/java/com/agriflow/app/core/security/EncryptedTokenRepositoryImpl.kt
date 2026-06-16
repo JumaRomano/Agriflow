@@ -74,11 +74,14 @@ class EncryptedTokenRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun saveTokens(accessToken: String, refreshToken: String) {
-        sharedPreferences.edit()
+    override fun saveTokens(accessToken: String, refreshToken: String, email: String?) {
+        val editor = sharedPreferences.edit()
             .putString(KEY_ACCESS_TOKEN, accessToken)
             .putString(KEY_REFRESH_TOKEN, refreshToken)
-            .apply()
+        if (email != null) {
+            editor.putString(KEY_USER_EMAIL, email)
+        }
+        editor.apply()
 
         val user = decodeUserFromToken(accessToken)
         actualRole = user?.role ?: UserRole.UNKNOWN
@@ -104,6 +107,7 @@ class EncryptedTokenRepositoryImpl @Inject constructor(
             .remove(KEY_REFRESH_TOKEN)
             .remove(KEY_ACTIVE_ROLE)
             .remove(KEY_REGISTERED_BUSINESS_ROLE)
+            .remove(KEY_USER_EMAIL)
             .apply()
         actualRole = UserRole.UNKNOWN
         _userFlow.value = null
@@ -152,12 +156,19 @@ class EncryptedTokenRepositoryImpl @Inject constructor(
             val payload = parts[1]
             val decodedBytes = Base64.decode(payload, Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING)
             val jsonString = String(decodedBytes, StandardCharsets.UTF_8)
+            android.util.Log.d("AgriflowJWT", "Decoded JWT payload: $jsonString")
             val jsonObject = JSONObject(jsonString)
             
             val userId = jsonObject.optString("sub") ?: ""
             val username = jsonObject.optString("username").takeIf { it.isNotBlank() }
                 ?: jsonObject.optString("name") ?: "User"
-            val email = jsonObject.optString("email") ?: ""
+            val email = jsonObject.optString("email").takeIf { it.isNotBlank() }
+                ?: sharedPreferences.getString(KEY_USER_EMAIL, null)?.takeIf { it.isNotBlank() }
+                ?: jsonObject.optString("sub").takeIf { it.contains("@") }
+                ?: jsonObject.optString("username").takeIf { it.contains("@") }
+                ?: jsonObject.optString("userEmail").takeIf { it.isNotBlank() }
+                ?: jsonObject.optString("user_email").takeIf { it.isNotBlank() }
+                ?: ""
             val phone = jsonObject.optString("phone").takeIf { it.isNotBlank() }
                 ?: jsonObject.optString("phoneNumber")
             val roleStr = jsonObject.optString("role").takeIf { it.isNotBlank() }
@@ -190,5 +201,6 @@ class EncryptedTokenRepositoryImpl @Inject constructor(
         const val KEY_REFRESH_TOKEN = "refresh_token"
         const val KEY_ACTIVE_ROLE = "active_role"
         const val KEY_REGISTERED_BUSINESS_ROLE = "registered_business_role"
+        const val KEY_USER_EMAIL = "user_email"
     }
 }

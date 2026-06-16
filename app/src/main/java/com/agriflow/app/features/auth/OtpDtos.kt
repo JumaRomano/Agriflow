@@ -7,7 +7,8 @@ enum class OtpType {
     FORGOT_PASSWORD,
     REGISTRATION,
     RESET_PASSWORD,
-    EMAIL_CHANGE
+    EMAIL_CHANGE,
+    WITHDRAWAL
 }
 
 data class SendOtpRequestDto(

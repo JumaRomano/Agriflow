@@ -9,7 +9,12 @@ data class WalletState(
     val withdrawAmount: String = "",
     val withdrawMpesaNumber: String = "",
     val withdrawAmountError: String? = null,
-    val withdrawMpesaNumberError: String? = null
+    val withdrawMpesaNumberError: String? = null,
+    val isOtpSent: Boolean = false,
+    val otpCode: String = "",
+    val otpError: String? = null,
+    val defaultMpesaNumber: String? = null,
+    val useDefaultMpesa: Boolean = false
 )
 
 data class WalletTransaction(

@@ -12,4 +12,6 @@ sealed interface OrdersAction {
         val trackingNumber: String? = null,
         val carrier: String? = null
     ) : OrdersAction
+
+    data object WalletClicked : OrdersAction
 }
