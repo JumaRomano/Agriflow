@@ -1,11 +1,8 @@
 /**
  * Core helper component: ProductMappers.
  */
-package com.agriflow.app.features.marketplace
+package com.agriflow.app.features.marketplace.productdetails
 
-import com.agriflow.app.features.marketplace.ProductEntity
-import com.agriflow.app.features.marketplace.ProductDto
-import com.agriflow.app.features.marketplace.Product
 fun ProductDto.toEntity(nowMillis: Long): ProductEntity? {
     val id = id?.takeIf(String::isNotBlank) ?: return null
     val name = name?.takeIf(String::isNotBlank) ?: return null

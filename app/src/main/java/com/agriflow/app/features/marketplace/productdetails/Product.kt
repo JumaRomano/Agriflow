@@ -1,7 +1,7 @@
 /**
  * Represents the class [Product] providing core functionality within the application.
  */
-package com.agriflow.app.features.marketplace
+package com.agriflow.app.features.marketplace.productdetails
 
 data class Product(
     val id: String,

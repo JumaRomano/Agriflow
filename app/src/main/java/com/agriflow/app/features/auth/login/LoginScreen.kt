@@ -1,7 +1,7 @@
 /**
- * Jetpack Compose UI screen components for the CreateNewPassword screen.
+ * Jetpack Compose UI screen components for the Login screen.
  */
-package com.agriflow.app.features.auth
+package com.agriflow.app.features.auth.login
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -11,22 +11,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -34,16 +27,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.agriflow.app.features.auth.AuthAction
+import com.agriflow.app.features.auth.AuthEvent
+import com.agriflow.app.features.auth.AuthState
+import com.agriflow.app.features.auth.AuthViewModel
 
 @Composable
-fun CreateNewPasswordRoute(
-    onResetSuccess: () -> Unit,
-    onNavigateBack: () -> Unit,
-    viewModel: CreateNewPasswordViewModel = hiltViewModel()
+fun LoginRoute(
+    onLoginSuccess: () -> Unit,
+    onRegisterClick: () -> Unit,
+    onForgotClick: () -> Unit,
+    viewModel: AuthViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -51,53 +48,34 @@ fun CreateNewPasswordRoute(
     LaunchedEffect(viewModel) {
         viewModel.events.collect { event ->
             when (event) {
-                is CreateNewPasswordEvent.NavigateToLogin -> {
-                    onResetSuccess()
-                }
-                is CreateNewPasswordEvent.ShowMessage -> {
-                    snackbarHostState.showSnackbar(event.message)
-                }
+                AuthEvent.NavigateToMain -> onLoginSuccess()
+                is AuthEvent.NavigateToOtp -> { /* Not applicable to Login screen */ }
+                is AuthEvent.ShowMessage -> snackbarHostState.showSnackbar(event.message)
             }
         }
     }
 
-    CreateNewPasswordScreen(
+    LoginScreen(
         state = state,
         snackbarHostState = snackbarHostState,
         onAction = viewModel::onAction,
-        onNavigateBack = onNavigateBack
+        onRegisterClick = onRegisterClick,
+        onForgotClick = onForgotClick
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateNewPasswordScreen(
-    state: CreateNewPasswordState,
+fun LoginScreen(
+    state: AuthState,
     snackbarHostState: SnackbarHostState,
-    onAction: (CreateNewPasswordAction) -> Unit,
-    onNavigateBack: () -> Unit,
+    onAction: (AuthAction) -> Unit,
+    onRegisterClick: () -> Unit,
+    onForgotClick:() -> Unit,
     modifier: Modifier = Modifier
+
+
 ) {
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("") },
-                navigationIcon = {
-                    IconButton(
-                        onClick = onNavigateBack,
-                        enabled = !state.isLoading
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
-                )
-            )
-        },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         modifier = modifier
     ) { paddingValues ->
@@ -110,11 +88,11 @@ fun CreateNewPasswordScreen(
             horizontalAlignment = Alignment.Start
         ) {
             Text(
-                text = "New Password",
+                text = "Welcome to Agriflow",
                 style = MaterialTheme.typography.headlineMedium
             )
             Text(
-                text = "Please enter your new secure password to reset your login credentials.",
+                text = "Join the future of Agriculture.",
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -122,33 +100,30 @@ fun CreateNewPasswordScreen(
             Spacer(modifier = Modifier.height(32.dp))
 
             OutlinedTextField(
-                value = state.newPassword,
-                onValueChange = { onAction(CreateNewPasswordAction.OnNewPasswordChanged(it)) },
-                label = { Text("New Password") },
+                value = state.loginEmail,
+                onValueChange = { onAction(AuthAction.LoginEmailChanged(it)) },
+                label = { Text("Email") },
                 singleLine = true,
                 enabled = !state.isLoading,
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             OutlinedTextField(
-                value = state.confirmPassword,
-                onValueChange = { onAction(CreateNewPasswordAction.OnConfirmPasswordChanged(it)) },
-                label = { Text("Confirm Password") },
+                value = state.loginPassword,
+                onValueChange = { onAction(AuthAction.LoginPasswordChanged(it)) },
+                label = { Text("Password") },
                 singleLine = true,
                 enabled = !state.isLoading,
                 visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 modifier = Modifier.fillMaxWidth()
             )
 
-            state.error?.let { error ->
+            state.errorMessage?.let { message ->
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(
-                    text = error,
+                    text = message,
                     color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.bodyMedium
                 )
@@ -157,19 +132,33 @@ fun CreateNewPasswordScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             Button(
-                onClick = { onAction(CreateNewPasswordAction.SubmitClicked) },
-                enabled = !state.isLoading && state.newPassword.isNotBlank() && state.confirmPassword.isNotBlank(),
+                onClick = { onAction(AuthAction.LoginSubmitted) },
+                enabled = !state.isLoading,
                 modifier = Modifier.fillMaxWidth()
             ) {
                 if (state.isLoading) {
-                    CircularProgressIndicator(
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        modifier = Modifier.size(20.dp)
-                    )
+                    CircularProgressIndicator(modifier = Modifier.size(20.dp))
                 } else {
-                    Text("Reset Password")
+                    Text("Sign in")
                 }
             }
+
+            TextButton(
+                onClick = onRegisterClick,
+                enabled = !state.isLoading,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            ) {
+                Text("Create an account")
+            }
+
+            TextButton(
+                onClick = onForgotClick,
+                enabled = !state.isLoading,
+                modifier =  Modifier.align(Alignment.CenterHorizontally)
+            ) {
+                Text("Forgot Password ?")
+            }
+
         }
     }
 }

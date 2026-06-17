@@ -1,7 +1,7 @@
 /**
  * Data Transfer Object (DTO) used for network request serialization when updating product details via PATCH.
  */
-package com.agriflow.app.features.marketplace
+package com.agriflow.app.features.marketplace.productdetails
 
 data class ProductUpdateRequest(
     val productName: String,

@@ -6,8 +6,9 @@ package com.agriflow.app.features.auth
 import com.agriflow.app.core.util.DataError
 import com.agriflow.app.core.util.EmptyResult
 import com.agriflow.app.core.util.Result
-import com.agriflow.app.features.auth.AuthSession
-import com.agriflow.app.features.auth.UserRole
+import com.agriflow.app.features.auth.otp.OtpType
+import com.agriflow.app.features.auth.otp.VerifyOtpResponseDto
+
 interface AuthRepository {
     suspend fun login(
         email: String,

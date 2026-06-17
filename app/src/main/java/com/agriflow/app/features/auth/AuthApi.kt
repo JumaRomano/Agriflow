@@ -3,9 +3,12 @@
  */
 package com.agriflow.app.features.auth
 
-import com.agriflow.app.features.auth.AuthResponseDto
-import com.agriflow.app.features.auth.LoginRequestDto
-import com.agriflow.app.features.auth.RegisterRequestDto
+import com.agriflow.app.features.auth.login.LoginRequestDto
+import com.agriflow.app.features.auth.otp.PasswordResetRequestDto
+import com.agriflow.app.features.auth.otp.SendOtpRequestDto
+import com.agriflow.app.features.auth.otp.VerifyOtpRequestDto
+import com.agriflow.app.features.auth.otp.VerifyOtpResponseDto
+import com.agriflow.app.features.auth.register.RegisterRequestDto
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST

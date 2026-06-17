@@ -41,8 +41,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import com.agriflow.app.core.ui.SplashRoute
-import com.agriflow.app.features.auth.LoginRoute
-import com.agriflow.app.features.auth.RegisterRoute
+import com.agriflow.app.features.auth.login.LoginRoute
+import com.agriflow.app.features.auth.register.RegisterRoute
 import com.agriflow.app.features.marketplace.MarketplaceRoute
 import com.agriflow.app.features.homescreen.HomeRoute
 import com.agriflow.app.features.marketplace.productdetails.ProductDetailsRoute
@@ -51,9 +51,9 @@ import com.agriflow.app.features.profile.EditProfileRoute
 import com.agriflow.app.features.marketplace.MyStore.sellerdashboard.MyStoreRoute
 import com.agriflow.app.features.addproduct.AddProductRoute
 import com.agriflow.app.features.editproduct.EditProductRoute
-import com.agriflow.app.features.auth.ForgotPasswordRoute
-import com.agriflow.app.features.auth.OtpVerificationRoute
-import com.agriflow.app.features.auth.CreateNewPasswordRoute
+import com.agriflow.app.features.auth.password.ForgotPasswordRoute
+import com.agriflow.app.features.auth.otp.OtpVerificationRoute
+import com.agriflow.app.features.auth.password.CreateNewPasswordRoute
 import com.agriflow.app.features.marketplace.MyStore.myproducts.MyProductsRoute
 import com.agriflow.app.features.cart.presentation.CartRoute
 import com.agriflow.app.features.payment.PaymentRoute

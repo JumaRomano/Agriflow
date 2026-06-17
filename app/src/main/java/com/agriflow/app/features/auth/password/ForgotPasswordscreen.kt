@@ -1,7 +1,7 @@
 /**
- * Jetpack Compose UI screen components for the OtpVerification screen.
+ * Jetpack Compose UI screen components for the ForgotPassword screen.
  */
-package com.agriflow.app.features.auth
+package com.agriflow.app.features.auth.password
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,7 +25,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -36,16 +35,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
 @Composable
-fun OtpVerificationRoute(
-    onNavigateToResetPassword: (String, String) -> Unit,
-    onNavigateToLogin: () -> Unit,
+fun ForgotPasswordRoute(
+    onNavigateToOtp: (String, String) -> Unit,
     onNavigateBack: () -> Unit,
-    viewModel: OtpVerificationViewModel = hiltViewModel()
+    viewModel: ForgotPasswordViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -53,22 +50,18 @@ fun OtpVerificationRoute(
     LaunchedEffect(viewModel) {
         viewModel.events.collect { event ->
             when (event) {
-                is OtpEvent.NavigateToLogin -> {
-                    onNavigateToLogin()
+                is ForgotPasswordEvent.NavigateToOtp -> {
+                    onNavigateToOtp(event.email, event.type)
                 }
-                is OtpEvent.NavigateToResetPassword -> {
-                    onNavigateToResetPassword(viewModel.email, event.token)
-                }
-                is OtpEvent.ShowMessage -> {
+                is ForgotPasswordEvent.ShowMessage -> {
                     snackbarHostState.showSnackbar(event.message)
                 }
             }
         }
     }
 
-    OtpVerificationScreen(
+    ForgotPasswordScreen(
         state = state,
-        email = viewModel.email,
         snackbarHostState = snackbarHostState,
         onAction = viewModel::onAction,
         onNavigateBack = onNavigateBack
@@ -77,11 +70,10 @@ fun OtpVerificationRoute(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun OtpVerificationScreen(
-    state: OtpState,
-    email: String,
+fun ForgotPasswordScreen(
+    state: ForgotPasswordState,
     snackbarHostState: SnackbarHostState,
-    onAction: (OtpAction) -> Unit,
+    onAction: (ForgotPasswordAction) -> Unit,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -117,11 +109,11 @@ fun OtpVerificationScreen(
             horizontalAlignment = Alignment.Start
         ) {
             Text(
-                text = "Verify OTP",
+                text = "Forgot Password?",
                 style = MaterialTheme.typography.headlineMedium
             )
             Text(
-                text = "We have sent a verification code to $email. Please enter the code below.",
+                text = "Enter your email address and we will send you an OTP code to verify your identity.",
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -129,22 +121,22 @@ fun OtpVerificationScreen(
             Spacer(modifier = Modifier.height(32.dp))
 
             OutlinedTextField(
-                value = state.otpCode,
-                onValueChange = { onAction(OtpAction.OnOtpChanged(it)) },
-                label = { Text("Verification Code") },
+                value = state.email,
+                onValueChange = { onAction(ForgotPasswordAction.OnEmailChanged(it)) },
+                label = { Text("Email Address") },
                 singleLine = true,
                 enabled = !state.isLoading,
-                isError = state.error != null,
-                supportingText = state.error?.let { { Text(it) } },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                isError = state.emailError != null,
+                supportingText = state.emailError?.let { { Text(it) } },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(24.dp))
 
             Button(
-                onClick = { onAction(OtpAction.VerifyClicked) },
-                enabled = !state.isLoading && state.otpCode.isNotBlank(),
+                onClick = { onAction(ForgotPasswordAction.SendOtpClicked) },
+                enabled = !state.isLoading && state.email.isNotBlank(),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 if (state.isLoading) {
@@ -153,33 +145,9 @@ fun OtpVerificationScreen(
                         modifier = Modifier.size(20.dp)
                     )
                 } else {
-                    Text("Verify")
+                    Text("Send OTP Verification")
                 }
             }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = "The OTP expires in 5 minutes",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            TextButton(
-                onClick = { onAction(OtpAction.ResendClicked) },
-                enabled = !state.isLoading,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            ) {
-                Text(
-                    text = "Didn't receive code? Resend",
-                    textAlign = TextAlign.Center
-                )
-            }
-
-
         }
     }
 }
-

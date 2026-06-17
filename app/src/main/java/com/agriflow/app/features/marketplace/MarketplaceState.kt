@@ -4,6 +4,7 @@
 package com.agriflow.app.features.marketplace
 
 import com.agriflow.app.features.auth.UserRole
+import com.agriflow.app.features.marketplace.productdetails.Product
 
 data class MarketplaceState(
     val products: List<Product> = emptyList(),

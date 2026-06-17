@@ -1,7 +1,7 @@
 /**
  * Sealed interface representing one-shot UI events emitted by the Otp ViewModel.
  */
-package com.agriflow.app.features.auth
+package com.agriflow.app.features.auth.otp
 
 sealed interface OtpEvent {
     data object NavigateToLogin : OtpEvent

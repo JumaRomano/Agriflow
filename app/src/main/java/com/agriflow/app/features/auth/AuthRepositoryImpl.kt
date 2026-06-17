@@ -8,13 +8,13 @@ import com.agriflow.app.core.network.safeApiCall
 import com.agriflow.app.core.util.DataError
 import com.agriflow.app.core.util.EmptyResult
 import com.agriflow.app.core.util.Result
-import com.agriflow.app.features.auth.toAuthSession
-import com.agriflow.app.features.auth.AuthApi
-import com.agriflow.app.features.auth.LoginRequestDto
-import com.agriflow.app.features.auth.RegisterRequestDto
-import com.agriflow.app.features.auth.AuthSession
-import com.agriflow.app.features.auth.UserRole
-import com.agriflow.app.features.auth.AuthRepository
+import com.agriflow.app.features.auth.login.LoginRequestDto
+import com.agriflow.app.features.auth.otp.OtpType
+import com.agriflow.app.features.auth.otp.PasswordResetRequestDto
+import com.agriflow.app.features.auth.otp.SendOtpRequestDto
+import com.agriflow.app.features.auth.otp.VerifyOtpRequestDto
+import com.agriflow.app.features.auth.otp.VerifyOtpResponseDto
+import com.agriflow.app.features.auth.register.RegisterRequestDto
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(

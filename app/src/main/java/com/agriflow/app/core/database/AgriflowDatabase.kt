@@ -10,8 +10,8 @@ import com.agriflow.app.features.auth.UserDao
 import com.agriflow.app.features.auth.UserEntity
 import com.agriflow.app.features.cart.data.CartDao
 import com.agriflow.app.features.cart.data.CartItemEntity
-import com.agriflow.app.features.marketplace.ProductDao
-import com.agriflow.app.features.marketplace.ProductEntity
+import com.agriflow.app.features.marketplace.productdetails.ProductDao
+import com.agriflow.app.features.marketplace.productdetails.ProductEntity
 import com.agriflow.app.features.orders.OrderDao
 import com.agriflow.app.features.orders.OrderEntity
 

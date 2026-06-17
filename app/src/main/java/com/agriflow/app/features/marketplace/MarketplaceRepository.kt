@@ -5,8 +5,10 @@ package com.agriflow.app.features.marketplace
 
 import com.agriflow.app.core.util.DataError
 import com.agriflow.app.core.util.EmptyResult
-import com.agriflow.app.features.marketplace.Product
+import com.agriflow.app.features.marketplace.productdetails.Product
 import com.agriflow.app.core.util.Result
+import com.agriflow.app.features.marketplace.productdetails.ProductUpdateRequest
+import com.agriflow.app.features.marketplace.productdetails.ProductUploadRequest
 import kotlinx.coroutines.flow.Flow
 import okhttp3.MultipartBody
 

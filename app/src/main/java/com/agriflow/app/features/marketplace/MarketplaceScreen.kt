@@ -50,6 +50,7 @@ import androidx.compose.ui.layout.ContentScale
 import coil.compose.AsyncImage
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.agriflow.app.features.auth.UserRole
+import com.agriflow.app.features.marketplace.productdetails.Product
 import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)

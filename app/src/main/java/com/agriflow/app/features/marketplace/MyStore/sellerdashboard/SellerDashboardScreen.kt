@@ -141,7 +141,7 @@ fun SellerDashboardScreen(
                         color = MaterialTheme.colorScheme.onBackground
                     )
                     Text(
-                        text = "Manage your store sales, orders and inventory levels",
+                        text = "Monitor your store sales, orders and inventory levels",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -152,24 +152,6 @@ fun SellerDashboardScreen(
                 Spacer(modifier = Modifier.height(8.dp))
             }
 
-            // Quick Actions Row
-            item {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    OutlinedButton(
-                        onClick = { /* Action to change time range filter */ }
-                    ) {
-                        Text("Last 30 Days")
-                    }
-                    OutlinedButton(
-                        onClick = { onAction(SellerDashboardAction.OnExportReportClicked) }
-                    ) {
-                        Text("Export Report")
-                    }
-                }
-            }
 
             item {
                 Spacer(modifier = Modifier.height(16.dp))
@@ -242,7 +224,7 @@ fun SellerDashboardScreen(
                 Spacer(modifier = Modifier.height(8.dp))
             }
 
-            // List of Orders rendered inline within root LazyColumn
+            // List of Orders
             if (state.recentOrders.isEmpty()) {
                 item {
                     Box(

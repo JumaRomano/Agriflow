@@ -1,12 +1,14 @@
 /**
  * ViewModel managing the business logic and UI state for the ForgotPassword feature.
  */
-package com.agriflow.app.features.auth
+package com.agriflow.app.features.auth.password
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.agriflow.app.core.util.DataError
 import com.agriflow.app.core.util.Result
+import com.agriflow.app.features.auth.AuthRepository
+import com.agriflow.app.features.auth.otp.OtpType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow

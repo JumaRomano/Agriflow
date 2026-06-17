@@ -4,7 +4,7 @@
 package com.agriflow.app.features.homescreen
 
 import com.agriflow.app.features.auth.UserRole
-import com.agriflow.app.features.marketplace.Product
+import com.agriflow.app.features.marketplace.productdetails.Product
 
 /**
  * State representing the Home Dashboard screen.

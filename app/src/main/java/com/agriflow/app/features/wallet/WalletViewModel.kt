@@ -7,7 +7,7 @@ import com.agriflow.app.core.security.TokenRepository
 import com.agriflow.app.core.util.Result
 import com.agriflow.app.core.util.DataError
 import com.agriflow.app.features.auth.AuthRepository
-import com.agriflow.app.features.auth.OtpType
+import com.agriflow.app.features.auth.otp.OtpType
 import com.agriflow.app.features.payment.PaymentMethod
 import com.agriflow.app.features.payment.PaymentMethodType
 import dagger.hilt.android.lifecycle.HiltViewModel

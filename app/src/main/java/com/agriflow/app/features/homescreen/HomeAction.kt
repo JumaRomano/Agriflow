@@ -3,8 +3,7 @@
  */
 package com.agriflow.app.features.homescreen
 
-import com.agriflow.app.features.marketplace.MarketplaceAction
-import com.agriflow.app.features.marketplace.Product
+import com.agriflow.app.features.marketplace.productdetails.Product
 
 /**
  * UI Actions (User Interactions) originating from the Home Dashboard Screen.

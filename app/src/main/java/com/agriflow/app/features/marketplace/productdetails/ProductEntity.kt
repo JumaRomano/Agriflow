@@ -1,7 +1,7 @@
 /**
  * Database entity class representing a record in the local database.
  */
-package com.agriflow.app.features.marketplace
+package com.agriflow.app.features.marketplace.productdetails
 
 import androidx.room.Entity
 import androidx.room.Index

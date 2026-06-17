@@ -13,8 +13,7 @@ import com.agriflow.app.core.navigation.Route
 import com.agriflow.app.core.util.FileHelper
 import com.agriflow.app.core.util.Result
 import com.agriflow.app.features.marketplace.MarketplaceRepository
-import com.agriflow.app.features.marketplace.ProductUpdateRequest
-import com.agriflow.app.features.marketplace.ProductUploadRequest
+import com.agriflow.app.features.marketplace.productdetails.ProductUpdateRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
