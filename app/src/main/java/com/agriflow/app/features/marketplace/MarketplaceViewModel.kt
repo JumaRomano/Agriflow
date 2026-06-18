@@ -3,6 +3,7 @@
  */
 package com.agriflow.app.features.marketplace
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.agriflow.app.core.util.Result
@@ -20,10 +21,11 @@ import javax.inject.Inject
 @HiltViewModel
 class MarketplaceViewModel @Inject constructor(
     private val repository: MarketplaceRepository,
-    private val tokenRepository: TokenRepository
+    private val tokenRepository: TokenRepository,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val _searchQuery = MutableStateFlow("")
+    private val _searchQuery = MutableStateFlow(savedStateHandle.get<String>("searchFilter") ?: "")
     private val _selectedCategory = MutableStateFlow("All")
     private val _isRefreshing = MutableStateFlow(false)
     private val _errorMessage = MutableStateFlow<String?>(null)

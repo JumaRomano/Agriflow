@@ -24,4 +24,6 @@ interface OrdersRepository {
     suspend fun getMyOrders(): Result<List<OrderDto>, DataError.Network>
 
     suspend fun getBusinessOrders(): Result<List<OrderDto>, DataError.Network>
+
+    suspend fun restoreCart(orderId: String): Result<Unit, DataError.Network>
 }

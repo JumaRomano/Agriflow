@@ -21,6 +21,8 @@ interface MarketplaceRepository {
 
     suspend fun getCategories(): Result<List<CategoryDto>, DataError.Network>
 
+    suspend fun getVerifiedBusinesses(): Result<List<BusinessDto>, DataError.Network>
+
     suspend fun uploadImage(file: MultipartBody.Part): Result<ImageResponseDto, DataError.Network>
 
     suspend fun createProduct(request: ProductUploadRequest): Result<Unit, DataError.Network>
@@ -28,4 +30,7 @@ interface MarketplaceRepository {
     suspend fun updateProduct(id: String, request: ProductUpdateRequest): Result<Unit, DataError.Network>
     suspend fun markAsOutOfStock(id: String): Result<Unit, DataError.Network>
     suspend fun getMyProducts(): Result<List<Product>, DataError.Network>
+
+    suspend fun getBusinessPublicDetails(id: String): Result<PublicBusinessDto, DataError.Network>
+    suspend fun getBusinessProducts(businessId: String): Result<List<Product>, DataError.Network>
 }

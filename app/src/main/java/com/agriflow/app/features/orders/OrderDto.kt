@@ -50,3 +50,7 @@ data class UpdateOrderStatusRequestDto(
     @SerializedName("trackingNumber") val trackingNumber: String? = null,
     @SerializedName("carrier") val carrier: String? = null
 )
+
+data class RestoreCartRequestDto(
+    @SerializedName("orderId") val orderId: String
+)

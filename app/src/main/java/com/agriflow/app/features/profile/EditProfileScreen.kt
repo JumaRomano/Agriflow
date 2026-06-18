@@ -135,7 +135,7 @@ fun EditProfileScreen(
             ) {
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Modern Avatar Section with Camera Icon Overlay
+                // Avatar
                 Box(
                     modifier = Modifier
                         .size(110.dp),
@@ -146,12 +146,7 @@ fun EditProfileScreen(
                             .fillMaxSize()
                             .clip(CircleShape)
                             .background(
-                                Brush.linearGradient(
-                                    colors = listOf(
-                                        MaterialTheme.colorScheme.primary,
-                                        MaterialTheme.colorScheme.secondary
-                                    )
-                                )
+                                MaterialTheme.colorScheme.primaryContainer
                             ),
                         contentAlignment = Alignment.Center
                     ) {
@@ -171,7 +166,7 @@ fun EditProfileScreen(
                             .clip(CircleShape)
                             .background(MaterialTheme.colorScheme.primaryContainer)
                             .clickable {
-                                // Add photo action could go here in a full implementation.
+                                // Add photo action goes here.
 
                             },
                         contentAlignment = Alignment.Center
@@ -185,7 +180,7 @@ fun EditProfileScreen(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(25.dp))
 
                 // Input Fields Card layout
                 Column(
@@ -196,7 +191,7 @@ fun EditProfileScreen(
                         .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    // Name/Username Field
+                    // Name Field
                     OutlinedTextField(
                         value = state.username,
                         onValueChange = { onAction(EditProfileAction.OnUsernameChanged(it)) },
@@ -220,7 +215,9 @@ fun EditProfileScreen(
                         )
                     )
 
-                    // Email Field (Read-only)
+                    Spacer(modifier = Modifier.height(15.dp))
+
+                    // Email Field
                     Column {
                         OutlinedTextField(
                             value = state.email,
@@ -245,12 +242,14 @@ fun EditProfileScreen(
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
-                            text = "Email address cannot be changed for now .",
+                            text = "Email address cannot be changed .",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
                             modifier = Modifier.padding(horizontal = 4.dp)
                         )
                     }
+
+                    Spacer(modifier = Modifier.height(15.dp))
 
                     // Phone Number Field
                     OutlinedTextField(

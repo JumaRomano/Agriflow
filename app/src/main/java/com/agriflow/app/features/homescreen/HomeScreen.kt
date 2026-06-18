@@ -4,6 +4,8 @@
 package com.agriflow.app.features.homescreen
 
 import android.R
+import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,13 +27,21 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Verified
 import androidx.compose.material.icons.filled.Wallet
 import com.agriflow.app.features.auth.UserRole
 import com.agriflow.app.features.marketplace.ProductGridItem
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.Surface
+import androidx.compose.ui.graphics.Color
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -67,11 +77,13 @@ import com.agriflow.app.features.profile.ProfileState
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeRoute(
-    onNavigateToMarketplace: () -> Unit,
+    onNavigateToMarketplace: (String?) -> Unit,
+    onNavigateToSupplierNetwork: () -> Unit,
     onNavigateToCart: () -> Unit,
     onNavigateToNotification: () -> Unit,
     onNavigateToWallet: () -> Unit,
     onNavigateToProductDetails: (String) -> Unit,
+    onNavigateToBusinessDetails: (String) -> Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
@@ -80,7 +92,9 @@ fun HomeRoute(
     LaunchedEffect(viewModel.events) {
         viewModel.events.collect { event ->
             when (event) {
-                HomeEvent.NavigateToMarketplace -> onNavigateToMarketplace()
+                HomeEvent.NavigateToMarketplace -> onNavigateToMarketplace(null)
+                is HomeEvent.NavigateToBusinessDetails -> onNavigateToBusinessDetails(event.businessId)
+                HomeEvent.NavigateToSupplierNetwork -> onNavigateToSupplierNetwork()
                 HomeEvent.NavigateToCart -> onNavigateToCart()
                 HomeEvent.NavigateToNotification -> onNavigateToNotification()
                 HomeEvent.NavigateToWallet -> onNavigateToWallet()
@@ -106,6 +120,16 @@ fun HomeScreen(
     snackbarHostState: SnackbarHostState,
     onAction: (HomeAction) -> Unit
 ) {
+    val homeProducts = remember(state.selectedCategory, state.products) {
+        if (state.selectedCategory.equals("All", ignoreCase = true)) {
+            state.products
+        } else {
+            state.products.filter {
+                it.category.equals(state.selectedCategory, ignoreCase = true)
+            }
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -150,8 +174,6 @@ fun HomeScreen(
                 )
             }
 
-
-
             // Hero section
             item {
                 Text(
@@ -170,10 +192,13 @@ fun HomeScreen(
                     OutlinedTextField(
                         value = state.searchQuery,
                         onValueChange = { onAction(HomeAction.SearchQueryChanged(it)) },
-                        placeholder = { Text("Search products...") },
-                        leadingIcon = { Text("🔍") },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true
+                        placeholder = { Text("Search Products") },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Search,
+                                contentDescription = "Search"
+                            )
+                        }
                     )
 
                     val filteredProducts = remember(state.searchQuery, state.products) {
@@ -244,28 +269,52 @@ fun HomeScreen(
                 }
             }
 
-
-
-
-
-            // Featured Products Section
-            if (state.products.isNotEmpty()) {
+            // Categories Section
+            if (state.categories.isNotEmpty()) {
                 item {
-                    Text(
-                        text = "Featured Products",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onBackground
+                    CategoryRow(
+                        categories = state.categories,
+                        onCategorySelected = { categoryName ->
+                            onAction(HomeAction.CategorySelected(categoryName))
+                        }
                     )
                 }
+            }
 
+            // Verified Distributors Section
+            if (state.distributors.isNotEmpty()) {
+                item {
+                    SectionHeader(
+                        title = "Verified Farms & Suppliers",
+                        onSeeAllClick = { onAction(HomeAction.ViewSupplierNetworkClicked) }
+                    )
+                }
+                item {
+                    DistributorRow(
+                        distributors = state.distributors,
+                        onDistributorClick = { distributor ->
+                            onAction(HomeAction.DistributorClicked(distributor.id))
+                        }
+                    )
+                }
+            }
+
+            // Featured Products Section
+            item {
+                SectionHeader(
+                    title = if (state.selectedCategory == "All") "Featured Products" else "Products in ${state.selectedCategory}",
+                    onSeeAllClick = { onAction(HomeAction.StartSourcingClicked) }
+                )
+            }
+
+            if (homeProducts.isNotEmpty()) {
                 item {
                     LazyRow(
                         horizontalArrangement = Arrangement.spacedBy(16.dp),
                         contentPadding = PaddingValues(horizontal = 4.dp),
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        items(state.products.take(10)) { product ->
+                        items(homeProducts.take(10)) { product ->
                             ProductGridItem(
                                 product = product,
                                 onClick = { onAction(HomeAction.ProductClicked(product)) },
@@ -274,8 +323,246 @@ fun HomeScreen(
                         }
                     }
                 }
+            } else {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 24.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text("📦", style = MaterialTheme.typography.headlineMedium)
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "No products found in ${state.selectedCategory}",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                }
             }
 
+        }
+    }
+}
+
+@Composable
+fun SectionHeader(
+    title: String,
+    onSeeAllClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    actionText: String = "See all"
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onBackground
+        )
+        TextButton(
+            onClick = onSeeAllClick,
+            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    text = actionText,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                Text(
+                    text = "→",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun CategoryRow(
+    categories: List<HomeCategory>,
+    onCategorySelected: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    LazyRow(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        contentPadding = PaddingValues(horizontal = 4.dp)
+    ) {
+        items(categories) { category ->
+            val isSelected = category.isSelected
+            val containerColor = if (isSelected) {
+                MaterialTheme.colorScheme.primaryContainer
+            } else {
+                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
+            }
+            val contentColor = if (isSelected) {
+                MaterialTheme.colorScheme.onPrimaryContainer
+            } else {
+                MaterialTheme.colorScheme.onSurfaceVariant
+            }
+            val borderColor = if (isSelected) {
+                MaterialTheme.colorScheme.primary
+            } else {
+                Color.Transparent
+            }
+
+            Surface(
+                onClick = { onCategorySelected(category.name) },
+                shape = RoundedCornerShape(12.dp),
+                color = containerColor,
+                contentColor = contentColor,
+                border = if (isSelected) BorderStroke(1.5.dp, borderColor) else null,
+                modifier = Modifier
+                    .clip(RoundedCornerShape(12.dp))
+                    .animateContentSize()
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(if (category.emoji.isNotEmpty()) 8.dp else 0.dp)
+                ) {
+                    if (category.emoji.isNotEmpty()) {
+                        Text(
+                            text = category.emoji,
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
+                    Text(
+                        text = category.name,
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun DistributorRow(
+    distributors: List<Distributor>,
+    onDistributorClick: (Distributor) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    LazyRow(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        contentPadding = PaddingValues(horizontal = 4.dp)
+    ) {
+        items(distributors) { distributor ->
+            Card(
+                onClick = { onDistributorClick(distributor) },
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+                ),
+                border = BorderStroke(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)
+                ),
+                modifier = Modifier
+                    .width(220.dp)
+                    .height(130.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(12.dp),
+                    verticalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // Verification Badge
+                        if (distributor.isVerified) {
+                            Row(
+                                modifier = Modifier
+                                    .background(
+                                        MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
+                                        RoundedCornerShape(100.dp)
+                                    )
+                                    .padding(horizontal = 8.dp, vertical = 2.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Verified,
+                                    contentDescription = "Verified Business",
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Text(
+                                    text = "Verified",
+                                    color = MaterialTheme.colorScheme.primary,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    Column {
+                        Text(
+                            text = distributor.brandName,
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Text(
+                            text = distributor.tagline,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Star,
+                            contentDescription = "Star"
+                        )
+
+                        Text(
+                            text = "${distributor.rating}",
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Text(
+                            text = "(${distributor.reviewCount})",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            }
         }
     }
 }

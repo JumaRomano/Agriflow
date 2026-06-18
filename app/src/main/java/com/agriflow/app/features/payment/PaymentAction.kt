@@ -10,5 +10,6 @@ sealed interface PaymentAction {
     data object OnInitiatePayment : PaymentAction
     data object OnDismissSuccessDialog : PaymentAction
     data object OnNavigateBack : PaymentAction
+    data object OnRestoreCartAndGoBack : PaymentAction
 }
 

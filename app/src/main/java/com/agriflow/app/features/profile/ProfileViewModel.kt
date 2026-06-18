@@ -16,9 +16,13 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+import com.agriflow.app.features.notifications.NotificationsRepository
+import com.google.firebase.messaging.FirebaseMessaging
+
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    private val tokenRepository: TokenRepository
+    private val tokenRepository: TokenRepository,
+    private val notificationsRepository: NotificationsRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ProfileState())
@@ -60,11 +64,17 @@ class ProfileViewModel @Inject constructor(
     }
 
     private fun logout() {
-        viewModelScope.launch {
-            _state.update { it.copy(isLoading = true) }
-            tokenRepository.clearTokens()
-            _state.update { it.copy(isLoading = false) }
-            _events.send(ProfileEvent.MapsToLogin)
+        _state.update { it.copy(isLoading = true) }
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            val fcmToken = if (task.isSuccessful) task.result else null
+            viewModelScope.launch {
+                if (!fcmToken.isNullOrBlank()) {
+                    notificationsRepository.unregisterDeviceToken(fcmToken)
+                }
+                tokenRepository.clearTokens()
+                _state.update { it.copy(isLoading = false) }
+                _events.send(ProfileEvent.MapsToLogin)
+            }
         }
     }
 }

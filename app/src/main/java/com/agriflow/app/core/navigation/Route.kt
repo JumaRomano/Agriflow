@@ -40,7 +40,7 @@ sealed interface Route {
     data object Home : Route
 
     @Serializable
-    data object Marketplace : Route
+    data class Marketplace(val searchFilter: String? = null) : Route
 
     @Serializable
     data object Orders : Route
@@ -63,6 +63,9 @@ sealed interface Route {
     data class ProductDetails(val productId: String) : Route
 
     @Serializable
+    data class BusinessDetails(val businessId: String) : Route
+
+    @Serializable
     data object Cart : Route
 
     @Serializable
@@ -77,6 +80,9 @@ sealed interface Route {
     data object Wallet : Route
     @Serializable
     data object MyStore : Route
+
+    @Serializable
+    data object SupplierNetwork : Route
     @Serializable
     data object AddProduct : Route
 

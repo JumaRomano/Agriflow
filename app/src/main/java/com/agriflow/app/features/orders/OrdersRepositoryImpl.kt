@@ -61,4 +61,10 @@ class OrdersRepositoryImpl @Inject constructor(
             ordersApi.getBusinessOrders()
         }
     }
+
+    override suspend fun restoreCart(orderId: String): Result<Unit, DataError.Network> {
+        return safeApiCall {
+            ordersApi.restoreCart(RestoreCartRequestDto(orderId))
+        }
+    }
 }

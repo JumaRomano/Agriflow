@@ -92,8 +92,35 @@ class PaymentViewModel @Inject constructor(
                 _state.update { it.copy(stkPushSent = false) }
                 verifyPaymentStatus(showLoading = true)
             }
+            PaymentAction.OnRestoreCartAndGoBack -> {
+                viewModelScope.launch {
+                    _state.update { it.copy(isProcessing = true, errorMessage = null) }
+                    val orderId = _state.value.orderId.orEmpty()
+                    when (val result = ordersRepository.restoreCart(orderId)) {
+                        is Result.Success -> {
+                            _state.update { it.copy(isProcessing = false, orderId = null) }
+                            _events.send(PaymentEvent.NavigateBack)
+                        }
+                        is Result.Error -> {
+                            _state.update {
+                                it.copy(
+                                    isProcessing = false,
+                                    errorMessage = "Failed to restore cart: ${result.error.name}. Please try again."
+                                )
+                            }
+                            _events.send(PaymentEvent.ShowSnackbar("Error restoring cart: ${result.error.name}"))
+                        }
+                    }
+                }
+            }
             PaymentAction.OnNavigateBack -> {
                 viewModelScope.launch {
+                    val orderId = _state.value.orderId
+                    if (orderId != null) {
+                        _state.update { it.copy(isProcessing = true) }
+                        ordersRepository.restoreCart(orderId)
+                        _state.update { it.copy(isProcessing = false, orderId = null) }
+                    }
                     _events.send(PaymentEvent.NavigateBack)
                 }
             }

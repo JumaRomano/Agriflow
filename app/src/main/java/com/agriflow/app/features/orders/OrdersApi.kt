@@ -35,4 +35,9 @@ interface OrdersApi {
     @GET("orders/seller/my-orders")
     suspend fun getBusinessOrders(): Response<List<OrderDto>>
 
+    @POST("orders/restore")
+    suspend fun restoreCart(
+        @Body request: RestoreCartRequestDto
+    ): Response<Unit>
+
 }

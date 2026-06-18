@@ -137,54 +137,64 @@ fun ProductDetailsScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         if (state.userRole == UserRole.BUYER) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                // Quantity selector
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                                ) {
-                                    OutlinedIconButton(
-                                        onClick = { onAction(ProductDetailsAction.OnDecrementQuantity) },
-                                        enabled = state.selectedQuantity > 1,
-                                        modifier = Modifier.size(40.dp)
-                                    ) {
-                                        Text(
-                                            text = "−",
-                                            style = MaterialTheme.typography.titleMedium,
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                    }
-                                    Text(
-                                        text = state.selectedQuantity.toString(),
-                                        style = MaterialTheme.typography.titleMedium,
-                                        fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.onSurface
-                                    )
-                                    val availableLimit = product.availableQuantity.toInt()
-                                    OutlinedIconButton(
-                                        onClick = { onAction(ProductDetailsAction.OnIncrementQuantity) },
-                                        enabled = state.selectedQuantity < availableLimit,
-                                        modifier = Modifier.size(40.dp)
-                                    ) {
-                                        Text(
-                                            text = "+",
-                                            style = MaterialTheme.typography.titleMedium,
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                    }
-                                }
-
-                                Spacer(modifier = Modifier.width(16.dp))
-
+                            if (product.availableQuantity <= 0) {
                                 Button(
-                                    onClick = { onAction(ProductDetailsAction.OnAddToCart) },
-                                    modifier = Modifier.weight(1f)
+                                    onClick = {},
+                                    enabled = false,
+                                    modifier = Modifier.fillMaxWidth()
                                 ) {
-                                    Text("Add to Cart")
+                                    Text("Out of Stock")
+                                }
+                            } else {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    // Quantity selector
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        OutlinedIconButton(
+                                            onClick = { onAction(ProductDetailsAction.OnDecrementQuantity) },
+                                            enabled = state.selectedQuantity > 1,
+                                            modifier = Modifier.size(40.dp)
+                                        ) {
+                                            Text(
+                                                text = "−",
+                                                style = MaterialTheme.typography.titleMedium,
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                        }
+                                        Text(
+                                            text = state.selectedQuantity.toString(),
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
+                                        val availableLimit = product.availableQuantity.toInt()
+                                        OutlinedIconButton(
+                                            onClick = { onAction(ProductDetailsAction.OnIncrementQuantity) },
+                                            enabled = state.selectedQuantity < availableLimit,
+                                            modifier = Modifier.size(40.dp)
+                                        ) {
+                                            Text(
+                                                text = "+",
+                                                style = MaterialTheme.typography.titleMedium,
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                        }
+                                    }
+
+                                    Spacer(modifier = Modifier.width(16.dp))
+
+                                    Button(
+                                        onClick = { onAction(ProductDetailsAction.OnAddToCart) },
+                                        modifier = Modifier.weight(1f)
+                                    ) {
+                                        Text("Add to Cart")
+                                    }
                                 }
                             }
                         } else {
@@ -272,15 +282,32 @@ fun ProductDetailsScreen(
                                         modifier = Modifier.weight(1f)
                                     )
                                     Spacer(modifier = Modifier.width(8.dp))
-                                    Badge(
-                                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                                        contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                                    Row(
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                        verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        Text(
-                                            text = product.category,
-                                            style = MaterialTheme.typography.labelSmall,
-                                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                                        )
+                                        Badge(
+                                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                                            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                                        ) {
+                                            Text(
+                                                text = product.category,
+                                                style = MaterialTheme.typography.labelSmall,
+                                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                            )
+                                        }
+                                        if (product.availableQuantity <= 0) {
+                                            Badge(
+                                                containerColor = MaterialTheme.colorScheme.errorContainer,
+                                                contentColor = MaterialTheme.colorScheme.onErrorContainer
+                                            ) {
+                                                Text(
+                                                    text = "Out of Stock",
+                                                    style = MaterialTheme.typography.labelSmall,
+                                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                                )
+                                            }
+                                        }
                                     }
                                 }
                             }

@@ -71,6 +71,10 @@ class ProductDetailsViewModel @Inject constructor(
                 viewModelScope.launch {
                     val product = state.value.product
                     if (product != null) {
+                        if (product.availableQuantity <= 0) {
+                            _events.send(ProductDetailsEvent.ShowSnackbar("This item is out of stock."))
+                            return@launch
+                        }
                         _events.send(ProductDetailsEvent.ShowSnackbar("Adding ${product.name} to cart..."))
                         when (val result = cartRepository.addToCart(product.id, _selectedQuantity.value.toDouble())) {
                             is Result.Success -> {

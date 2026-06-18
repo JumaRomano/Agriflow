@@ -22,4 +22,5 @@ sealed interface HomeAction {
     data class ProductClicked(val product: Product) : HomeAction
 
     data class SearchQueryChanged(val query: String) : HomeAction
+    data class DistributorClicked(val businessId: String) : HomeAction
 }

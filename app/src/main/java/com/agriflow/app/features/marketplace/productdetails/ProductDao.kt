@@ -18,7 +18,7 @@ abstract class ProductDao {
     abstract fun observeProductById(id: String): Flow<ProductEntity?>
 
     @Upsert
-    protected abstract suspend fun upsertProducts(products: List<ProductEntity>)
+    abstract suspend fun upsertProducts(products: List<ProductEntity>)
 
     @Query("DELETE FROM products WHERE id NOT IN (:ids)")
     protected abstract suspend fun deleteProductsNotIn(ids: List<String>)

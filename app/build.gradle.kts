@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.ksp)
    // alias(libs.plugins.google.services) apply false uncomment after adding google play
     alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.google.services)
 
 
 }

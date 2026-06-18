@@ -229,7 +229,7 @@ fun PaymentScreen(
                     OutlinedTextField(
                         value = state.deliveryNotes,
                         onValueChange = { onAction(PaymentAction.OnDeliveryNotesChanged(it)) },
-                        placeholder = { Text("e.g. Leave at gate or call on arrival") },
+                        placeholder = { Text("delivery note") },
                         singleLine = false,
                         maxLines = 2,
                         enabled = !state.isProcessing && !state.isVerifyingPayment,
@@ -298,7 +298,7 @@ fun PaymentScreen(
                             )
                         }
                         Text(
-                            text = "Enter your M-Pesa PIN on the prompt that appears on your phone screen to approve the transaction.",
+                            text = "Enter your M-Pesa PIN to approve the transaction.",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             lineHeight = MaterialTheme.typography.bodySmall.lineHeight * 1.2f
@@ -307,15 +307,48 @@ fun PaymentScreen(
                 }
 
                 if (state.errorMessage != null) {
-                    Text(
-                        text = state.errorMessage,
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodyMedium,
-                        textAlign = TextAlign.Center,
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(12.dp),
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp)
-                    )
+                    ) {
+                        Text(
+                            text = state.errorMessage,
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodyMedium,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        if (state.orderId != null) {
+                            Button(
+                                onClick = { onAction(PaymentAction.OnRestoreCartAndGoBack) },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.secondary,
+                                    contentColor = MaterialTheme.colorScheme.onSecondary
+                                ),
+                                shape = RoundedCornerShape(12.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(48.dp)
+                            ) {
+                                if (state.isProcessing) {
+                                    CircularProgressIndicator(
+                                        color = MaterialTheme.colorScheme.onSecondary,
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                } else {
+                                    Text(
+                                        text = "Back To Cart",
+                                        fontWeight = FontWeight.Bold,
+                                        style = MaterialTheme.typography.titleSmall
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
 
                 Spacer(modifier = Modifier.weight(1f))
@@ -394,7 +427,7 @@ fun PaymentScreen(
             // --- VERIFYING PAYMENT DIALOG ---
             if (state.isVerifyingPayment) {
                 AlertDialog(
-                    onDismissRequest = { /* Prevent dismiss by tapping outside */ },
+                    onDismissRequest = {},
                     title = {
                         Text(
                             text = "Verifying Payment",
@@ -415,7 +448,7 @@ fun PaymentScreen(
                             CircularProgressIndicator(color = mpesaGreen)
                         }
                     },
-                    confirmButton = {} // Non-dismissible verification overlay
+                    confirmButton = {}
                 )
             }
         }

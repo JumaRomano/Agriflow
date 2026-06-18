@@ -9,12 +9,25 @@ import com.agriflow.app.features.marketplace.productdetails.Product
 /**
  * State representing the Home Dashboard screen.
  */
+data class HomeCategory(
+    val id: String,
+    val name: String,
+    val emoji: String,
+    val isSelected: Boolean = false
+)
+
+/**
+ * State representing the Home Dashboard screen.
+ */
 data class HomeState(
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
     val userRole: UserRole = UserRole.BUYER,
     val name: String = "John Doe",
     val products: List<Product> = emptyList(),
+    val categories: List<HomeCategory> = emptyList(),
+    val distributors: List<Distributor> = emptyList(),
+    val selectedCategory: String = "All",
     val searchQuery: String = ""
 )
 

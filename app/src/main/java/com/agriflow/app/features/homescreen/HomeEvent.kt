@@ -14,4 +14,6 @@ sealed interface HomeEvent {
     data object NavigateToWallet : HomeEvent
 
     data class NavigateToProductDetails(val productId: String) : HomeEvent
+    data class NavigateToBusinessDetails(val businessId: String) : HomeEvent
+    data object NavigateToSupplierNetwork : HomeEvent
 }

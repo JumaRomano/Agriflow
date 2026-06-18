@@ -46,6 +46,7 @@ import com.agriflow.app.features.auth.register.RegisterRoute
 import com.agriflow.app.features.marketplace.MarketplaceRoute
 import com.agriflow.app.features.homescreen.HomeRoute
 import com.agriflow.app.features.marketplace.productdetails.ProductDetailsRoute
+import com.agriflow.app.features.suppliernetwork.SupplierNetworkRoute
 import com.agriflow.app.features.profile.ProfileRoute
 import com.agriflow.app.features.profile.EditProfileRoute
 import com.agriflow.app.features.marketplace.MyStore.sellerdashboard.MyStoreRoute
@@ -60,6 +61,9 @@ import com.agriflow.app.features.payment.PaymentRoute
 import com.agriflow.app.features.payment.PaymentMethodsRoute
 import com.agriflow.app.features.orders.OrdersRoute
 import com.agriflow.app.features.wallet.WalletRoute
+import com.agriflow.app.features.businessdetails.BusinessDetailsRoute
+import com.agriflow.app.features.notifications.NotificationScreen
+
 
 
 
@@ -105,7 +109,7 @@ fun AgriflowNavHost(
             )
             add(
                 BottomNavItem(
-                    route = Route.Marketplace,
+                    route = Route.Marketplace(),
                     title = "Market",
                     icon = Icons.Default.Storefront
                 )
@@ -328,13 +332,18 @@ fun AgriflowNavHost(
             navigation<Route.MainGraph>(startDestination = Route.Home) {
                 composable<Route.Home> {
                     HomeRoute(
-                        onNavigateToMarketplace = {
-                            navController.navigate(Route.Marketplace) {
+                        onNavigateToMarketplace = { filter ->
+                            navController.navigate(Route.Marketplace(searchFilter = filter)) {
                                 popUpTo(navController.graph.findStartDestination().id) {
                                     saveState = true
                                 }
                                 launchSingleTop = true
                                 restoreState = true
+                            }
+                        },
+                        onNavigateToSupplierNetwork = {
+                            navController.navigate(Route.SupplierNetwork) {
+                                launchSingleTop = true
                             }
                         },
                         onNavigateToCart = {
@@ -356,6 +365,11 @@ fun AgriflowNavHost(
                             navController.navigate(Route.ProductDetails(productId)) {
                                 launchSingleTop = true
                             }
+                        },
+                        onNavigateToBusinessDetails = { businessId ->
+                            navController.navigate(Route.BusinessDetails(businessId)) {
+                                launchSingleTop = true
+                            }
                         }
                     )
                 }
@@ -369,6 +383,19 @@ fun AgriflowNavHost(
                         },
                         onNavigateToCart = {
                             navController.navigate(Route.Cart) {
+                                launchSingleTop = true
+                            }
+                        }
+                    )
+                }
+
+                composable<Route.SupplierNetwork> {
+                    SupplierNetworkRoute(
+                        onNavigateBack = {
+                            navController.popBackStack()
+                        },
+                        onNavigateToBusinessDetails = { businessId ->
+                            navController.navigate(Route.BusinessDetails(businessId)) {
                                 launchSingleTop = true
                             }
                         }
@@ -556,6 +583,19 @@ fun AgriflowNavHost(
                     )
                 }
 
+                composable<Route.BusinessDetails> {
+                    BusinessDetailsRoute(
+                        onNavigateBack = {
+                            navController.popBackStack()
+                        },
+                        onNavigateToProduct = { productId ->
+                            navController.navigate(Route.ProductDetails(productId)) {
+                                launchSingleTop = true
+                            }
+                        }
+                    )
+                }
+
                 composable<Route.PaymentMethods>{
                     PaymentMethodsRoute(
                         onNavigateBack = {
@@ -573,7 +613,11 @@ fun AgriflowNavHost(
                 }
 
                 composable<Route.Notification>{
-                    DummyScreen("Notifications")
+                    NotificationScreen(
+                        onBackClick = {
+                            navController.popBackStack()
+                        }
+                    )
                 }
                 composable<Route.Chat>{
                     DummyScreen("Chat")

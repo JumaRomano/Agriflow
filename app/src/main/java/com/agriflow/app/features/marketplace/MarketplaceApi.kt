@@ -28,6 +28,9 @@ interface MarketplaceApi {
     @GET("categories")
     suspend fun getCategories(): Response<List<CategoryDto>>
 
+    @GET("businesses/verified")
+    suspend fun getVerifiedBusinesses(): Response<List<BusinessDto>>
+
     @Multipart
     @POST("products/upload-image")
     suspend fun uploadImage(
@@ -52,4 +55,14 @@ interface MarketplaceApi {
 
     @GET("products/my-products")
     suspend fun getMyProducts(): Response<List<ProductDto>>
+
+    @GET("businesses/{id}/public")
+    suspend fun getBusinessPublicDetails(
+        @Path("id") id: String
+    ): Response<PublicBusinessDto>
+
+    @GET("products/business/{businessId}")
+    suspend fun getBusinessProducts(
+        @Path("businessId") businessId: String
+    ): Response<List<ProductDto>>
 }

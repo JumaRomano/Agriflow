@@ -34,10 +34,9 @@ class OfflineFirstMarketplaceRepositoryImpl @Inject constructor(
     }
 
     override fun getProductById(id: String): Flow<Product?> {
-        return productDao.observeProductById(id).map { entity ->
-            entity?.toDomain() ?: DummyData.sampleProducts.firstOrNull { it.id == id }
-        }
+        return productDao.observeProductById(id).map { it?.toDomain() }
     }
+    
 
     override suspend fun refreshProducts(): EmptyResult<DataError.Network> {
         return safeApiCall {
@@ -60,6 +59,12 @@ class OfflineFirstMarketplaceRepositoryImpl @Inject constructor(
     override suspend fun getCategories(): Result<List<CategoryDto>, DataError.Network> {
         return safeApiCall {
             marketplaceApi.getCategories()
+        }
+    }
+
+    override suspend fun getVerifiedBusinesses(): Result<List<BusinessDto>, DataError.Network> {
+        return safeApiCall {
+            marketplaceApi.getVerifiedBusinesses()
         }
     }
 
@@ -95,6 +100,27 @@ class OfflineFirstMarketplaceRepositoryImpl @Inject constructor(
             dtos.mapNotNull { dto ->
                 dto.toEntity(now)?.toDomain()
             }
+        }
+    }
+
+    override suspend fun getBusinessPublicDetails(id: String): Result<PublicBusinessDto, DataError.Network> {
+        return safeApiCall {
+            marketplaceApi.getBusinessPublicDetails(id)
+        }
+    }
+
+    override suspend fun getBusinessProducts(businessId: String): Result<List<Product>, DataError.Network> {
+        return safeApiCall {
+            marketplaceApi.getBusinessProducts(businessId)
+        }.map { dtos ->
+            val now = timeProvider.currentTimeMillis()
+            val entities = dtos.mapNotNull { dto ->
+                dto.toEntity(now)
+            }
+            if (entities.isNotEmpty()) {
+                productDao.upsertProducts(entities)
+            }
+            entities.map { it.toDomain() }
         }
     }
 }

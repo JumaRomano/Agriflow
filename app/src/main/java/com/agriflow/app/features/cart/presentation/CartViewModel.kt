@@ -65,13 +65,27 @@ class CartViewModel @Inject constructor(
                     }
                 }
                 is Result.Error -> {
-                    _state.update {
-                        it.copy(
-                            isFetchingCart = false,
-                            errorMessage = "Failed to load cart items."
-                        )
+                    // differentiates error and not found
+                    if (result.error.name == "NOT_FOUND" || result.error.name == "EMPTY_CART") {
+                        _state.update {
+                            it.copy(
+                                items = emptyList(),
+                                subtotal = 0.0,
+                                shippingFee = 0.0,
+                                total = 0.0,
+                                isFetchingCart = false,
+                                errorMessage = null
+                            )
+                        }
+                    } else {
+                        _state.update {
+                            it.copy(
+                                isFetchingCart = false,
+                                errorMessage = "Failed to load cart items."
+                            )
+                        }
+                        _events.send("Failed to sync cart: ${result.error.name}")
                     }
-                    _events.send("Failed to sync cart: ${result.error.name}")
                 }
             }
         }
@@ -113,8 +127,8 @@ class CartViewModel @Inject constructor(
             accumulatedDeltas.remove(productId)
 
             val result = if (deltaToSend < 0.0) {
-                val quantityToDeduct = -deltaToSend
-                cartRepository.deductCartItem(itemId, quantityToDeduct)
+                val remainingQuantity = _state.value.items.find { it.id == itemId }?.quantity ?: 0.0
+                cartRepository.deductCartItem(itemId, remainingQuantity)
             } else {
                 cartRepository.addToCart(productId, deltaToSend)
             }
