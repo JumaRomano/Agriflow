@@ -205,21 +205,34 @@ fun EnterpriseUpgradeScreen(
                                 )
                             }
 
-                            if (isApproved) {
-                                Column {
-                                    Text(
-                                        text = "Wallet Balance",
-                                        style = MaterialTheme.typography.labelSmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                    Text(
-                                        text = String.format("KES %.2f", state.walletBalance),
-                                        style = MaterialTheme.typography.titleLarge,
-                                        fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.primary
-                                    )
-                                }
-                            }
+                             if (isApproved) {
+                                 Column {
+                                     Text(
+                                         text = "Available Balance",
+                                         style = MaterialTheme.typography.labelSmall,
+                                         color = MaterialTheme.colorScheme.onSurfaceVariant
+                                     )
+                                     Text(
+                                         text = String.format("KES %.2f", state.availableBalance),
+                                         style = MaterialTheme.typography.titleLarge,
+                                         fontWeight = FontWeight.Bold,
+                                         color = MaterialTheme.colorScheme.primary
+                                     )
+                                 }
+                                 Column {
+                                     Text(
+                                         text = "Pending Balance",
+                                         style = MaterialTheme.typography.labelSmall,
+                                         color = MaterialTheme.colorScheme.onSurfaceVariant
+                                     )
+                                     Text(
+                                         text = String.format("KES %.2f", state.pendingBalance),
+                                         style = MaterialTheme.typography.titleLarge,
+                                         fontWeight = FontWeight.Bold,
+                                         color = MaterialTheme.colorScheme.primary
+                                     )
+                                 }
+                             }
                         }
                     }
 

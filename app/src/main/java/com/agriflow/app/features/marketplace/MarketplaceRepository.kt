@@ -5,10 +5,10 @@ package com.agriflow.app.features.marketplace
 
 import com.agriflow.app.core.util.DataError
 import com.agriflow.app.core.util.EmptyResult
-import com.agriflow.app.features.marketplace.productdetails.Product
+import com.agriflow.app.features.products.productdetails.Product
 import com.agriflow.app.core.util.Result
-import com.agriflow.app.features.marketplace.productdetails.ProductUpdateRequest
-import com.agriflow.app.features.marketplace.productdetails.ProductUploadRequest
+import com.agriflow.app.features.products.productdetails.ProductUpdateRequest
+import com.agriflow.app.features.products.productdetails.ProductUploadRequest
 import kotlinx.coroutines.flow.Flow
 import okhttp3.MultipartBody
 
@@ -23,6 +23,8 @@ interface MarketplaceRepository {
 
     suspend fun getVerifiedBusinesses(): Result<List<BusinessDto>, DataError.Network>
 
+    fun observeSuppliers(): Flow<List<com.agriflow.app.features.suppliernetwork.SupplierEntity>>
+
     suspend fun uploadImage(file: MultipartBody.Part): Result<ImageResponseDto, DataError.Network>
 
     suspend fun createProduct(request: ProductUploadRequest): Result<Unit, DataError.Network>
@@ -33,4 +35,9 @@ interface MarketplaceRepository {
 
     suspend fun getBusinessPublicDetails(id: String): Result<PublicBusinessDto, DataError.Network>
     suspend fun getBusinessProducts(businessId: String): Result<List<Product>, DataError.Network>
+
+    fun observeStoreInventory(): Flow<List<com.agriflow.app.features.MyStore.StoreInventoryEntity>>
+    suspend fun saveStoreInventoryItem(item: com.agriflow.app.features.MyStore.StoreInventoryEntity)
+    suspend fun deleteStoreInventoryItem(id: String)
+    suspend fun syncPendingInventory(): Result<Unit, DataError.Network>
 }

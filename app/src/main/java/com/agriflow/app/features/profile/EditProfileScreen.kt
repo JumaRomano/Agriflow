@@ -4,6 +4,7 @@
  */
 package com.agriflow.app.features.profile
 
+import android.R.attr.label
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,6 +24,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.filled.PhotoCamera
@@ -52,6 +54,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
@@ -191,15 +194,15 @@ fun EditProfileScreen(
                         .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    // Name Field
+                    // Username Field
                     OutlinedTextField(
                         value = state.username,
                         onValueChange = { onAction(EditProfileAction.OnUsernameChanged(it)) },
-                        label = { Text("Full Name") },
+                        label = { Text("Username") },
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Default.Person,
-                                contentDescription = "Name",
+                                contentDescription = "Username",
                                 tint = MaterialTheme.colorScheme.primary
                             )
                         },
@@ -215,41 +218,101 @@ fun EditProfileScreen(
                         )
                     )
 
-                    Spacer(modifier = Modifier.height(15.dp))
+                    // First Name Field
+                    OutlinedTextField(
+                        value = state.firstName,
+                        onValueChange = { onAction(EditProfileAction.OnFirstNameChanged(it)) },
+                        label = { Text("First Name") },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = "First Name",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        },
+                        singleLine = true,
+                        enabled = !state.isLoading,
+                        isError = state.firstNameError != null,
+                        supportingText = state.firstNameError?.let { { Text(it) } },
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                        )
+                    )
+
+                    // Middle Name Field
+                    OutlinedTextField(
+                        value = state.middleName,
+                        onValueChange = { onAction(EditProfileAction.OnMiddleNameChanged(it)) },
+                        label = { Text("Middle Name (Optional)") },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = "Middle Name",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        },
+                        singleLine = true,
+                        enabled = !state.isLoading,
+                        isError = state.middleNameError != null,
+                        supportingText = state.middleNameError?.let { { Text(it) } },
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                        )
+                    )
+
+                    // Surname Field
+                    OutlinedTextField(
+                        value = state.surName,
+                        onValueChange = { onAction(EditProfileAction.OnSurNameChanged(it)) },
+                        label = { Text("Surname") },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = "Surname",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        },
+                        singleLine = true,
+                        enabled = !state.isLoading,
+                        isError = state.surNameError != null,
+                        supportingText = state.surNameError?.let { { Text(it) } },
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                        )
+                    )
 
                     // Email Field
-                    Column {
-                        OutlinedTextField(
-                            value = state.email,
-                            onValueChange = {},
-                            label = { Text("Email Address") },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Default.Email,
-                                    contentDescription = "Email",
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
-                                )
-                            },
-                            singleLine = true,
-                            enabled = false,
-                            shape = RoundedCornerShape(12.dp),
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                disabledBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.25f),
-                                disabledTextColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-                                disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
+                    OutlinedTextField(
+                        value = state.email,
+                        onValueChange = { onAction(EditProfileAction.OnEmailChanged(it)) },
+                        label = { Text("Email Address") },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Email,
+                                contentDescription = "Email",
+                                tint = MaterialTheme.colorScheme.primary
                             )
+                        },
+                        singleLine = true,
+                        enabled = !state.isLoading,
+                        isError = state.emailError != null,
+                        supportingText = state.emailError?.let { { Text(it) } },
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
                         )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = "Email address cannot be changed .",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-                            modifier = Modifier.padding(horizontal = 4.dp)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(15.dp))
+                    )
 
                     // Phone Number Field
                     OutlinedTextField(
@@ -277,25 +340,30 @@ fun EditProfileScreen(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(40.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
                 // Save Changes Button
                 Button(
                     onClick = { onAction(EditProfileAction.OnSaveClicked) },
-                    enabled = !state.isLoading && state.username.isNotBlank(),
-                    shape = RoundedCornerShape(12.dp),
+                    enabled = !state.isLoading &&
+                            state.username.isNotBlank() &&
+                            state.firstName.isNotBlank() &&
+                            state.surName.isNotBlank() &&
+                            state.email.isNotBlank() &&
+                            state.phoneNumber.isNotBlank(),
+                    shape = RoundedCornerShape(10.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary,
                         contentColor = MaterialTheme.colorScheme.onPrimary
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(50.dp)
+                        .height(40.dp)
                 ) {
                     if (state.isLoading) {
                         CircularProgressIndicator(
                             color = MaterialTheme.colorScheme.onPrimary,
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier.size(20.dp)
                         )
                     } else {
                         Text(
@@ -305,6 +373,143 @@ fun EditProfileScreen(
                         )
                     }
                 }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // Change Password Section Title
+                Text(
+                    text = "Change Password",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 4.dp)
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+
+                // Password Fields Card layout
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f))
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    // Current Password Field
+                    OutlinedTextField(
+                        value = state.currentPassword,
+                        onValueChange = { onAction(EditProfileAction.OnCurrentPasswordChanged(it)) },
+                        label = { Text("Current Password") },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Lock,
+                                contentDescription = "Current Password",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        },
+                        singleLine = true,
+                        enabled = !state.isLoading && !state.isPasswordLoading,
+                        isError = state.currentPasswordError != null,
+                        supportingText = state.currentPasswordError?.let { { Text(it) } },
+                        visualTransformation = PasswordVisualTransformation(),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                        )
+                    )
+
+                    // New Password Field
+                    OutlinedTextField(
+                        value = state.newPassword,
+                        onValueChange = { onAction(EditProfileAction.OnNewPasswordChanged(it)) },
+                        label = { Text("New Password") },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Lock,
+                                contentDescription = "New Password",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        },
+                        singleLine = true,
+                        enabled = !state.isLoading && !state.isPasswordLoading,
+                        isError = state.newPasswordError != null,
+                        supportingText = state.newPasswordError?.let { { Text(it) } },
+                        visualTransformation = PasswordVisualTransformation(),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                        )
+                    )
+
+                    // Confirm New Password Field
+                    OutlinedTextField(
+                        value = state.confirmNewPassword,
+                        onValueChange = { onAction(EditProfileAction.OnConfirmNewPasswordChanged(it)) },
+                        label = { Text("Confirm New Password") },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Lock,
+                                contentDescription = "Confirm New Password",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        },
+                        singleLine = true,
+                        enabled = !state.isLoading && !state.isPasswordLoading,
+                        isError = state.confirmNewPasswordError != null,
+                        supportingText = state.confirmNewPasswordError?.let { { Text(it) } },
+                        visualTransformation = PasswordVisualTransformation(),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
+                        )
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Change Password Button
+                    Button(
+                        onClick = { onAction(EditProfileAction.OnChangePasswordClicked) },
+                        enabled = !state.isLoading && !state.isPasswordLoading &&
+                                state.currentPassword.isNotBlank() &&
+                                state.newPassword.isNotBlank() &&
+                                state.confirmNewPassword.isNotBlank(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp)
+                    ) {
+                        if (state.isPasswordLoading) {
+                            CircularProgressIndicator(
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        } else {
+                            Text(
+                                text = "Change Password",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
+
             }
         }
     }

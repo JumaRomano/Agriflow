@@ -182,12 +182,24 @@ class EncryptedTokenRepositoryImpl @Inject constructor(
                 else -> UserRole.UNKNOWN
             }
 
+            val firstName = jsonObject.optString("firstName").takeIf { it.isNotBlank() }
+                ?: jsonObject.optString("first_name") ?: ""
+            val middleName = jsonObject.optString("middleName").takeIf { it.isNotBlank() }
+                ?: jsonObject.optString("middle_name") ?: ""
+            val surName = jsonObject.optString("surName").takeIf { it.isNotBlank() }
+                ?: jsonObject.optString("surname").takeIf { it.isNotBlank() }
+                ?: jsonObject.optString("lastName")
+                ?: jsonObject.optString("last_name") ?: ""
+
             User(
                 id = userId,
                 username = username,
                 email = email,
                 phoneNumber = phone,
-                role = role
+                role = role,
+                firstName = firstName,
+                middleName = middleName.takeIf { it.isNotBlank() },
+                surName = surName
             )
         } catch (e: Exception) {
             e.printStackTrace()

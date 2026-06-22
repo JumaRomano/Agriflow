@@ -3,7 +3,7 @@
  */
 package com.agriflow.app.features.marketplace
 
-import com.agriflow.app.features.marketplace.productdetails.Product
+import com.agriflow.app.features.products.productdetails.Product
 
 sealed interface MarketplaceAction {
     data class SearchQueryChanged(val query: String) : MarketplaceAction

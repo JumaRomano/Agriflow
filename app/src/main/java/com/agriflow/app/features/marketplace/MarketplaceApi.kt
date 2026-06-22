@@ -3,9 +3,9 @@
  */
 package com.agriflow.app.features.marketplace
 
-import com.agriflow.app.features.marketplace.productdetails.ProductDto
-import com.agriflow.app.features.marketplace.productdetails.ProductUpdateRequest
-import com.agriflow.app.features.marketplace.productdetails.ProductUploadRequest
+import com.agriflow.app.features.products.productdetails.ProductDto
+import com.agriflow.app.features.products.productdetails.ProductUpdateRequest
+import com.agriflow.app.features.products.productdetails.ProductUploadRequest
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body

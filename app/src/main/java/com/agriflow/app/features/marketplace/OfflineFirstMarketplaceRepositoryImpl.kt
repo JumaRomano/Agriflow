@@ -10,12 +10,17 @@ import com.agriflow.app.core.util.Result
 import com.agriflow.app.core.util.TimeProvider
 import com.agriflow.app.core.util.asEmptyDataResult
 import com.agriflow.app.core.util.map
-import com.agriflow.app.features.marketplace.productdetails.ProductDao
-import com.agriflow.app.features.marketplace.productdetails.toDomain
-import com.agriflow.app.features.marketplace.productdetails.toEntity
-import com.agriflow.app.features.marketplace.productdetails.Product
-import com.agriflow.app.features.marketplace.productdetails.ProductUpdateRequest
-import com.agriflow.app.features.marketplace.productdetails.ProductUploadRequest
+import com.agriflow.app.features.products.productdetails.ProductDao
+import com.agriflow.app.features.products.productdetails.toDomain
+import com.agriflow.app.features.products.productdetails.toEntity
+import com.agriflow.app.features.products.productdetails.Product
+import com.agriflow.app.features.products.productdetails.ProductUpdateRequest
+import com.agriflow.app.features.products.productdetails.ProductUploadRequest
+import com.agriflow.app.features.suppliernetwork.SupplierDao
+import com.agriflow.app.features.suppliernetwork.SupplierEntity
+import com.agriflow.app.features.MyStore.StoreInventoryDao
+import com.agriflow.app.features.MyStore.StoreInventoryEntity
+import com.agriflow.app.core.database.SyncState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import okhttp3.MultipartBody
@@ -23,6 +28,8 @@ import javax.inject.Inject
 
 class OfflineFirstMarketplaceRepositoryImpl @Inject constructor(
     private val productDao: ProductDao,
+    private val supplierDao: SupplierDao,
+    private val storeInventoryDao: StoreInventoryDao,
     private val marketplaceApi: MarketplaceApi,
     private val timeProvider: TimeProvider
 ) : MarketplaceRepository {
@@ -63,9 +70,33 @@ class OfflineFirstMarketplaceRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getVerifiedBusinesses(): Result<List<BusinessDto>, DataError.Network> {
-        return safeApiCall {
-            marketplaceApi.getVerifiedBusinesses()
+        return when (val result = safeApiCall { marketplaceApi.getVerifiedBusinesses() }) {
+            is Result.Success -> {
+                val entities = result.data.map { dto ->
+                    SupplierEntity(
+                        supplierId = dto.id.orEmpty(),
+                        name = dto.name.orEmpty(),
+                        farmLocation = dto.tagline.orEmpty(),
+                        rating = dto.rating ?: 5.0,
+                        contactInfo = "", // Placeholder or type
+                        type = dto.type.orEmpty(),
+                        logoUrl = dto.logoUrl,
+                        reviewCount = dto.reviewCount ?: 0,
+                        isVerified = dto.isVerified ?: true
+                    )
+                }
+                supplierDao.clearSuppliers()
+                supplierDao.insertSuppliers(entities)
+                Result.Success(result.data)
+            }
+            is Result.Error -> {
+                result
+            }
         }
+    }
+
+    override fun observeSuppliers(): Flow<List<SupplierEntity>> {
+        return supplierDao.observeAllSuppliers()
     }
 
     override suspend fun uploadImage(file: MultipartBody.Part): Result<ImageResponseDto, DataError.Network> {
@@ -97,9 +128,13 @@ class OfflineFirstMarketplaceRepositoryImpl @Inject constructor(
             marketplaceApi.getMyProducts()
         }.map { dtos ->
             val now = timeProvider.currentTimeMillis()
-            dtos.mapNotNull { dto ->
-                dto.toEntity(now)?.toDomain()
+            val entities = dtos.mapNotNull { dto ->
+                dto.toEntity(now)
             }
+            if (entities.isNotEmpty()) {
+                productDao.upsertProducts(entities)
+            }
+            entities.map { it.toDomain() }
         }
     }
 
@@ -122,5 +157,46 @@ class OfflineFirstMarketplaceRepositoryImpl @Inject constructor(
             }
             entities.map { it.toDomain() }
         }
+    }
+
+    override fun observeStoreInventory(): Flow<List<StoreInventoryEntity>> {
+        return storeInventoryDao.observeAllInventory()
+    }
+
+    override suspend fun saveStoreInventoryItem(item: StoreInventoryEntity) {
+        storeInventoryDao.insertInventoryItem(item)
+    }
+
+    override suspend fun deleteStoreInventoryItem(id: String) {
+        storeInventoryDao.deleteInventoryItem(id)
+    }
+
+    override suspend fun syncPendingInventory(): Result<Unit, DataError.Network> {
+        val unsynced = storeInventoryDao.getUnsyncedInventory()
+        if (unsynced.isEmpty()) return Result.Success(Unit)
+
+        var lastError: DataError.Network? = null
+        for (item in unsynced) {
+            val request = ProductUploadRequest(
+                productName = item.productName,
+                description = item.description,
+                price = item.price,
+                quantity = item.quantity,
+                unit = item.unit,
+                categoryId = item.categoryId,
+                images = if (item.imageUrls.isBlank()) emptyList() else item.imageUrls.split(",")
+            )
+            when (val apiResult = safeApiCall { marketplaceApi.createProduct(request) }) {
+                is Result.Success -> {
+                    // Delete from drafts on successful sync
+                    storeInventoryDao.deleteInventoryItem(item.id)
+                }
+                is Result.Error -> {
+                    lastError = apiResult.error
+                    storeInventoryDao.updateSyncStatus(item.id, SyncState.FAILED.name)
+                }
+            }
+        }
+        return if (lastError != null) Result.Error(lastError) else Result.Success(Unit)
     }
 }

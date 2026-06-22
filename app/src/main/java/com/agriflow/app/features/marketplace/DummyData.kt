@@ -3,7 +3,7 @@
  */
 package com.agriflow.app.features.marketplace
 
-import com.agriflow.app.features.marketplace.productdetails.Product
+import com.agriflow.app.features.products.productdetails.Product
 
 object DummyData {
     val sampleProducts = listOf(
@@ -18,7 +18,8 @@ object DummyData {
             imageUrl = "",
             availableQuantity = 150.0,
             quantityUnit = "bag",
-            description = "High-quality white maize harvested from the fertile soil of Eldoret."
+            description = "High-quality white maize harvested from the fertile soil of Eldoret.",
+            businessId = "1"
         ),
         Product(
             id = "2",
@@ -31,7 +32,8 @@ object DummyData {
             imageUrl = "",
             availableQuantity = 50.0,
             quantityUnit = "kg",
-            description = "Grade-A Hass avocados, hand-picked and perfect for wholesale."
+            description = "Grade-A Hass avocados, hand-picked and perfect for wholesale.",
+            businessId = "2"
         ),
         Product(
             id = "3",
@@ -44,7 +46,8 @@ object DummyData {
             imageUrl = "",
             availableQuantity = 20.0,
             quantityUnit = "crate",
-            description = "Crisp, organic vine-ripened tomatoes grown under standard greenhouse environments."
+            description = "Crisp, organic vine-ripened tomatoes grown under standard greenhouse environments.",
+            businessId = "3"
         ),
         Product(
             id = "4",
@@ -57,7 +60,8 @@ object DummyData {
             imageUrl = "",
             availableQuantity = 500.0,
             quantityUnit = "bag",
-            description = "Standard NPK 17-17-17 fertilizer composition to optimize agricultural yields."
+            description = "Standard NPK 17-17-17 fertilizer composition to optimize agricultural yields.",
+            businessId = "4"
         ),
         Product(
             id = "5",
@@ -70,7 +74,8 @@ object DummyData {
             imageUrl = "",
             availableQuantity = 80.0,
             quantityUnit = "bag",
-            description = "Sun-dried red sorghum grains ideal for wholesale processing."
+            description = "Sun-dried red sorghum grains ideal for wholesale processing.",
+            businessId = "5"
         ),
         Product(
             id = "6",
@@ -83,7 +88,8 @@ object DummyData {
             imageUrl = "",
             availableQuantity = 35.0,
             quantityUnit = "kg",
-            description = "Sweet, juicy coastal Apple mangoes ready for immediate export."
+            description = "Sweet, juicy coastal Apple mangoes ready for immediate export.",
+            businessId = "6"
         ),
         Product(
             id = "7",
@@ -96,7 +102,8 @@ object DummyData {
             imageUrl = "",
             availableQuantity = 1000.0,
             quantityUnit = "ltr",
-            description = "Pasteurized fresh cow milk from standard local dairy farms."
+            description = "Pasteurized fresh cow milk from standard local dairy farms.",
+            businessId = "7"
         ),
         Product(
             id = "8",
@@ -109,7 +116,8 @@ object DummyData {
             imageUrl = "",
             availableQuantity = 500000.0,
             quantityUnit = "ltr",
-            description = "Eco-safe agricultural insecticide certified for standard crop protection."
+            description = "Eco-safe agricultural insecticide certified for standard crop protection.",
+            businessId = "8"
         )
     )
 }

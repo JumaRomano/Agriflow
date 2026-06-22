@@ -2,7 +2,7 @@ package com.agriflow.app.core.database
 
 import androidx.room.TypeConverter
 import com.agriflow.app.features.auth.UserRole
-import com.agriflow.app.features.marketplace.MyStore.sellerdashboard.OrderStatus
+import com.agriflow.app.features.MyStore.sellerdashboard.OrderStatus
 import java.util.Date
 
 class DatabaseConverters {
@@ -42,5 +42,19 @@ class DatabaseConverters {
     @TypeConverter
     fun toDate(timestamp: Long?): Date? {
         return timestamp?.let { Date(it) }
+    }
+
+    @TypeConverter
+    fun fromSyncState(state: SyncState): String {
+        return state.name
+    }
+
+    @TypeConverter
+    fun toSyncState(value: String): SyncState {
+        return try {
+            SyncState.valueOf(value)
+        } catch (e: IllegalArgumentException) {
+            SyncState.PENDING
+        }
     }
 }

@@ -35,18 +35,49 @@ class EditProfileViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            tokenRepository.getUserFlow().collect { user ->
-                if (user != null && !isInitialized) {
-                    isInitialized = true
-                    _state.update {
-                        it.copy(
-                            username = user.username,
-                            email = user.email,
-                            phoneNumber = user.phoneNumber ?: ""
-                        )
+            _state.update { it.copy(isLoading = true) }
+            
+            // Immediately prefill basics from token cache
+            launch {
+                tokenRepository.getUserFlow().collect { user ->
+                    if (user != null && !isInitialized) {
+                        isInitialized = true
+                        _state.update {
+                            it.copy(
+                                userId = user.id,
+                                username = user.username,
+                                email = user.email,
+                                phoneNumber = user.phoneNumber ?: "",
+                                firstName = user.firstName ?: "",
+                                middleName = user.middleName ?: "",
+                                surName = user.surName ?: ""
+                            )
+                        }
                     }
                 }
             }
+
+            // Fetch fresh detailed user from api
+            when (val result = authRepository.getCurrentUser()) {
+                is Result.Success -> {
+                    val user = result.data
+                    _state.update {
+                        it.copy(
+                            userId = user.id,
+                            username = user.username,
+                            email = user.email,
+                            phoneNumber = user.phoneNumber ?: "",
+                            firstName = user.firstName ?: "",
+                            middleName = user.middleName ?: "",
+                            surName = user.surName ?: ""
+                        )
+                    }
+                }
+                is Result.Error -> {
+                    // Fail silently, token listener already populated basics
+                }
+            }
+            _state.update { it.copy(isLoading = false) }
         }
     }
 
@@ -55,15 +86,42 @@ class EditProfileViewModel @Inject constructor(
             is EditProfileAction.OnUsernameChanged -> {
                 _state.update { it.copy(username = action.username, usernameError = null) }
             }
+            is EditProfileAction.OnFirstNameChanged -> {
+                _state.update { it.copy(firstName = action.firstName, firstNameError = null) }
+            }
+            is EditProfileAction.OnMiddleNameChanged -> {
+                _state.update { it.copy(middleName = action.middleName, middleNameError = null) }
+            }
+            is EditProfileAction.OnSurNameChanged -> {
+                _state.update { it.copy(surName = action.surName, surNameError = null) }
+            }
+            is EditProfileAction.OnEmailChanged -> {
+                _state.update { it.copy(email = action.email, emailError = null) }
+            }
             is EditProfileAction.OnPhoneNumberChanged -> {
                 _state.update { it.copy(phoneNumber = action.phoneNumber, phoneNumberError = null) }
             }
+            is EditProfileAction.OnCurrentPasswordChanged -> {
+                _state.update { it.copy(currentPassword = action.currentPassword, currentPasswordError = null) }
+            }
+            is EditProfileAction.OnNewPasswordChanged -> {
+                _state.update { it.copy(newPassword = action.newPassword, newPasswordError = null) }
+            }
+            is EditProfileAction.OnConfirmNewPasswordChanged -> {
+                _state.update { it.copy(confirmNewPassword = action.confirmNewPassword, confirmNewPasswordError = null) }
+            }
             EditProfileAction.OnSaveClicked -> saveProfile()
+            EditProfileAction.OnChangePasswordClicked -> changePassword()
         }
     }
 
     private fun saveProfile() {
+        val userId = _state.value.userId
         val currentUsername = _state.value.username
+        val firstName = _state.value.firstName
+        val middleName = _state.value.middleName
+        val surName = _state.value.surName
+        val email = _state.value.email
         val currentPhoneNumber = _state.value.phoneNumber
 
         var hasError = false
@@ -76,7 +134,28 @@ class EditProfileViewModel @Inject constructor(
             hasError = true
         }
 
-        if (currentPhoneNumber.isNotBlank()) {
+        if (firstName.isBlank()) {
+            _state.update { it.copy(firstNameError = "First name cannot be empty") }
+            hasError = true
+        }
+
+        if (surName.isBlank()) {
+            _state.update { it.copy(surNameError = "Surname cannot be empty") }
+            hasError = true
+        }
+
+        if (email.isBlank()) {
+            _state.update { it.copy(emailError = "Email address cannot be empty") }
+            hasError = true
+        } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email.trim()).matches()) {
+            _state.update { it.copy(emailError = "Enter a valid email address") }
+            hasError = true
+        }
+
+        if (currentPhoneNumber.isBlank()) {
+            _state.update { it.copy(phoneNumberError = "Phone number cannot be empty") }
+            hasError = true
+        } else {
             val cleanPhone = currentPhoneNumber.trim()
             val isValid = cleanPhone.matches(Regex("^\\+?[0-9]{7,15}$"))
             if (!isValid) {
@@ -90,8 +169,13 @@ class EditProfileViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
             val result = authRepository.updateProfile(
+                userId = userId,
                 username = currentUsername,
-                phoneNumber = currentPhoneNumber.trim().takeIf { it.isNotBlank() }
+                firstName = firstName,
+                middleName = middleName.takeIf { it.isNotBlank() },
+                surName = surName,
+                phoneNumber = currentPhoneNumber,
+                email = email
             )
             _state.update { it.copy(isLoading = false) }
 
@@ -99,6 +183,62 @@ class EditProfileViewModel @Inject constructor(
                 is Result.Success -> {
                     _state.update { it.copy(success = true) }
                     _events.send(EditProfileEvent.SaveSuccess)
+                }
+                is Result.Error -> {
+                    val message = result.error.toMessage()
+                    _events.send(EditProfileEvent.ShowMessage(message))
+                }
+            }
+        }
+    }
+
+    private fun changePassword() {
+        val currentPassword = _state.value.currentPassword
+        val newPassword = _state.value.newPassword
+        val confirmNewPassword = _state.value.confirmNewPassword
+
+        var hasError = false
+
+        if (currentPassword.isEmpty()) {
+            _state.update { it.copy(currentPasswordError = "Current password is required") }
+            hasError = true
+        }
+        if (newPassword.isEmpty()) {
+            _state.update { it.copy(newPasswordError = "New password is required") }
+            hasError = true
+        } else if (newPassword.length < 8) {
+            _state.update { it.copy(newPasswordError = "Password must be at least 8 characters") }
+            hasError = true
+        }
+        if (confirmNewPassword.isEmpty()) {
+            _state.update { it.copy(confirmNewPasswordError = "Please confirm your new password") }
+            hasError = true
+        } else if (newPassword != confirmNewPassword) {
+            _state.update { it.copy(confirmNewPasswordError = "Passwords do not match") }
+            hasError = true
+        }
+
+        if (hasError) return
+
+        viewModelScope.launch {
+            _state.update { it.copy(isPasswordLoading = true) }
+            val result = authRepository.changePassword(
+                oldPassword = currentPassword,
+                newPassword = newPassword,
+                confirmNewPassword = confirmNewPassword
+            )
+            _state.update { it.copy(isPasswordLoading = false) }
+
+            when (result) {
+                is Result.Success -> {
+                    _state.update {
+                        it.copy(
+                            currentPassword = "",
+                            newPassword = "",
+                            confirmNewPassword = ""
+                        )
+                    }
+                    _events.send(EditProfileEvent.ShowMessage("Password changed successfully!"))
                 }
                 is Result.Error -> {
                     val message = result.error.toMessage()

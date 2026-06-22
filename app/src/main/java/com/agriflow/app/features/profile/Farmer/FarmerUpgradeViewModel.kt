@@ -13,6 +13,7 @@ import com.agriflow.app.core.util.Result
 import com.agriflow.app.features.auth.AuthRepository
 import com.agriflow.app.features.auth.UserRole
 import com.agriflow.app.core.security.TokenRepository
+import com.agriflow.app.features.wallet.WalletRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,7 +26,8 @@ import javax.inject.Inject
 @HiltViewModel
 class FarmerUpgradeViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-    private val tokenRepository: TokenRepository
+    private val tokenRepository: TokenRepository,
+    private val walletRepository: WalletRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(RoleUpgradeState(selectedRole = UserRole.FARMER))
@@ -44,6 +46,24 @@ class FarmerUpgradeViewModel @Inject constructor(
             when (val result = authRepository.getBusinessDetails()) {
                 is Result.Success -> {
                     tokenRepository.saveRegisteredBusinessRole(UserRole.FARMER)
+                    val isApproved = result.data.approvalStatus == "APPROVED"
+                    var available = 0.0
+                    var pending = 0.0
+                    if (isApproved) {
+                        when (val walletResult = walletRepository.getWallet()) {
+                            is Result.Success -> {
+                                available = walletResult.data.availableBalance ?: 0.0
+                                pending = walletResult.data.pendingBalance ?: 0.0
+                            }
+                            is Result.Error -> {
+                                available = result.data.walletBalance ?: 0.0
+                                pending = result.data.pendingBalance ?: 0.0
+                            }
+                        }
+                    } else {
+                        available = result.data.walletBalance ?: 0.0
+                        pending = result.data.pendingBalance ?: 0.0
+                    }
                     _state.update {
                         it.copy(
                             isLoading = false,
@@ -51,7 +71,9 @@ class FarmerUpgradeViewModel @Inject constructor(
                             businessEmail = result.data.businessEmail.orEmpty(),
                             businessPhone = result.data.businessPhone.orEmpty(),
                             approvalStatus = result.data.approvalStatus,
-                            walletBalance = result.data.walletBalance ?: 0.0
+                            walletBalance = available,
+                            availableBalance = available,
+                            pendingBalance = pending
                         )
                     }
                 }

@@ -6,5 +6,9 @@ package com.agriflow.app.features.auth
 
 data class UpdateProfileRequestDto(
     val username: String,
-    val phoneNumber: String?
+    val firstName: String,
+    val middleName: String?,
+    val surName: String,
+    val phoneNumber: String,
+    val email: String
 )

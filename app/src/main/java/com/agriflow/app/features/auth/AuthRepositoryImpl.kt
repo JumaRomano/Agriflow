@@ -4,6 +4,7 @@
 package com.agriflow.app.features.auth
 
 import com.agriflow.app.core.security.TokenRepository
+import kotlinx.coroutines.flow.firstOrNull
 import com.agriflow.app.core.network.safeApiCall
 import com.agriflow.app.core.util.DataError
 import com.agriflow.app.core.util.EmptyResult
@@ -19,16 +20,15 @@ import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
     private val authApi: AuthApi,
-    private val tokenRepository: TokenRepository
+    private val tokenRepository: TokenRepository,
+    private val userDao: UserDao
 ) : AuthRepository {
 
     override suspend fun login(
         email: String,
         password: String
     ): Result<AuthSession, DataError.Network> {
-        // Repository implementation is the bridge between domain and network DTOs.
-        // The ViewModel never sees LoginRequestDto or Retrofit Response.
-        return safeApiCall {
+        val result = safeApiCall {
             authApi.login(
                 request = LoginRequestDto(
                     email = email.trim(),
@@ -36,7 +36,17 @@ class AuthRepositoryImpl @Inject constructor(
                 )
             )
         }.toAuthSessionResult()
-            .also { result -> result.saveTokensIfSuccessful(email) }
+        
+        if (result is Result.Success) {
+            val session = result.data
+            tokenRepository.saveTokens(
+                accessToken = session.tokens.accessToken,
+                refreshToken = session.tokens.refreshToken,
+                email = email.trim()
+            )
+            userDao.insertUser(session.user.toEntity())
+        }
+        return result
     }
 
     override suspend fun register(
@@ -47,7 +57,7 @@ class AuthRepositoryImpl @Inject constructor(
         firstName: String,
         surName: String
     ): Result<AuthSession, DataError.Network> {
-        return safeApiCall {
+        val result = safeApiCall {
             authApi.register(
                 request = RegisterRequestDto(
                     username = username.trim(),
@@ -60,7 +70,17 @@ class AuthRepositoryImpl @Inject constructor(
                 )
             )
         }.toAuthSessionResult()
-            .also { result -> result.saveTokensIfSuccessful(email) }
+        
+        if (result is Result.Success) {
+            val session = result.data
+            tokenRepository.saveTokens(
+                accessToken = session.tokens.accessToken,
+                refreshToken = session.tokens.refreshToken,
+                email = email.trim()
+            )
+            userDao.insertUser(session.user.toEntity())
+        }
+        return result
     }
 
     override suspend fun upgradeRole(
@@ -69,7 +89,7 @@ class AuthRepositoryImpl @Inject constructor(
         businessEmail: String,
         phoneNumber: String
     ): Result<AuthSession, DataError.Network> {
-        return safeApiCall {
+        val result = safeApiCall {
             authApi.upgradeRole(
                 request = UpgradeRoleRequestDto(
                     role = role.name,
@@ -79,12 +99,21 @@ class AuthRepositoryImpl @Inject constructor(
                 )
             )
         }.toAuthSessionResult()
-            .also { result -> result.saveTokensIfSuccessful() }
+        
+        if (result is Result.Success) {
+            val session = result.data
+            tokenRepository.saveTokens(
+                accessToken = session.tokens.accessToken,
+                refreshToken = session.tokens.refreshToken
+            )
+            userDao.insertUser(session.user.toEntity())
+        }
+        return result
     }
 
     override suspend fun logout(): EmptyResult<DataError.Local> {
-        // Local logout is currently just token cleanup. Later this can also call a revoke endpoint.
         tokenRepository.clearTokens()
+        userDao.clearUser()
         return Result.Success(Unit)
     }
 
@@ -143,18 +172,63 @@ class AuthRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updateProfile(
+        userId: String,
         username: String,
-        phoneNumber: String?
+        firstName: String,
+        middleName: String?,
+        surName: String,
+        phoneNumber: String,
+        email: String
     ): Result<AuthSession, DataError.Network> {
-        return safeApiCall {
+        val result = safeApiCall {
             authApi.updateProfile(
+                userId = userId,
                 request = UpdateProfileRequestDto(
                     username = username.trim(),
-                    phoneNumber = phoneNumber?.trim()?.takeIf(String::isNotBlank)
+                    firstName = firstName.trim(),
+                    middleName = middleName?.trim()?.takeIf(String::isNotBlank),
+                    surName = surName.trim(),
+                    phoneNumber = phoneNumber.trim(),
+                    email = email.trim()
                 )
             )
         }.toAuthSessionResult()
-            .also { result -> result.saveTokensIfSuccessful() }
+
+        if (result is Result.Success) {
+            val session = result.data
+            tokenRepository.saveTokens(
+                accessToken = session.tokens.accessToken,
+                refreshToken = session.tokens.refreshToken
+            )
+            userDao.insertUser(session.user.toEntity())
+        }
+        return result
+    }
+
+    override suspend fun changePassword(
+        oldPassword: String,
+        newPassword: String,
+        confirmNewPassword: String
+    ): EmptyResult<DataError.Network> {
+        return safeApiCall {
+            authApi.changePassword(
+                ChangePasswordRequestDto(
+                    oldPassword = oldPassword,
+                    newPassword = newPassword,
+                    confirmNewPassword = confirmNewPassword
+                )
+            )
+        }
+    }
+
+    override suspend fun getCurrentUser(): Result<User, DataError.Network> {
+        val result = safeApiCall {
+            authApi.getCurrentUser()
+        }
+        return when (result) {
+            is Result.Success -> Result.Success(result.data.toUser())
+            is Result.Error -> Result.Error(result.error)
+        }
     }
 
     private fun Result<com.agriflow.app.features.auth.AuthResponseDto, DataError.Network>.toAuthSessionResult():
@@ -170,17 +244,6 @@ class AuthRepositoryImpl @Inject constructor(
                     Result.Error(DataError.Network.SERIALIZATION)
                 }
             }
-        }
-    }
-
-    private fun Result<AuthSession, DataError.Network>.saveTokensIfSuccessful(email: String? = null) {
-        if (this is Result.Success) {
-            // Persist tokens only after the response has been validated and mapped into AuthSession.
-            tokenRepository.saveTokens(
-                accessToken = data.tokens.accessToken,
-                refreshToken = data.tokens.refreshToken,
-                email = email ?: data.user.email.takeIf { it.isNotBlank() }
-            )
         }
     }
 }

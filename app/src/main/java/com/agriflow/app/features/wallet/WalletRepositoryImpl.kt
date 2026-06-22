@@ -3,10 +3,12 @@ package com.agriflow.app.features.wallet
 import com.agriflow.app.core.network.safeApiCall
 import com.agriflow.app.core.util.DataError
 import com.agriflow.app.core.util.Result
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class WalletRepositoryImpl @Inject constructor(
-    private val walletApi: WalletApi
+    private val walletApi: WalletApi,
+    private val transactionDao: TransactionDao
 ) : WalletRepository {
 
     // In-memory fallback balances for demo/offline development testing
@@ -143,6 +145,9 @@ class WalletRepositoryImpl @Inject constructor(
                     )
                     simulatedTransactions.add(0, newTx)
 
+                    val entity = newTx.toEntity(System.currentTimeMillis())
+                    transactionDao.insertTransactions(listOf(entity))
+
                     Result.Success(
                         WithdrawResponseDto(
                             success = true,
@@ -160,13 +165,23 @@ class WalletRepositoryImpl @Inject constructor(
     override suspend fun getTransactions(): Result<List<WalletTransactionDto>, DataError.Network> {
         return when (val result = safeApiCall { walletApi.getTransactions() }) {
             is Result.Success -> {
+                val entities = result.data.map { it.toEntity(System.currentTimeMillis()) }
+                transactionDao.clearTransactions()
+                transactionDao.insertTransactions(entities)
                 Result.Success(result.data)
             }
             is Result.Error -> {
                 // Local simulation fallback for offline testing
+                val entities = simulatedTransactions.map { it.toEntity(System.currentTimeMillis()) }
+                transactionDao.clearTransactions()
+                transactionDao.insertTransactions(entities)
                 Result.Success(simulatedTransactions)
             }
         }
+    }
+
+    override fun observeTransactions(): Flow<List<TransactionEntity>> {
+        return transactionDao.observeAllTransactions()
     }
 }
 

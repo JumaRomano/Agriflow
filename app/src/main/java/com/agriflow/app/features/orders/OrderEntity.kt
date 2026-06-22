@@ -2,7 +2,7 @@ package com.agriflow.app.features.orders
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.agriflow.app.features.marketplace.MyStore.sellerdashboard.OrderStatus
+import com.agriflow.app.features.MyStore.sellerdashboard.OrderStatus
 
 @Entity(tableName = "orders")
 data class OrderEntity(

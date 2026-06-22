@@ -26,6 +26,7 @@ class SupplierNetworkViewModel @Inject constructor(
 
 
     init {
+        observeSuppliers()
         fetchVerifiedBusinesses()
 
         viewModelScope.launch {
@@ -48,6 +49,27 @@ class SupplierNetworkViewModel @Inject constructor(
         }
     }
 
+    private fun observeSuppliers() {
+        viewModelScope.launch {
+            marketplaceRepository.observeSuppliers().collect { entities ->
+                val uiItems = entities.map { entity ->
+                    SupplierNetworkItem(
+                        id = entity.supplierId,
+                        name = entity.name,
+                        type = if (entity.type.equals("FARMER", ignoreCase = true)) SupplierType.FARMER else SupplierType.SUPPLIER,
+                        tagline = entity.farmLocation.takeIf { it.isNotBlank() } ?: "Verified partner in the AgriFlow network",
+                        logoUrl = entity.logoUrl,
+                        rating = entity.rating,
+                        reviewCount = entity.reviewCount,
+                        emoji = if (entity.type.equals("FARMER", ignoreCase = true)) "🌾" else "🏢",
+                        isVerified = entity.isVerified
+                    )
+                }
+                _allSuppliers.value = uiItems
+            }
+        }
+    }
+
     fun onSearchQueryChanged(query: String) {
         _searchQuery.value = query
         _state.update { it.copy(searchQuery = query) }
@@ -63,27 +85,15 @@ class SupplierNetworkViewModel @Inject constructor(
             _state.update { it.copy(isLoading = true) }
             when (val result = marketplaceRepository.getVerifiedBusinesses()) {
                 is Result.Success -> {
-                    val apiSuppliers = result.data.mapNotNull { dto ->
-                        val id = dto.id ?: return@mapNotNull null
-                        val name = dto.name ?: return@mapNotNull null
-                        SupplierNetworkItem(
-                            id = id,
-                            name = name,
-                            type = if (dto.type?.equals("FARMER", ignoreCase = true) == true) SupplierType.FARMER else SupplierType.SUPPLIER,
-                            tagline = dto.tagline ?: "Verified partner in the AgriFlow network",
-                            logoUrl = dto.logoUrl,
-                            rating = dto.rating ?: 5.0,
-                            reviewCount = dto.reviewCount ?: 0,
-                            emoji = if (dto.type?.equals("FARMER", ignoreCase = true) == true) "🌾" else "🏢",
-                            isVerified = dto.isVerified ?: true
-                        )
-                    }
-                    _allSuppliers.value = apiSuppliers
                     _state.update { it.copy(isLoading = false, errorMessage = null) }
                 }
                 is Result.Error -> {
-                    _allSuppliers.value = emptyList()
-                    _state.update { it.copy(isLoading = false, errorMessage = "Failed to load supplier network") }
+                    _state.update { 
+                        it.copy(
+                            isLoading = false, 
+                            errorMessage = if (_allSuppliers.value.isEmpty()) "Failed to load supplier network" else null
+                        ) 
+                    }
                 }
             }
         }

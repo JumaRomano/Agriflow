@@ -12,6 +12,8 @@ data class RoleUpgradeState(
     val businessPhone: String = "",
     val approvalStatus: String? = null,
     val walletBalance: Double = 0.0,
+    val availableBalance: Double = 0.0,
+    val pendingBalance: Double = 0.0,
     val isLoading: Boolean = false,
     val errorMessage: String? = null
 )

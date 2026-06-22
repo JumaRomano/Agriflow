@@ -163,7 +163,7 @@ fun PaymentScreen(
                     }
                 }
 
-                // --- 2. M-PESA CHANNEL BRANDING ---
+                //payment
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
@@ -209,7 +209,13 @@ fun PaymentScreen(
                     OutlinedTextField(
                         value = state.deliveryAddress,
                         onValueChange = { onAction(PaymentAction.OnDeliveryAddressChanged(it)) },
-                        placeholder = { Text("e.g Nairobi") },
+                        placeholder = {
+                            Text(
+                                text = "e.g. Nairobi",
+                                // Reduces opacity so it looks like a faded hint, not actual text
+                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                            )
+                        },
                         singleLine = false,
                         maxLines = 2,
                         isError = state.deliveryAddressError != null,
@@ -229,7 +235,12 @@ fun PaymentScreen(
                     OutlinedTextField(
                         value = state.deliveryNotes,
                         onValueChange = { onAction(PaymentAction.OnDeliveryNotesChanged(it)) },
-                        placeholder = { Text("delivery note") },
+                        placeholder = {
+                            Text(
+                                text = "e.g. Leave at the front door", // Made the hint more descriptive
+                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                            )
+                        },
                         singleLine = false,
                         maxLines = 2,
                         enabled = !state.isProcessing && !state.isVerifyingPayment,
@@ -237,7 +248,7 @@ fun PaymentScreen(
                     )
                 }
 
-                // --- 4. INPUT PHONE NUMBER ---
+// --- 4. INPUT PHONE NUMBER ---
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -251,7 +262,12 @@ fun PaymentScreen(
                     OutlinedTextField(
                         value = state.phoneNumber,
                         onValueChange = { onAction(PaymentAction.OnPhoneNumberChanged(it)) },
-                        placeholder = { Text("0712345678") },
+                        placeholder = {
+                            Text(
+                                text = "e.g. 0712345678",
+                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                            )
+                        },
                         singleLine = true,
                         leadingIcon = {
                             Icon(
@@ -270,7 +286,7 @@ fun PaymentScreen(
                     )
                 }
 
-                // --- 5. SECURE PAYMENT INFORMATION ---
+                // --- 5.PAYMENT INFORMATION ---
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
@@ -399,7 +415,7 @@ fun PaymentScreen(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                text = "An M-Pesa STK Push request has been sent to ${state.phoneNumber}.",
+                                text = "An M-Pesa prompt has been sent to ${state.phoneNumber}.",
                                 textAlign = TextAlign.Center,
                                 style = MaterialTheme.typography.bodyMedium
                             )
@@ -440,7 +456,7 @@ fun PaymentScreen(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                text = "Please wait while we confirm your M-Pesa payment.",
+                                text = "Please wait while we confirm your payment.",
                                 textAlign = TextAlign.Center,
                                 style = MaterialTheme.typography.bodyMedium
                             )

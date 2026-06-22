@@ -14,6 +14,7 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 import retrofit2.http.GET
 import retrofit2.http.PUT
+import retrofit2.http.Path
 
 interface AuthApi {
     @POST("auth/login")
@@ -49,11 +50,37 @@ interface AuthApi {
         @Body request: PasswordResetRequestDto
     ): Response<Unit>
 
-    @PUT("users/profile")
+    @PUT("users/{userId}/profile")
     suspend fun updateProfile(
+        @Path("userId") userId: String,
         @Body request: UpdateProfileRequestDto
-    ): Response<AuthResponseDto>
+    ): Response<Unit>
+
+    @POST("users/change-password")
+    suspend fun changePassword(
+        @Body request: ChangePasswordRequestDto
+    ): Response<Unit>
+
+    @GET("users/me")
+    suspend fun getCurrentUser(): Response<CurrentUserResponseDto>
 }
+
+data class CurrentUserResponseDto(
+    val id: String,
+    val username: String,
+    val firstName: String?,
+    val middleName: String?,
+    val surName: String?,
+    val phoneNumber: String?,
+    val role: String?,
+    val email: String
+)
+
+data class ChangePasswordRequestDto(
+    val oldPassword: String,
+    val newPassword: String,
+    val confirmNewPassword: String
+)
 
 data class UpgradeRoleRequestDto(
     val role: String,

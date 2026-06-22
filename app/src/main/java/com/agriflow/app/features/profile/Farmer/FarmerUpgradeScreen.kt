@@ -188,7 +188,8 @@ fun FarmerUpgradeScreen(
                                 )
                                 Text(
                                     text = state.businessEmail,
-                                    style = MaterialTheme.typography.bodyLarge
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    fontWeight = FontWeight.Bold
                                 )
                             }
 
@@ -200,21 +201,35 @@ fun FarmerUpgradeScreen(
                                 )
                                 Text(
                                     text = state.businessPhone,
-                                    style = MaterialTheme.typography.bodyLarge
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    fontWeight = FontWeight.Bold
                                 )
                             }
 
                             if (isApproved) {
                                 Column {
                                     Text(
-                                        text = "Wallet Balance",
+                                        text = "Available Balance",
                                         style = MaterialTheme.typography.labelSmall,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                     Text(
-                                        text = String.format("KES %.2f", state.walletBalance),
+                                        text = String.format("KES %.2f", state.availableBalance),
                                         style = MaterialTheme.typography.titleLarge,
                                         fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                                Column {
+                                    Text(
+                                        text = "Pending Balance" +  "(Orders that are not completed)",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                    Text(
+                                        text = String.format("KES %.2f", state.pendingBalance),
+                                        style = MaterialTheme.typography.titleLarge,
+                                        fontWeight = FontWeight.Medium,
                                         color = MaterialTheme.colorScheme.primary
                                     )
                                 }
@@ -245,7 +260,7 @@ fun FarmerUpgradeScreen(
                     )
 
                     Text(
-                        text = "Provide your farm's commercial info. Farmers are authorized to buy and sell produce on Agriflow.",
+                        text = "Provide your farm's commercial info. Farmers are authorized to buy and sell produce on Agriflow by simply switching between accounts.",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(vertical = 8.dp)

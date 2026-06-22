@@ -51,6 +51,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -83,6 +84,7 @@ import com.agriflow.app.features.auth.UserRole
 import com.agriflow.app.features.marketplace.MarketplaceAction
 import java.text.SimpleDateFormat
 import java.util.Locale
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -263,14 +265,14 @@ fun OrderCard(
 ) {
     val transitionState = animateFloatAsState(targetValue = if (isExpanded) 180f else 0f, label = "rotation")
 
-    ElevatedCard(
+    OutlinedCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.elevatedCardColors(
+        colors = CardDefaults.outlinedCardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp)
     ) {
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()

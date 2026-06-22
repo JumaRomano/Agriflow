@@ -1,6 +1,6 @@
 package com.agriflow.app.features.businessdetails
 
-import com.agriflow.app.features.marketplace.productdetails.Product
+import com.agriflow.app.features.products.productdetails.Product
 
 data class BusinessDetailsState(
     val isLoading: Boolean = false,

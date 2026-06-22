@@ -54,7 +54,20 @@ interface AuthRepository {
     ): EmptyResult<DataError.Network>
 
     suspend fun updateProfile(
+        userId: String,
         username: String,
-        phoneNumber: String?
-    ): Result<AuthSession, DataError.Network>
+        firstName: String,
+        middleName: String?,
+        surName: String,
+        phoneNumber: String,
+        email: String
+    ): EmptyResult<DataError.Network>
+
+    suspend fun changePassword(
+        oldPassword: String,
+        newPassword: String,
+        confirmNewPassword: String
+    ): EmptyResult<DataError.Network>
+
+    suspend fun getCurrentUser(): Result<User, DataError.Network>
 }

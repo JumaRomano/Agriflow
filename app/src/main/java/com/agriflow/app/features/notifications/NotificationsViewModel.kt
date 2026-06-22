@@ -19,7 +19,25 @@ class NotificationsViewModel @Inject constructor(
     val state = _state.asStateFlow()
 
     init {
+        observeNotifications()
         loadNotifications()
+    }
+
+    private fun observeNotifications() {
+        viewModelScope.launch {
+            notificationsRepository.observeNotifications().collect { entities ->
+                val items = entities.map { entity ->
+                    NotificationItem(
+                        id = entity.notificationId,
+                        title = entity.title,
+                        description = entity.body,
+                        timestamp = formatTimestamp(entity.timestamp),
+                        isRead = entity.isRead
+                    )
+                }
+                _state.update { it.copy(notifications = items) }
+            }
+        }
     }
 
     fun onAction(action: NotificationsAction) {
@@ -28,15 +46,13 @@ class NotificationsViewModel @Inject constructor(
                 loadNotifications()
             }
             NotificationsAction.ClearAllNotifications -> {
-                _state.update { it.copy(notifications = emptyList()) }
+                viewModelScope.launch {
+                    notificationsRepository.clearAllNotifications()
+                }
             }
             is NotificationsAction.MarkAsRead -> {
-                _state.update { currentState ->
-                    currentState.copy(
-                        notifications = currentState.notifications.map { item ->
-                            if (item.id == action.notificationId) item.copy(isRead = true) else item
-                        }
-                    )
+                viewModelScope.launch {
+                    notificationsRepository.markAsRead(action.notificationId)
                 }
             }
         }
@@ -47,16 +63,7 @@ class NotificationsViewModel @Inject constructor(
             _state.update { it.copy(isLoading = true, errorMessage = null) }
             when (val result = notificationsRepository.getMyNotifications()) {
                 is Result.Success -> {
-                    val items = result.data.map { dto ->
-                        NotificationItem(
-                            id = dto.id.orEmpty(),
-                            title = dto.title ?: "Notification",
-                            description = dto.body ?: "",
-                            timestamp = dto.createdAt ?: "",
-                            isRead = dto.read ?: false
-                        )
-                    }
-                    _state.update { it.copy(isLoading = false, notifications = items) }
+                    _state.update { it.copy(isLoading = false) }
                 }
                 is Result.Error -> {
                     _state.update {
@@ -67,6 +74,15 @@ class NotificationsViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    private fun formatTimestamp(timestamp: Long): String {
+        return try {
+            val sdf = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm", java.util.Locale.getDefault())
+            sdf.format(java.util.Date(timestamp))
+        } catch (e: Exception) {
+            ""
         }
     }
 }

@@ -7,8 +7,12 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.agriflow.app.core.database.AgriflowDatabase
 import com.agriflow.app.features.auth.UserDao
 import com.agriflow.app.features.cart.data.CartDao
-import com.agriflow.app.features.marketplace.productdetails.ProductDao
+import com.agriflow.app.features.products.productdetails.ProductDao
 import com.agriflow.app.features.orders.OrderDao
+import com.agriflow.app.features.wallet.TransactionDao
+import com.agriflow.app.features.notifications.NotificationDao
+import com.agriflow.app.features.suppliernetwork.SupplierDao
+import com.agriflow.app.features.MyStore.StoreInventoryDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -59,6 +63,30 @@ object DatabaseModule {
     @Singleton
     fun provideOrderDao(database: AgriflowDatabase): OrderDao {
         return database.orderDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideTransactionDao(database: AgriflowDatabase): TransactionDao {
+        return database.transactionDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideNotificationDao(database: AgriflowDatabase): NotificationDao {
+        return database.notificationDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideSupplierDao(database: AgriflowDatabase): SupplierDao {
+        return database.supplierDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideStoreInventoryDao(database: AgriflowDatabase): StoreInventoryDao {
+        return database.storeInventoryDao()
     }
 
     private val MIGRATION_1_2 = object : Migration(1, 2) {

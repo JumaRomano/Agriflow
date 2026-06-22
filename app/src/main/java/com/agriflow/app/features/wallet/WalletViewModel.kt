@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import java.util.UUID
@@ -39,7 +40,27 @@ class WalletViewModel @Inject constructor(
     val events = _events.receiveAsFlow()
 
     init {
+        observeTransactions()
         loadWalletData()
+    }
+
+    private fun observeTransactions() {
+        viewModelScope.launch {
+            walletRepository.observeTransactions().collect { entities ->
+                val txList = entities.map { entity ->
+                    WalletTransaction(
+                        id = entity.transactionId,
+                        type = if (entity.type.equals("REVENUE", ignoreCase = true) || entity.type.equals("CREDIT", ignoreCase = true)) TransactionType.REVENUE else TransactionType.WITHDRAWAL,
+                        amount = entity.amount,
+                        description = entity.description.takeIf { it.isNotBlank() }
+                            ?: entity.category.takeIf { it.isNotBlank() }?.replaceFirstChar { it.uppercase() }?.plus(" transaction")
+                            ?: "Transaction",
+                        timestamp = entity.timestamp
+                    )
+                }
+                _state.update { it.copy(transactions = txList) }
+            }
+        }
     }
 
     fun onAction(action: WalletAction) {
@@ -121,10 +142,10 @@ class WalletViewModel @Inject constructor(
 
     private fun loadWalletData() {
         viewModelScope.launch {
-            _state.value = _state.value.copy(isLoading = true)
+            _state.update { it.copy(isLoading = true) }
             val user = tokenRepository.getUserFlow().first()
             if (user == null) {
-                _state.value = _state.value.copy(isLoading = false)
+                _state.update { it.copy(isLoading = false) }
                 _events.send(WalletEvent.ShowToast("User session not found."))
                 return@launch
             }
@@ -145,34 +166,19 @@ class WalletViewModel @Inject constructor(
                 is Result.Success -> {
                     val wallet = walletResult.data
                     
-                    // Fetch transactions
-                    val transactionsResult = walletRepository.getTransactions()
-                    val txList = when (transactionsResult) {
-                        is Result.Success -> {
-                            transactionsResult.data.map { dto ->
-                                WalletTransaction(
-                                    id = dto.id ?: UUID.randomUUID().toString(),
-                                    type = if (dto.type?.equals("REVENUE", ignoreCase = true) == true) TransactionType.REVENUE else TransactionType.WITHDRAWAL,
-                                    amount = dto.amount ?: 0.0,
-                                    description = dto.description?.takeIf { it.isNotBlank() }
-                                        ?: dto.category?.takeIf { it.isNotBlank() }?.replaceFirstChar { it.uppercase() }?.plus(" transaction")
-                                        ?: "Transaction",
-                                    timestamp = parseCreatedAtToMillis(dto.createdAt ?: "")
-                                )
-                            }
-                        }
-                        is Result.Error -> emptyList()
-                    }
+                    // Fetch transactions (this updates Room DB in the background, firing the flow)
+                    walletRepository.getTransactions()
 
-                    _state.value = _state.value.copy(
-                        balance = wallet.availableBalance ?: 0.0,
-                        pendingBalance = wallet.pendingBalance ?: 0.0,
-                        transactions = txList,
-                        isLoading = false
-                    )
+                    _state.update {
+                        it.copy(
+                            balance = wallet.availableBalance ?: 0.0,
+                            pendingBalance = wallet.pendingBalance ?: 0.0,
+                            isLoading = false
+                        )
+                    }
                 }
                 is Result.Error -> {
-                    _state.value = _state.value.copy(isLoading = false)
+                    _state.update { it.copy(isLoading = false) }
                     _events.send(WalletEvent.ShowToast("Failed to fetch wallet details."))
                 }
             }

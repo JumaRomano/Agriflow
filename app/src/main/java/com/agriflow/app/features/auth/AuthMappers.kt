@@ -18,7 +18,10 @@ fun AuthResponseDto.toAuthSession(): AuthSession? {
         username = name,
         email = "", 
         phoneNumber = null,
-        role = role.toUserRole()
+        role = role.toUserRole(),
+        firstName = "",
+        middleName = null,
+        surName = ""
     )
 
     return AuthSession(
@@ -40,4 +43,30 @@ private fun String?.toUserRole(): UserRole {
         UserRole.ADMIN.name -> UserRole.ADMIN
         else -> UserRole.UNKNOWN
     }
+}
+
+fun User.toEntity(): UserEntity {
+    return UserEntity(
+        id = id,
+        username = username,
+        email = email,
+        phoneNumber = phoneNumber,
+        role = role,
+        firstName = firstName,
+        middleName = middleName,
+        surName = surName
+    )
+}
+
+fun CurrentUserResponseDto.toUser(): User {
+    return User(
+        id = id,
+        username = username,
+        email = email,
+        phoneNumber = phoneNumber,
+        role = role.toUserRole(),
+        firstName = firstName ?: "",
+        middleName = middleName,
+        surName = surName ?: ""
+    )
 }
