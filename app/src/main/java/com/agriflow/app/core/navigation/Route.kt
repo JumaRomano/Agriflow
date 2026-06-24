@@ -43,7 +43,7 @@ sealed interface Route {
     data class Marketplace(val searchFilter: String? = null) : Route
 
     @Serializable
-    data object Orders : Route
+    data class Orders(val orderId: String? = null) : Route
 
     @Serializable
     data object Profile : Route

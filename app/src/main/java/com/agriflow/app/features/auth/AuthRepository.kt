@@ -29,7 +29,7 @@ interface AuthRepository {
         businessName: String,
         businessEmail: String,
         businessPhone: String
-    ): Result<AuthSession, DataError.Network>
+    ): Result<BusinessDetailsResponseDto, DataError.Network>
 
     suspend fun getBusinessDetails(): Result<BusinessDetailsResponseDto, DataError.Network>
 

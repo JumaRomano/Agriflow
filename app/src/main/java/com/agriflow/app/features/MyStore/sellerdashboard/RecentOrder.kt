@@ -12,7 +12,9 @@ enum class OrderStatus {
 
 data class RecentOrder(
     val id: String,
-    val productName: String,
-    val price: Double,
-    val statusEnum: OrderStatus
+    val orderNumber: String,
+    val createdAt: String,
+    val status: String,
+    val totalAmount: Double,
+    val itemsCount: Int
 )

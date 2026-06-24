@@ -18,10 +18,15 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+import androidx.lifecycle.SavedStateHandle
+import androidx.navigation.toRoute
+import com.agriflow.app.core.navigation.Route
+
 @HiltViewModel
 class OrdersViewModel @Inject constructor(
     private val ordersRepository: OrdersRepository,
-    private val tokenRepository: TokenRepository
+    private val tokenRepository: TokenRepository,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(OrdersState())
@@ -31,6 +36,10 @@ class OrdersViewModel @Inject constructor(
     val events = _events.receiveAsFlow()
 
     init {
+        val routeArgs = savedStateHandle.toRoute<Route.Orders>()
+        routeArgs.orderId?.let { orderId ->
+            _state.update { it.copy(expandedOrderId = orderId) }
+        }
         viewModelScope.launch {
             tokenRepository.getUserRoleFlow().collect { role ->
                 _state.update { it.copy(activeRole = role) }

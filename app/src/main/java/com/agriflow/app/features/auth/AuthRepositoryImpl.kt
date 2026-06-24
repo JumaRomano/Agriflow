@@ -87,28 +87,18 @@ class AuthRepositoryImpl @Inject constructor(
         role: UserRole,
         businessName: String,
         businessEmail: String,
-        phoneNumber: String
-    ): Result<AuthSession, DataError.Network> {
-        val result = safeApiCall {
+        businessPhone: String
+    ): Result<BusinessDetailsResponseDto, DataError.Network> {
+        return safeApiCall {
             authApi.upgradeRole(
                 request = UpgradeRoleRequestDto(
                     role = role.name,
                     businessName = businessName.trim(),
                     businessEmail = businessEmail.trim(),
-                    phoneNumber = phoneNumber.trim()
+                    phoneNumber = businessPhone.trim()
                 )
             )
-        }.toAuthSessionResult()
-        
-        if (result is Result.Success) {
-            val session = result.data
-            tokenRepository.saveTokens(
-                accessToken = session.tokens.accessToken,
-                refreshToken = session.tokens.refreshToken
-            )
-            userDao.insertUser(session.user.toEntity())
         }
-        return result
     }
 
     override suspend fun logout(): EmptyResult<DataError.Local> {
@@ -179,7 +169,7 @@ class AuthRepositoryImpl @Inject constructor(
         surName: String,
         phoneNumber: String,
         email: String
-    ): Result<AuthSession, DataError.Network> {
+    ): EmptyResult<DataError.Network> {
         val result = safeApiCall {
             authApi.updateProfile(
                 userId = userId,
@@ -192,15 +182,21 @@ class AuthRepositoryImpl @Inject constructor(
                     email = email.trim()
                 )
             )
-        }.toAuthSessionResult()
+        }
 
         if (result is Result.Success) {
-            val session = result.data
-            tokenRepository.saveTokens(
-                accessToken = session.tokens.accessToken,
-                refreshToken = session.tokens.refreshToken
+            val currentRole = tokenRepository.getUserFlow().firstOrNull()?.role ?: UserRole.UNKNOWN
+            val updatedUser = UserEntity(
+                id = userId,
+                username = username.trim(),
+                email = email.trim(),
+                phoneNumber = phoneNumber.trim(),
+                role = currentRole,
+                firstName = firstName.trim(),
+                middleName = middleName?.trim()?.takeIf(String::isNotBlank),
+                surName = surName.trim()
             )
-            userDao.insertUser(session.user.toEntity())
+            userDao.insertUser(updatedUser)
         }
         return result
     }

@@ -22,13 +22,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Storefront
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.HorizontalDivider
 
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -46,7 +50,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -54,6 +60,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -61,6 +69,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 fun MyStoreRoute(
     onNavigateToMyStore: () -> Unit,
     onNavigateToAddProduct: () -> Unit,
+    onNavigateToOrders: (String) -> Unit,
     viewModel: SellerDashboardViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
@@ -73,7 +82,7 @@ fun MyStoreRoute(
                     // Navigate to export screen or handle export action
                 }
                 is SellerDashboardEvent.NavigateToOrderDetail -> {
-                    snackbarHostState.showSnackbar("Navigating to order: ${event.orderId}")
+                    onNavigateToOrders(event.orderId)
                 }
                 is SellerDashboardEvent.ShowSnackbarMessage -> {
                     snackbarHostState.showSnackbar(event.message)
@@ -140,19 +149,34 @@ fun SellerDashboardScreen(
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Filter: ",
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        MonthFilterDropdown(
+                            selectedFilter = state.selectedMonthFilter,
+                            monthlyBreakdown = state.monthlyBreakdown,
+                            onMonthSelected = { month ->
+                                onAction(SellerDashboardAction.OnMonthFilterSelected(month))
+                            }
+                        )
+                    }
                 }
             }
-
-            item {
-                Spacer(modifier = Modifier.height(8.dp))
-            }
-
 
             item {
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-            // KPI Grid (Responsive 2x2 layout for mobile screen size using weight)
+            // KPI Grid (Responsive grid layout for mobile screen size using weight)
             item {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -163,9 +187,28 @@ fun SellerDashboardScreen(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         KpiCard(
-                            title = "Revenue",
-                            value = state.totalRevenue,
+                            title = if (state.selectedMonthFilter == "All Time") "Total Revenue" else "${state.selectedMonthFilter} Revenue",
+                            value = state.displayRevenue,
                             icon = Icons.AutoMirrored.Filled.TrendingUp,
+                            iconTint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.weight(1f)
+                        )
+                        KpiCard(
+                            title = "This Month Revenue",
+                            value = state.thisMonthRevenue,
+                            icon = Icons.AutoMirrored.Filled.TrendingUp,
+                            iconTint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        KpiCard(
+                            title = if (state.selectedMonthFilter == "All Time") "Total Orders" else "${state.selectedMonthFilter} Orders",
+                            value = state.displayOrders.toString(),
+                            icon = Icons.Default.Storefront,
                             iconTint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.weight(1f)
                         )
@@ -182,27 +225,75 @@ fun SellerDashboardScreen(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         KpiCard(
+                            title = "Delivered Orders",
+                            value = state.deliveredOrders.toString(),
+                            icon = Icons.Default.Storefront,
+                            iconTint = MaterialTheme.colorScheme.secondary,
+                            modifier = Modifier.weight(1f)
+                        )
+                        KpiCard(
                             title = "Active Products",
                             value = state.activeListings.toString(),
                             icon = Icons.Default.Storefront,
                             iconTint = MaterialTheme.colorScheme.secondary,
                             modifier = Modifier.weight(1f)
                         )
-                        KpiCard(
-                            title = "Alerts",
-                            value = state.inventoryAlerts.toString(),
-                            icon = Icons.Default.Warning,
-                            iconTint = if (state.inventoryAlerts > 0) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
-                            containerColor = if (state.inventoryAlerts > 0) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.surface,
-                            contentColor = if (state.inventoryAlerts > 0) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onSurface,
-                            modifier = Modifier.weight(1f)
+                    }
+
+                }
+            }
+
+            // Monthly Breakdown Section
+            if (state.monthlyBreakdown.isNotEmpty()) {
+                item {
+                    Spacer(modifier = Modifier.height(24.dp))
+                    Text(
+                        text = "Monthly Performance",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+                itemsIndexed(
+                    items = state.monthlyBreakdown
+                ) { index, item ->
+                    ListItem(
+                        headlineContent = {
+                            Text(
+                                text = formatMonthOnly(item.monthLabel),
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        },
+                        supportingContent = {
+                            Text(
+                                text = "${item.orderCount ?: 0} orders",
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        },
+                        trailingContent = {
+                            Text(
+                                text = "Ksh ${String.format("%.2f", item.revenue ?: 0.0)}",
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        },
+                        colors = ListItemDefaults.colors(
+                            containerColor = Color.Transparent
+                        )
+                    )
+                    if (index < state.monthlyBreakdown.lastIndex) {
+                        HorizontalDivider(
+                            thickness = 1.dp,
+                            color = MaterialTheme.colorScheme.surfaceVariant
                         )
                     }
                 }
             }
 
             item {
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(24.dp))
             }
 
             // Recent Orders Header
@@ -245,10 +336,7 @@ fun SellerDashboardScreen(
                         onClick = { onAction(SellerDashboardAction.OnOrderClicked(order.id)) }
                     )
                     if (index < state.recentOrders.lastIndex) {
-                        HorizontalDivider(
-                            thickness = 1.dp,
-                            color = MaterialTheme.colorScheme.surfaceVariant
-                        )
+                        Spacer(modifier = Modifier.height(12.dp))
                     }
                 }
             }
@@ -314,54 +402,184 @@ private fun RecentOrderListItem(
     order: RecentOrder,
     onClick: () -> Unit
 ) {
-    ListItem(
-        headlineContent = {
-            Text(
-                text = order.productName,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-        },
-        supportingContent = {
-            Text(
-                text = "ID: ${order.id} • $${"%.2f".format(order.price)}",
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        },
-        trailingContent = {
+    OutlinedCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.outlinedCardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            // Header: Order Number & Date
             Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                StatusBadge(status = order.statusEnum)
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                    contentDescription = "View Order Details",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                Column {
+                    Text(
+                        text = "Order #${order.orderNumber}",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = formatDate(order.createdAt),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+                StatusBadge(status = order.status)
+            }
+
+            // Overview details (Items summary & Amount)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                val itemsSize = order.itemsCount
+                val itemsText = if (itemsSize == 1) "1 item" else "$itemsSize items"
+                Text(
+                    text = itemsText,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    text = "KES ${"%,.2f".format(order.totalAmount)}",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.ExtraBold,
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
-        },
-        colors = ListItemDefaults.colors(
-            containerColor = Color.Transparent
-        ),
-        modifier = Modifier.clickable(onClick = onClick)
-    )
+        }
+    }
 }
 
 @Composable
-private fun StatusBadge(status: OrderStatus) {
+private fun StatusBadge(status: String?) {
+    val cleanStatus = status?.uppercase() ?: "UNKNOWN"
+    val containerColor = when (cleanStatus) {
+        "PENDING" -> Color(0xFFFFF9C4) // yellow container
+        "SHIPPED" -> Color(0xFFE3F2FD) // blue container
+        "COMPLETED", "DELIVERED" -> Color(0xFFE8F5E9) // green container
+        "CANCELLED" -> Color(0xFFFFEBEE) // red container
+        else -> MaterialTheme.colorScheme.surfaceVariant
+    }
+    val contentColor = when (cleanStatus) {
+        "PENDING" -> Color(0xFFF57F17) // dark yellow text
+        "SHIPPED" -> Color(0xFF1565C0) // dark blue text
+        "COMPLETED", "DELIVERED" -> Color(0xFF2E7D32) // dark green text
+        "CANCELLED" -> Color(0xFFC62828) // dark red text
+        else -> MaterialTheme.colorScheme.onSurfaceVariant
+    }
+
     Surface(
         shape = RoundedCornerShape(8.dp),
-        color = MaterialTheme.colorScheme.surfaceVariant,
-        contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(vertical = 4.dp)
+        color = containerColor,
+        contentColor = contentColor
     ) {
         Text(
-            text = status.name,
-            style = MaterialTheme.typography.labelMedium,
-            fontWeight = FontWeight.SemiBold,
+            text = status ?: "UNKNOWN",
+            style = MaterialTheme.typography.labelSmall,
+            fontWeight = FontWeight.ExtraBold,
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
         )
     }
 }
+
+private fun formatDate(dateStr: String): String {
+    return try {
+        // Try parsing full ISO datetime
+        val parser = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+        val date = parser.parse(dateStr)
+        val formatter = SimpleDateFormat("MMM d, yyyy 'at' h:mm a", Locale.getDefault())
+        if (date != null) formatter.format(date) else dateStr
+    } catch (e: Exception) {
+        try {
+            val parser2 = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+            val date = parser2.parse(dateStr)
+            val formatter = SimpleDateFormat("MMM d, yyyy 'at' h:mm a", Locale.getDefault())
+            if (date != null) formatter.format(date) else dateStr
+        } catch (e2: Exception) {
+            dateStr
+        }
+    }
+}
+
+@Composable
+private fun MonthFilterDropdown(
+    selectedFilter: String,
+    monthlyBreakdown: List<MonthlyBreakdownDto>,
+    onMonthSelected: (String) -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    val filterOptions = remember(monthlyBreakdown) {
+        val list = mutableListOf("All Time", "This Month")
+        monthlyBreakdown.forEach { breakdown ->
+            val cleanMonth = formatMonthOnly(breakdown.monthLabel)
+            if (cleanMonth != "Unknown" && !list.contains(cleanMonth)) {
+                list.add(cleanMonth)
+            }
+        }
+        list
+    }
+
+    Box {
+        Surface(
+            onClick = { expanded = true },
+            shape = RoundedCornerShape(8.dp),
+            color = MaterialTheme.colorScheme.surfaceVariant,
+            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(start = 4.dp)
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Text(
+                    text = selectedFilter,
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Bold
+                )
+                Icon(
+                    imageVector = Icons.Default.ArrowDropDown,
+                    contentDescription = "Select Month",
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+        }
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            filterOptions.forEach { option ->
+                DropdownMenuItem(
+                    text = { Text(option) },
+                    onClick = {
+                        onMonthSelected(option)
+                        expanded = false
+                    }
+                )
+            }
+        }
+    }
+}
+
+private fun formatMonthOnly(monthLabel: String?): String {
+    if (monthLabel.isNullOrBlank()) return "Unknown"
+    val firstPart = monthLabel.split(" ").firstOrNull() ?: monthLabel
+    return firstPart.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
+}
+
 

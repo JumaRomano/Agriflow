@@ -1,7 +1,7 @@
 /**
  * Jetpack Compose UI screen components for the MyProducts screen.
  */
-package com.agriflow.app.features.MyStore.myproducts
+package com.agriflow.app.features.products.myproducts
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -73,6 +73,10 @@ fun MyProductsRoute(
 ) {
     val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(Unit) {
+        viewModel.onAction(MyProductsAction.Refresh)
+    }
 
     LaunchedEffect(viewModel.events) {
         viewModel.events.collect { event ->
@@ -272,7 +276,7 @@ private fun ListedProductCard(
                 }
             }
 
-            // 2. Middle Content (Uses weight(1f) to take available space safely)
+            // 2. Middle Content
             Column(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -295,24 +299,24 @@ private fun ListedProductCard(
                     overflow = TextOverflow.Ellipsis
                 )
 
+                Text(
+                    text = "Stock: ${product.stockQuantity}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+
+                )
+
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Text(
-                        text = "Stock: ${product.stockQuantity}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        // This allows the stock text to shrink and add '...' if space is tight, protecting the badge
-                        modifier = Modifier.weight(1f, fill = false)
-                    )
                     StatusBadge(status = product.status)
                 }
             }
 
-            // 3. Trailing Content (Action Icons)
+            // 3. Action Icons
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {

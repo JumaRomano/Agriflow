@@ -1,11 +1,12 @@
 /**
  * Sealed interface representing user actions and UI events for the MyProducts flow.
  */
-package com.agriflow.app.features.MyStore.myproducts
+package com.agriflow.app.features.products.myproducts
 
 sealed interface MyProductsAction {
     data object OnAddProductClicked : MyProductsAction
     data class OnProductClicked(val productId: String) : MyProductsAction
     data class OnEditClicked(val productId: String) : MyProductsAction
     data class OnDeleteClicked(val productId: String) : MyProductsAction
+    data object Refresh : MyProductsAction
 }

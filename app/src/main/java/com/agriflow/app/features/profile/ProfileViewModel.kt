@@ -18,11 +18,14 @@ import javax.inject.Inject
 
 import com.agriflow.app.features.notifications.NotificationsRepository
 import com.google.firebase.messaging.FirebaseMessaging
+import com.agriflow.app.features.auth.AuthRepository
+import com.agriflow.app.core.util.Result
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     private val tokenRepository: TokenRepository,
-    private val notificationsRepository: NotificationsRepository
+    private val notificationsRepository: NotificationsRepository,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(ProfileState())
@@ -56,7 +59,37 @@ class ProfileViewModel @Inject constructor(
                     if (activeRole == UserRole.FARMER || activeRole == UserRole.SUPPLIER) {
                         tokenRepository.setActiveRole(UserRole.BUYER)
                     } else {
-                        _events.send(ProfileEvent.NavigateToRoleUpgrade(state.value.role))
+                        val actualRole = tokenRepository.getActualRole()
+                        if (actualRole == UserRole.FARMER || actualRole == UserRole.SUPPLIER) {
+                            tokenRepository.setActiveRole(actualRole)
+                        } else {
+                            _state.update { it.copy(isLoading = true) }
+                            when (val result = authRepository.getBusinessDetails()) {
+                                is Result.Success -> {
+                                    _state.update { it.copy(isLoading = false) }
+                                    val businessDetails = result.data
+                                    val approvalStatus = businessDetails.approvalStatus
+                                    if (approvalStatus != null) {
+                                        var registeredRole = tokenRepository.getRegisteredBusinessRole()
+                                        if (registeredRole == UserRole.UNKNOWN) {
+                                            registeredRole = UserRole.FARMER
+                                            tokenRepository.saveRegisteredBusinessRole(registeredRole)
+                                        }
+                                        if (approvalStatus.equals("APPROVED", ignoreCase = true)) {
+                                            tokenRepository.setActiveRole(registeredRole)
+                                        } else {
+                                            _events.send(ProfileEvent.NavigateToRoleUpgrade(registeredRole))
+                                        }
+                                    } else {
+                                        _events.send(ProfileEvent.NavigateToRoleUpgrade(UserRole.BUYER))
+                                    }
+                                }
+                                is Result.Error -> {
+                                    _state.update { it.copy(isLoading = false) }
+                                    _events.send(ProfileEvent.NavigateToRoleUpgrade(UserRole.BUYER))
+                                }
+                            }
+                        }
                     }
                 }
             }

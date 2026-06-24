@@ -7,4 +7,5 @@ sealed interface SellerDashboardAction {
     data object OnExportReportClicked : SellerDashboardAction
     data class OnOrderClicked(val orderId: String) : SellerDashboardAction
     data object OnAddProductClicked : SellerDashboardAction
+    data class OnMonthFilterSelected(val monthLabel: String) : SellerDashboardAction
 }

@@ -30,7 +30,7 @@ interface AuthApi {
     @POST("businesses/register")
     suspend fun upgradeRole(
         @Body request: UpgradeRoleRequestDto
-    ): Response<AuthResponseDto>
+    ): Response<BusinessDetailsResponseDto>
 
     @GET("businesses/me")
     suspend fun getBusinessDetails(): Response<BusinessDetailsResponseDto>

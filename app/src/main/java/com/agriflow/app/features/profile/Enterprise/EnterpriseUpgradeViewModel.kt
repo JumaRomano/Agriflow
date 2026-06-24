@@ -95,6 +95,7 @@ class EnterpriseUpgradeViewModel @Inject constructor(
             is RoleUpgradeAction.BusinessPhoneChanged -> {
                 _state.update { it.copy(businessPhone = action.phone, errorMessage = null) }
             }
+
             RoleUpgradeAction.SubmitClicked -> submitUpgrade()
             RoleUpgradeAction.SwitchToActiveRole -> switchToActiveRole()
             else -> {}
@@ -123,9 +124,17 @@ class EnterpriseUpgradeViewModel @Inject constructor(
                 )
             ) {
                 is Result.Success -> {
-                    _state.update { it.copy(isLoading = false) }
+                    val businessDetails = result.data
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            businessName = businessDetails.businessName.orEmpty(),
+                            businessEmail = businessDetails.businessEmail.orEmpty(),
+                            businessPhone = businessDetails.businessPhone.orEmpty(),
+                            approvalStatus = businessDetails.approvalStatus
+                        )
+                    }
                     tokenRepository.saveRegisteredBusinessRole(UserRole.SUPPLIER)
-                    _events.send(RoleUpgradeEvent.UpgradeSuccess)
                 }
                 is Result.Error -> {
                     val message = "Registering your Enterprise failed. Please try again."

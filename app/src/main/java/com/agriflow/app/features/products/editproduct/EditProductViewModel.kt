@@ -48,6 +48,10 @@ class EditProductViewModel @Inject constructor(
             marketplaceRepository.getProductById(productId).collect { product ->
                 if (product != null && !isInitialized) {
                     isInitialized = true
+                    val matchedCategoryId = _state.value.categories
+                        .find { it.name.equals(product.category, ignoreCase = true) }?.id
+                        ?: product.category
+
                     _state.update {
                         it.copy(
                             productId = productId,
@@ -55,7 +59,7 @@ class EditProductViewModel @Inject constructor(
                             description = product.description,
                             price = (product.priceCents / 100.0).toString(),
                             quantity = product.availableQuantity.toInt().toString(),
-                            selectedCategoryId = product.category,
+                            selectedCategoryId = matchedCategoryId,
                             selectedUnit = product.quantityUnit,
                             selectedImageUris = if (!product.imageUrl.isNullOrBlank()) {
                                 listOf(Uri.parse(product.imageUrl))
@@ -251,9 +255,15 @@ class EditProductViewModel @Inject constructor(
             _state.update { it.copy(isFetchingCategories = true) }
             when (val result = marketplaceRepository.getCategories()) {
                 is Result.Success -> {
-                    _state.update {
-                        it.copy(
-                            categories = result.data,
+                    _state.update { currentState ->
+                        val categoriesList = result.data
+                        val matchedId = categoriesList
+                            .find { it.name.equals(currentState.selectedCategoryId, ignoreCase = true) }?.id
+                            ?: currentState.selectedCategoryId
+
+                        currentState.copy(
+                            categories = categoriesList,
+                            selectedCategoryId = matchedId,
                             isFetchingCategories = false
                         )
                     }

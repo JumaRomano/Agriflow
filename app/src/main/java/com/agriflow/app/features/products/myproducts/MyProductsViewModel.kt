@@ -1,7 +1,7 @@
 /**
  * ViewModel managing the business logic and UI state for the MyProducts feature.
  */
-package com.agriflow.app.features.MyStore.myproducts
+package com.agriflow.app.features.products.myproducts
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -19,10 +19,13 @@ import com.agriflow.app.core.security.TokenRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.combine
 
+import com.agriflow.app.features.auth.AuthRepository
+
 @HiltViewModel
 class MyProductsViewModel @Inject constructor(
     private val repository: MarketplaceRepository,
-    private val tokenRepository: TokenRepository
+    private val tokenRepository: TokenRepository,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(MyProductsState())
@@ -41,14 +44,32 @@ class MyProductsViewModel @Inject constructor(
             val user = tokenRepository.getUserFlow().first()
             val username = user?.username.orEmpty()
 
+            var businessId: String? = null
+            var businessName: String? = null
+
+            // Fetch business details to get the seller's business info
+            when (val result = authRepository.getBusinessDetails()) {
+                is Result.Success -> {
+                    businessId = result.data.id
+                    businessName = result.data.businessName
+                }
+                is Result.Error -> {
+                    // Fallback to username only if fetch fails
+                }
+            }
+
             combine(
                 repository.observeProducts(),
                 repository.observeStoreInventory()
             ) { syncedProducts, offlineDrafts ->
-                // Filter synced products where farmerName matches the seller's username
+                // Filter synced products where businessId, businessName, or farmerName matches
                 val syncedListed = syncedProducts
                     .filter { product ->
-                        username.isBlank() || product.farmerName.equals(username, ignoreCase = true)
+                        val matchesBusinessId = businessId != null && product.businessId == businessId
+                        val matchesBusinessName = businessName != null && product.farmerName.equals(businessName, ignoreCase = true)
+                        val matchesUsername = username.isNotBlank() && product.farmerName.equals(username, ignoreCase = true)
+
+                        username.isBlank() || matchesBusinessId || matchesBusinessName || matchesUsername
                     }
                     .map { product ->
                         ListedProduct(
@@ -132,6 +153,9 @@ class MyProductsViewModel @Inject constructor(
                 viewModelScope.launch {
                     _events.send(MyProductsEvent.ShowSnackbarMessage("Product deleted successfully"))
                 }
+            }
+            MyProductsAction.Refresh -> {
+                loadListedProducts()
             }
         }
     }

@@ -403,7 +403,7 @@ fun EditProfileScreen(
                     OutlinedTextField(
                         value = state.currentPassword,
                         onValueChange = { onAction(EditProfileAction.OnCurrentPasswordChanged(it)) },
-                        label = { Text("Current Password") },
+                        label = { Text("Enter Current Password") },
                         leadingIcon = {
                             Icon(
                                 imageVector = Icons.Default.Lock,

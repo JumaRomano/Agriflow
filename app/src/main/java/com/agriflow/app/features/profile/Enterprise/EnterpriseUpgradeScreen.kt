@@ -129,16 +129,22 @@ fun EnterpriseUpgradeScreen(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     val isApproved = state.approvalStatus.equals("APPROVED", ignoreCase = true)
-                    val statusText = if (isApproved) "Approved" else "Pending Review"
-                    val statusContainerColor = if (isApproved) {
-                        MaterialTheme.colorScheme.primaryContainer
-                    } else {
-                        MaterialTheme.colorScheme.tertiaryContainer
+                    val isRejected = state.approvalStatus.equals("REJECTED", ignoreCase = true)
+                    
+                    val statusText = when {
+                        isApproved -> "Approved"
+                        isRejected -> "Rejected"
+                        else -> "Pending Review"
                     }
-                    val statusContentColor = if (isApproved) {
-                        MaterialTheme.colorScheme.onPrimaryContainer
-                    } else {
-                        MaterialTheme.colorScheme.onTertiaryContainer
+                    val statusContainerColor = when {
+                        isApproved -> MaterialTheme.colorScheme.primaryContainer
+                        isRejected -> MaterialTheme.colorScheme.errorContainer
+                        else -> MaterialTheme.colorScheme.tertiaryContainer
+                    }
+                    val statusContentColor = when {
+                        isApproved -> MaterialTheme.colorScheme.onPrimaryContainer
+                        isRejected -> MaterialTheme.colorScheme.onErrorContainer
+                        else -> MaterialTheme.colorScheme.onTertiaryContainer
                     }
 
                     Box(
@@ -152,6 +158,16 @@ fun EnterpriseUpgradeScreen(
                             style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.Bold,
                             color = statusContentColor
+                        )
+                    }
+
+                    if (isRejected) {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Text(
+                            text = "Your registration request has been rejected. Please contact support for more details.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.padding(horizontal = 4.dp)
                         )
                     }
 

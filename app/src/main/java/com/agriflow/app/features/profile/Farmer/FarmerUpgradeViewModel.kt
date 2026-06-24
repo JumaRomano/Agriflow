@@ -123,9 +123,17 @@ class FarmerUpgradeViewModel @Inject constructor(
                 )
             ) {
                 is Result.Success -> {
-                    _state.update { it.copy(isLoading = false) }
+                    val businessDetails = result.data
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            businessName = businessDetails.businessName.orEmpty(),
+                            businessEmail = businessDetails.businessEmail.orEmpty(),
+                            businessPhone = businessDetails.businessPhone.orEmpty(),
+                            approvalStatus = businessDetails.approvalStatus
+                        )
+                    }
                     tokenRepository.saveRegisteredBusinessRole(UserRole.FARMER)
-                    _events.send(RoleUpgradeEvent.UpgradeSuccess)
                 }
                 is Result.Error -> {
                     val message = "Upgrade to Farmer failed. Please try again."

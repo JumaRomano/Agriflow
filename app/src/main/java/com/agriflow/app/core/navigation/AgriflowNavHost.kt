@@ -55,7 +55,7 @@ import com.agriflow.app.features.products.editproduct.EditProductRoute
 import com.agriflow.app.features.auth.password.ForgotPasswordRoute
 import com.agriflow.app.features.auth.otp.OtpVerificationRoute
 import com.agriflow.app.features.auth.password.CreateNewPasswordRoute
-import com.agriflow.app.features.MyStore.myproducts.MyProductsRoute
+import com.agriflow.app.features.products.myproducts.MyProductsRoute
 import com.agriflow.app.features.cart.presentation.CartRoute
 import com.agriflow.app.features.payment.PaymentRoute
 import com.agriflow.app.features.payment.PaymentMethodsRoute
@@ -116,7 +116,7 @@ fun AgriflowNavHost(
             )
             add(
                 BottomNavItem(
-                    route = Route.Orders,
+                    route = Route.Orders(),
                     title = "Orders",
                     icon = Icons.AutoMirrored.Filled.ReceiptLong
                 )
@@ -417,6 +417,11 @@ fun AgriflowNavHost(
                             navController.navigate(Route.MyProducts) {
                                 launchSingleTop = true
                             }
+                        },
+                        onNavigateToOrders = { orderId ->
+                            navController.navigate(Route.Orders(orderId)) {
+                                launchSingleTop = true
+                            }
                         }
                     )
                 }
@@ -490,7 +495,7 @@ fun AgriflowNavHost(
                             }
                         },
                         onNavigateToOrders = {
-                            navController.navigate(Route.Orders) {
+                            navController.navigate(Route.Orders()) {
                                 launchSingleTop = true
                             }
                         },
@@ -561,7 +566,7 @@ fun AgriflowNavHost(
                             navController.popBackStack()
                         },
                         onNavigateToOrders = {
-                            navController.navigate(Route.Orders) {
+                            navController.navigate(Route.Orders()) {
                                 popUpTo(Route.Cart) {
                                     inclusive = true
                                 }
