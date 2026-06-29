@@ -41,6 +41,7 @@ private fun String?.toUserRole(): UserRole {
         UserRole.BUYER.name -> UserRole.BUYER
         "BUYER" -> UserRole.BUYER
         UserRole.ADMIN.name -> UserRole.ADMIN
+        UserRole.AGENT.name -> UserRole.AGENT
         else -> UserRole.UNKNOWN
     }
 }

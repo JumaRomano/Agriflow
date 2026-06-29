@@ -179,6 +179,7 @@ class EncryptedTokenRepositoryImpl @Inject constructor(
                 "SUPPLIER", "SELLER" -> UserRole.SUPPLIER
                 "BUYER" -> UserRole.BUYER
                 "ADMIN" -> UserRole.ADMIN
+                "Agent" -> UserRole.AGENT
                 else -> UserRole.UNKNOWN
             }
 
