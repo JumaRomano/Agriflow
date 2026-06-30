@@ -82,6 +82,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.agriflow.app.features.auth.UserRole
 import com.agriflow.app.features.marketplace.MarketplaceAction
+import com.agriflow.app.features.ratings.ui.RatingsViewModel
+import com.agriflow.app.features.ratings.ui.components.SubmitRatingDialog
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -89,10 +91,12 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OrdersRoute(
-    viewModel: OrdersViewModel = hiltViewModel()
+    viewModel: OrdersViewModel = hiltViewModel(),
+    ratingsViewModel: RatingsViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+    var showRatingDialogForOrder by remember { mutableStateOf<OrderDto?>(null) }
 
     LaunchedEffect(viewModel.events) {
         viewModel.events.collect { event ->
@@ -110,8 +114,22 @@ fun OrdersRoute(
     OrdersScreen(
         state = state,
         snackbarHostState = snackbarHostState,
-        onAction = viewModel::onAction
+        onAction = viewModel::onAction,
+        onRateSeller = { order -> showRatingDialogForOrder = order }
     )
+
+    if (showRatingDialogForOrder != null) {
+        val order = showRatingDialogForOrder!!
+        val sellerId = order.businessId ?: "unknown_seller"
+        SubmitRatingDialog(
+            sellerName = "Seller", // Could fetch specific seller name if needed
+            onDismissRequest = { showRatingDialogForOrder = null },
+            onSubmit = { ratingValue, reviewText ->
+                ratingsViewModel.submitRating(sellerId, ratingValue, reviewText)
+                showRatingDialogForOrder = null
+            }
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -119,7 +137,8 @@ fun OrdersRoute(
 fun OrdersScreen(
     state: OrdersState,
     snackbarHostState: SnackbarHostState,
-    onAction: (OrdersAction) -> Unit
+    onAction: (OrdersAction) -> Unit,
+    onRateSeller: (OrderDto) -> Unit = {}
 ) {
     var showUpdateDialog by remember { mutableStateOf<OrderDto?>(null) }
 
@@ -235,7 +254,8 @@ fun OrdersScreen(
                             isExpanded = state.expandedOrderId == order.id,
                             isSeller = state.activeRole == UserRole.FARMER || state.activeRole == UserRole.SUPPLIER,
                             onToggleExpand = { onAction(OrdersAction.ToggleOrderDetails(order.id.orEmpty())) },
-                            onUpdateStatusClicked = { showUpdateDialog = order }
+                            onUpdateStatusClicked = { showUpdateDialog = order },
+                            onRateSellerClicked = { onRateSeller(order) }
                         )
                     }
                 }
@@ -261,7 +281,8 @@ fun OrderCard(
     isExpanded: Boolean,
     isSeller: Boolean,
     onToggleExpand: () -> Unit,
-    onUpdateStatusClicked: () -> Unit
+    onUpdateStatusClicked: () -> Unit,
+    onRateSellerClicked: () -> Unit = {}
 ) {
     val transitionState = animateFloatAsState(targetValue = if (isExpanded) 180f else 0f, label = "rotation")
 
@@ -439,6 +460,18 @@ fun OrderCard(
                             )
                         ) {
                             Text("Update Shipment Status", fontWeight = FontWeight.Bold)
+                        }
+                    } else if (order.status?.uppercase() == "DELIVERED" || order.status?.uppercase() == "COMPLETED") {
+                        Button(
+                            onClick = onRateSellerClicked,
+                            shape = RoundedCornerShape(8.dp),
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.secondary,
+                                contentColor = MaterialTheme.colorScheme.onSecondary
+                            )
+                        ) {
+                            Text("Rate Seller", fontWeight = FontWeight.Bold)
                         }
                     }
                 }

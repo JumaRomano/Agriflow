@@ -30,6 +30,10 @@ class NavigationViewModel @Inject constructor(
         return !tokenRepository.getAccessToken().isNullOrBlank()
     }
 
+    fun isUserStaff(): Boolean {
+        return tokenRepository.getActualRole() == UserRole.AGENT
+    }
+
     fun getUpgradeDestination(): Route {
         val actualRole = tokenRepository.getActualRole()
         val registeredRole = tokenRepository.getRegisteredBusinessRole()

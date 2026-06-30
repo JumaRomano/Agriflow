@@ -8,7 +8,7 @@ import com.google.gson.annotations.SerializedName
 data class OrderDto(
     @SerializedName(value = "id", alternate = ["_id", "orderId"]) val id: String?,
     @SerializedName("userId") val userId: String?,
-   // @SerializedName("businessId") val businessId: String,
+    @SerializedName("businessId") val businessId: String?,
     @SerializedName("orderNumber") val orderNumber: String?,
     @SerializedName(value = "status", alternate = ["fulfillmentStatus"]) val status: String?,
     @SerializedName(value = "totalAmount", alternate = ["sellerTotal"]) val totalAmount: Double?,

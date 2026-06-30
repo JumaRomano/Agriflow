@@ -24,16 +24,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.agriflow.app.features.auth.AuthAction
 import com.agriflow.app.features.auth.AuthEvent
 import com.agriflow.app.features.auth.AuthState
 import com.agriflow.app.features.auth.AuthViewModel
+import com.agriflow.app.features.staff.auth.StaffLoginDialog
 
 @Composable
 fun LoginRoute(
@@ -60,7 +65,8 @@ fun LoginRoute(
         snackbarHostState = snackbarHostState,
         onAction = viewModel::onAction,
         onRegisterClick = onRegisterClick,
-        onForgotClick = onForgotClick
+        onForgotClick = onForgotClick,
+        onStaffLoginSuccess = onLoginSuccess
     )
 }
 
@@ -71,10 +77,10 @@ fun LoginScreen(
     onAction: (AuthAction) -> Unit,
     onRegisterClick: () -> Unit,
     onForgotClick:() -> Unit,
+    onStaffLoginSuccess: () -> Unit,
     modifier: Modifier = Modifier
-
-
 ) {
+    var showStaffLogin by remember { mutableStateOf(false) }
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         modifier = modifier
@@ -89,7 +95,12 @@ fun LoginScreen(
         ) {
             Text(
                 text = "Welcome to Agriflow",
-                style = MaterialTheme.typography.headlineMedium
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier.pointerInput(Unit) {
+                    detectTapGestures(
+                        onLongPress = { showStaffLogin = true }
+                    )
+                }
             )
             Text(
                 text = "Join the future of Agriculture.",
@@ -160,5 +171,15 @@ fun LoginScreen(
             }
 
         }
+    }
+
+    if (showStaffLogin) {
+        StaffLoginDialog(
+            onDismiss = { showStaffLogin = false },
+            onLoginSuccess = {
+                showStaffLogin = false
+                onStaffLoginSuccess()
+            }
+        )
     }
 }

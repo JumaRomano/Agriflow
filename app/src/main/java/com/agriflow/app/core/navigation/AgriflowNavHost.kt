@@ -63,6 +63,7 @@ import com.agriflow.app.features.orders.OrdersRoute
 import com.agriflow.app.features.wallet.WalletRoute
 import com.agriflow.app.features.businessdetails.BusinessDetailsRoute
 import com.agriflow.app.features.notifications.NotificationScreen
+import com.agriflow.app.features.staff.dashboard.StaffDashboardRoute
 
 
 
@@ -209,7 +210,11 @@ fun AgriflowNavHost(
                 SplashRoute(
                     onSplashFinished = {
                         val startDestination = if (viewModel.isUserLoggedIn()){
-                            Route.MainGraph
+                            if (viewModel.isUserStaff()) {
+                                Route.StaffGraph
+                            } else {
+                                Route.MainGraph
+                            }
                         }else{
                             Route.AuthGraph
                         }
@@ -230,7 +235,8 @@ fun AgriflowNavHost(
                 composable<Route.Login> {
                     LoginRoute (
                         onLoginSuccess = {
-                            navController.navigate(Route.MainGraph) {
+                            val destination = if (viewModel.isUserStaff()) Route.StaffGraph else Route.MainGraph
+                            navController.navigate(destination) {
                                 popUpTo<Route.AuthGraph> {
                                     inclusive = true
                                 }
@@ -325,6 +331,22 @@ fun AgriflowNavHost(
                 }
 
 
+            }
+
+            // --- STAFF GRAPH ---
+            navigation<Route.StaffGraph>(startDestination = Route.StaffDashboard) {
+                composable<Route.StaffDashboard> {
+                    StaffDashboardRoute(
+                        onLogoutSuccess = {
+                            navController.navigate(Route.AuthGraph) {
+                                popUpTo(navController.graph.id) {
+                                    inclusive = true
+                                }
+                                launchSingleTop = true
+                            }
+                        }
+                    )
+                }
             }
 
             // --- MAIN GRAPH ---

@@ -24,6 +24,9 @@ sealed interface Route {
     @Serializable
     data object MainGraph : Route
 
+    @Serializable
+    data object StaffGraph : Route
+
     // --- AUTH SCREENS ---
     // We use 'data object' for screens that don't take any arguments.
     @Serializable
@@ -38,6 +41,14 @@ sealed interface Route {
         // --- MAIN SCREENS ---
     @Serializable
     data object Home : Route
+
+        // --- STAFF SCREENS ---
+    @Serializable
+    data object StaffDashboard : Route
+    @Serializable
+    data object StaffTasks : Route
+    @Serializable
+    data object StaffAccount : Route
 
     @Serializable
     data class Marketplace(val searchFilter: String? = null) : Route
