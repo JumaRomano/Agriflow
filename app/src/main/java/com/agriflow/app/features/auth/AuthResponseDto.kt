@@ -11,5 +11,7 @@ data class AuthResponseDto(
     @SerializedName(value = "refreshToken", alternate = ["refresh_token"])
     val refreshToken: String?,
     val role: String?,
-    val username: String?
+    val username: String?,
+    @SerializedName("mustChangePassword")
+    val mustChangePassword: Boolean? = false
 )

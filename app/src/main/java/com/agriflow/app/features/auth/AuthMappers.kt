@@ -29,7 +29,8 @@ fun AuthResponseDto.toAuthSession(): AuthSession? {
         tokens = AuthTokens(
             accessToken = accessToken,
             refreshToken = refreshToken
-        )
+        ),
+        mustChangePassword = mustChangePassword == true
     )
 }
 

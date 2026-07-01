@@ -6,6 +6,7 @@ import com.agriflow.app.core.util.DataError
 import com.agriflow.app.core.util.Result
 import com.agriflow.app.features.auth.AuthSession
 import com.agriflow.app.features.auth.UserDao
+import com.agriflow.app.features.auth.ChangePasswordRequestDto
 import com.agriflow.app.features.auth.toAuthSession
 import com.agriflow.app.features.auth.toEntity
 import javax.inject.Inject
@@ -15,6 +16,12 @@ interface StaffAuthRepository {
         username: String,
         password: String
     ): Result<AuthSession, DataError.Network>
+
+    suspend fun changePassword(
+        oldPassword: String,
+        newPassword: String,
+        confirmNewPassword: String
+    ): Result<Unit, DataError.Network>
 }
 
 class StaffAuthRepositoryImpl @Inject constructor(
@@ -53,6 +60,22 @@ class StaffAuthRepositoryImpl @Inject constructor(
                     Result.Error(DataError.Network.SERIALIZATION)
                 }
             }
+        }
+    }
+
+    override suspend fun changePassword(
+        oldPassword: String,
+        newPassword: String,
+        confirmNewPassword: String
+    ): Result<Unit, DataError.Network> {
+        return safeApiCall {
+            staffAuthApi.changePassword(
+                request = ChangePasswordRequestDto(
+                    oldPassword = oldPassword,
+                    newPassword = newPassword,
+                    confirmNewPassword = confirmNewPassword
+                )
+            )
         }
     }
 }

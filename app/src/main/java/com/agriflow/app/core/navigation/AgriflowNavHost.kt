@@ -64,6 +64,7 @@ import com.agriflow.app.features.wallet.WalletRoute
 import com.agriflow.app.features.businessdetails.BusinessDetailsRoute
 import com.agriflow.app.features.notifications.NotificationScreen
 import com.agriflow.app.features.staff.dashboard.StaffDashboardRoute
+import com.agriflow.app.features.staff.auth.StaffChangePasswordRoute
 
 
 
@@ -235,11 +236,23 @@ fun AgriflowNavHost(
                 composable<Route.Login> {
                     LoginRoute (
                         onLoginSuccess = {
-                            val destination = if (viewModel.isUserStaff()) Route.StaffGraph else Route.MainGraph
-                            navController.navigate(destination) {
+                            navController.navigate(Route.MainGraph) {
                                 popUpTo<Route.AuthGraph> {
                                     inclusive = true
                                 }
+                                launchSingleTop = true
+                            }
+                        },
+                        onStaffLoginSuccess = {
+                            navController.navigate(Route.StaffGraph) {
+                                popUpTo<Route.AuthGraph> {
+                                    inclusive = true
+                                }
+                                launchSingleTop = true
+                            }
+                        },
+                        onNavigateToChangePassword = { currentPassword ->
+                            navController.navigate(Route.StaffChangePassword(currentPassword)) {
                                 launchSingleTop = true
                             }
                         },
@@ -330,6 +343,18 @@ fun AgriflowNavHost(
                     )
                 }
 
+                composable<Route.StaffChangePassword> {
+                    StaffChangePasswordRoute(
+                        onPasswordChanged = {
+                            navController.navigate(Route.StaffGraph) {
+                                popUpTo<Route.AuthGraph> {
+                                    inclusive = true
+                                }
+                                launchSingleTop = true
+                            }
+                        }
+                    )
+                }
 
             }
 

@@ -58,6 +58,8 @@ fun RegisterRoute(
             when (event) {
                 is AuthEvent.NavigateToOtp -> onNavigateToOtp(event.email, event.type)
                 AuthEvent.NavigateToMain -> onRegisterSuccess()
+                AuthEvent.NavigateToStaffDashboard -> { /* Not applicable to Register screen */ }
+                is AuthEvent.NavigateToChangePassword -> { /* Not applicable to Register screen */ }
                 is AuthEvent.ShowMessage -> snackbarHostState.showSnackbar(event.message)
             }
         }

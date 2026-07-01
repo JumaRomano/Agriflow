@@ -21,6 +21,7 @@ class AuthViewModelTest {
     val mainDispatcherRule = MainDispatcherRule()
 
     private val authRepository: AuthRepository = mockk()
+    private val staffAuthRepository: com.agriflow.app.features.staff.auth.StaffAuthRepository = mockk()
     private lateinit var viewModel: AuthViewModel
 
     private val dummyUser = User(
@@ -45,7 +46,7 @@ class AuthViewModelTest {
 
     @Before
     fun setUp() {
-        viewModel = AuthViewModel(authRepository)
+        viewModel = AuthViewModel(authRepository, staffAuthRepository)
     }
 
     // --- Login Validation Tests ---
@@ -57,21 +58,23 @@ class AuthViewModelTest {
 
         viewModel.events.test {
             viewModel.onAction(AuthAction.LoginSubmitted)
-            assertEquals("Email is required", viewModel.state.value.errorMessage)
-            assertEquals(AuthEvent.ShowMessage("Email is required"), awaitItem())
+            assertEquals("Email or Username is required", viewModel.state.value.errorMessage)
+            assertEquals(AuthEvent.ShowMessage("Email or Username is required"), awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
     }
 
     @Test
-    fun `login validation - when email is invalid, show error`() = runTest {
-        viewModel.onAction(AuthAction.LoginEmailChanged("invalidemail"))
+    fun `staff login - when mustChangePassword is true, emit NavigateToChangePassword`() = runTest {
+        val staffSession = dummySession.copy(mustChangePassword = true)
+        coEvery { staffAuthRepository.login("agent01", "password123") } returns Result.Success(staffSession)
+
+        viewModel.onAction(AuthAction.LoginEmailChanged("agent01"))
         viewModel.onAction(AuthAction.LoginPasswordChanged("password123"))
 
         viewModel.events.test {
             viewModel.onAction(AuthAction.LoginSubmitted)
-            assertEquals("Enter a valid email address", viewModel.state.value.errorMessage)
-            assertEquals(AuthEvent.ShowMessage("Enter a valid email address"), awaitItem())
+            assertEquals(AuthEvent.NavigateToChangePassword("password123"), awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -438,7 +441,7 @@ class AuthViewModelTest {
         viewModel.onAction(AuthAction.LoginEmailChanged(""))
         viewModel.onAction(AuthAction.LoginPasswordChanged("password123"))
         viewModel.onAction(AuthAction.LoginSubmitted)
-        assertEquals("Email is required", viewModel.state.value.errorMessage)
+        assertEquals("Email or Username is required", viewModel.state.value.errorMessage)
 
         // 2. Clear login error by changing email
         viewModel.onAction(AuthAction.LoginEmailChanged("user@example.com"))

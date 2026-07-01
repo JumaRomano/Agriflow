@@ -51,6 +51,9 @@ sealed interface Route {
     data object StaffAccount : Route
 
     @Serializable
+    data class StaffChangePassword(val currentPassword: String = "") : Route
+
+    @Serializable
     data class Marketplace(val searchFilter: String? = null) : Route
 
     @Serializable

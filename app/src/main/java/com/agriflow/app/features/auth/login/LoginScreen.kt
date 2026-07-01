@@ -24,25 +24,34 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.agriflow.app.features.auth.AuthAction
 import com.agriflow.app.features.auth.AuthEvent
 import com.agriflow.app.features.auth.AuthState
 import com.agriflow.app.features.auth.AuthViewModel
-import com.agriflow.app.features.staff.auth.StaffLoginDialog
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.VisualTransformation
+
+
 
 @Composable
 fun LoginRoute(
     onLoginSuccess: () -> Unit,
+    onStaffLoginSuccess: () -> Unit,
+    onNavigateToChangePassword: (String) -> Unit,
     onRegisterClick: () -> Unit,
     onForgotClick: () -> Unit,
     viewModel: AuthViewModel = hiltViewModel()
@@ -54,6 +63,8 @@ fun LoginRoute(
         viewModel.events.collect { event ->
             when (event) {
                 AuthEvent.NavigateToMain -> onLoginSuccess()
+                AuthEvent.NavigateToStaffDashboard -> onStaffLoginSuccess()
+                is AuthEvent.NavigateToChangePassword -> onNavigateToChangePassword(event.currentPassword)
                 is AuthEvent.NavigateToOtp -> { /* Not applicable to Login screen */ }
                 is AuthEvent.ShowMessage -> snackbarHostState.showSnackbar(event.message)
             }
@@ -76,11 +87,11 @@ fun LoginScreen(
     snackbarHostState: SnackbarHostState,
     onAction: (AuthAction) -> Unit,
     onRegisterClick: () -> Unit,
-    onForgotClick:() -> Unit,
-    onStaffLoginSuccess: () -> Unit,
-    modifier: Modifier = Modifier
+    onForgotClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    onStaffLoginSuccess: () -> Unit
 ) {
-    var showStaffLogin by remember { mutableStateOf(false) }
+    var isPasswordVisible by remember { mutableStateOf(false) }
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         modifier = modifier
@@ -95,12 +106,7 @@ fun LoginScreen(
         ) {
             Text(
                 text = "Welcome to Agriflow",
-                style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.pointerInput(Unit) {
-                    detectTapGestures(
-                        onLongPress = { showStaffLogin = true }
-                    )
-                }
+                style = MaterialTheme.typography.headlineMedium
             )
             Text(
                 text = "Join the future of Agriculture.",
@@ -127,8 +133,26 @@ fun LoginScreen(
                 label = { Text("Password") },
                 singleLine = true,
                 enabled = !state.isLoading,
-                visualTransformation = PasswordVisualTransformation(),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                trailingIcon = {
+                    val image = if (isPasswordVisible) {
+                        Icons.Default.Visibility
+                    } else {
+                        Icons.Default.VisibilityOff
+                    }
+
+                    val description = if (isPasswordVisible) "Hide password" else "Show password"
+
+                    IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
+                        Icon(imageVector = image, contentDescription = description)
+                    }
+                },
+                visualTransformation = if (isPasswordVisible) {
+                    VisualTransformation.None
+                } else {
+                    PasswordVisualTransformation()
+                },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
             )
 
             state.errorMessage?.let { message ->
@@ -171,15 +195,5 @@ fun LoginScreen(
             }
 
         }
-    }
-
-    if (showStaffLogin) {
-        StaffLoginDialog(
-            onDismiss = { showStaffLogin = false },
-            onLoginSuccess = {
-                showStaffLogin = false
-                onStaffLoginSuccess()
-            }
-        )
     }
 }

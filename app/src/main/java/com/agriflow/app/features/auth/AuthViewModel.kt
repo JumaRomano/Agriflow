@@ -19,7 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val staffAuthRepository: com.agriflow.app.features.staff.auth.StaffAuthRepository
 ) : ViewModel() {
 
     // Mutable inside the ViewModel, read-only for the UI.
@@ -91,16 +92,30 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true, errorMessage = null) }
 
-            when (
-                val result = authRepository.login(
+            val isEmail = currentState.loginEmail.contains("@")
+
+            val result = if (isEmail) {
+                authRepository.login(
                     email = currentState.loginEmail,
                     password = currentState.loginPassword
                 )
-            ) {
+            } else {
+                staffAuthRepository.login(
+                    username = currentState.loginEmail,
+                    password = currentState.loginPassword
+                )
+            }
+
+            when (result) {
                 is Result.Success -> {
                     _state.update { it.copy(isLoading = false) }
-                    // Navigation is an event, not state, because it should happen once.
-                    _events.send(AuthEvent.NavigateToMain)
+                    if (result.data.mustChangePassword) {
+                        _events.send(AuthEvent.NavigateToChangePassword(currentState.loginPassword))
+                    } else if (isEmail) {
+                        _events.send(AuthEvent.NavigateToMain)
+                    } else {
+                        _events.send(AuthEvent.NavigateToStaffDashboard)
+                    }
                 }
 
                 is Result.Error -> {
@@ -160,8 +175,7 @@ class AuthViewModel @Inject constructor(
 
     private fun validateLogin(state: AuthState): String? {
         return when {
-            state.loginEmail.isBlank() -> "Email is required"
-            !state.loginEmail.contains("@") -> "Enter a valid email address"
+            state.loginEmail.isBlank() -> "Email or Username is required"
             state.loginPassword.isBlank() -> "Password is required"
             else -> null
         }
