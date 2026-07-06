@@ -22,7 +22,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        buildConfigField("String", "BASE_URL", "\"https://hallie-unshirked-sharolyn.ngrok-free.dev/api/\"")
+        buildConfigField("String", "BASE_URL", "\"https://api.agriflowhub.xyz/api/\"")
 
         //ksp {
           //  arg("room.schemaLocation", "$projectDir/schemas")
@@ -32,6 +32,7 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

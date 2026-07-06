@@ -7,7 +7,7 @@ enum class UserRole {
     FARMER,
     SUPPLIER,
     BUYER,
-    AGENT,
+    STAFF,
     ADMIN,
     UNKNOWN
 }

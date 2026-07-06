@@ -15,4 +15,5 @@ sealed interface EditProfileAction {
     data class OnConfirmNewPasswordChanged(val confirmNewPassword: String) : EditProfileAction
     data object OnSaveClicked : EditProfileAction
     data object OnChangePasswordClicked : EditProfileAction
+    data class OnProfilePictureSelected(val uri: android.net.Uri) : EditProfileAction
 }

@@ -52,7 +52,8 @@ class StaffAuthRepositoryImpl @Inject constructor(
                     tokenRepository.saveTokens(
                         accessToken = session.tokens.accessToken,
                         refreshToken = session.tokens.refreshToken,
-                        email = session.user.email ?: username.trim() // fallback if no email
+                        email = session.user.email ?: username.trim(), // fallback if no email
+                        role = session.user.role
                     )
                     userDao.insertUser(session.user.toEntity())
                     Result.Success(session)

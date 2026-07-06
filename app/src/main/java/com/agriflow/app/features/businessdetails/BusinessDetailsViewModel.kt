@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.agriflow.app.core.util.Result
 import com.agriflow.app.features.marketplace.MarketplaceRepository
+import com.agriflow.app.features.ratings.RatingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,6 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class BusinessDetailsViewModel @Inject constructor(
     private val marketplaceRepository: MarketplaceRepository,
+    private val ratingsRepository: RatingsRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -77,8 +79,25 @@ class BusinessDetailsViewModel @Inject constructor(
                 }
             }
 
+            val ratingSummaryJob = launch {
+                when (val result = ratingsRepository.getBusinessRatingSummary(businessId)) {
+                    is Result.Success -> {
+                        _state.update { currentState ->
+                            currentState.copy(
+                                rating = result.data.averageRating,
+                                reviewCount = result.data.totalRatings
+                            )
+                        }
+                    }
+                    is Result.Error -> {
+                        // Keep existing rating if API fails
+                    }
+                }
+            }
+
             detailsJob.join()
             productsJob.join()
+            ratingSummaryJob.join()
             _state.update { it.copy(isLoading = false) }
         }
     }

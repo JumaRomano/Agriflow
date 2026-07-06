@@ -26,5 +26,7 @@ data class EditProfileState(
     val confirmNewPasswordError: String? = null,
     val isLoading: Boolean = false,
     val isPasswordLoading: Boolean = false,
-    val success: Boolean = false
+    val success: Boolean = false,
+    val profilePicture: String? = null,
+    val isUploadingImage: Boolean = false
 )

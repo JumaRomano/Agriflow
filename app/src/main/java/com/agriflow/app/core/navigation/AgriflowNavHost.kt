@@ -90,9 +90,29 @@ data class BottomNavItem(
 @Composable
 fun AgriflowNavHost(
     navController: NavHostController,
-    startDestination: Route = Route.Splash,
     modifier: Modifier = Modifier,
     viewModel: NavigationViewModel = hiltViewModel()
+) {
+    val navigationState by viewModel.navigationState.collectAsState()
+
+    if (navigationState.isLoading) {
+        SplashRoute(onSplashFinished = {})
+    } else {
+        AgriflowNavContent(
+            navController = navController,
+            startDestination = navigationState.startDestination,
+            viewModel = viewModel,
+            modifier = modifier
+        )
+    }
+}
+
+@Composable
+private fun AgriflowNavContent(
+    navController: NavHostController,
+    startDestination: Route,
+    viewModel: NavigationViewModel,
+    modifier: Modifier = Modifier
 ) {
     // Observe the current back stack entry to dynamically determine which screen is active
     val navBackStackEntry by navController.currentBackStackEntryAsState()

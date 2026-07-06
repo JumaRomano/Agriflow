@@ -52,7 +52,15 @@ class EncryptedTokenRepositoryImpl @Inject constructor(
     init {
         // Initialize state reactively on repository launch using current stored tokens
         val initialUser = decodeUserFromToken(getAccessToken())
-        actualRole = initialUser?.role ?: UserRole.UNKNOWN
+        
+        // Try to load role from prefs first, fallback to JWT decode
+        val storedRoleStr = sharedPreferences.getString(KEY_USER_ROLE, null)
+        actualRole = if (storedRoleStr != null) {
+            try { UserRole.valueOf(storedRoleStr) } catch (e: Exception) { initialUser?.role ?: UserRole.UNKNOWN }
+        } else {
+            initialUser?.role ?: UserRole.UNKNOWN
+        }
+
         val activeRole = determineActiveRole(actualRole)
         _userFlow.value = initialUser?.copy(role = activeRole)
         _userRoleFlow.value = activeRole
@@ -70,21 +78,24 @@ class EncryptedTokenRepositoryImpl @Inject constructor(
         return when {
             actual == UserRole.FARMER && (savedRole == UserRole.FARMER || savedRole == UserRole.BUYER) -> savedRole
             actual == UserRole.SUPPLIER && (savedRole == UserRole.SUPPLIER || savedRole == UserRole.BUYER) -> savedRole
+            actual == UserRole.STAFF -> UserRole.STAFF // Staff always stay as Staff
             else -> actual
         }
     }
 
-    override fun saveTokens(accessToken: String, refreshToken: String, email: String?) {
+    override fun saveTokens(accessToken: String, refreshToken: String, email: String?, role: UserRole) {
         val editor = sharedPreferences.edit()
             .putString(KEY_ACCESS_TOKEN, accessToken)
             .putString(KEY_REFRESH_TOKEN, refreshToken)
+            .putString(KEY_USER_ROLE, role.name)
+        
         if (email != null) {
             editor.putString(KEY_USER_EMAIL, email)
         }
         editor.apply()
 
         val user = decodeUserFromToken(accessToken)
-        actualRole = user?.role ?: UserRole.UNKNOWN
+        actualRole = if (role != UserRole.UNKNOWN) role else (user?.role ?: UserRole.UNKNOWN)
         
         if (actualRole == UserRole.FARMER || actualRole == UserRole.SUPPLIER) {
             saveRegisteredBusinessRole(actualRole)
@@ -106,6 +117,7 @@ class EncryptedTokenRepositoryImpl @Inject constructor(
             .remove(KEY_ACCESS_TOKEN)
             .remove(KEY_REFRESH_TOKEN)
             .remove(KEY_ACTIVE_ROLE)
+            .remove(KEY_USER_ROLE)
             .remove(KEY_REGISTERED_BUSINESS_ROLE)
             .remove(KEY_USER_EMAIL)
             .apply()
@@ -179,7 +191,7 @@ class EncryptedTokenRepositoryImpl @Inject constructor(
                 "SUPPLIER", "SELLER" -> UserRole.SUPPLIER
                 "BUYER" -> UserRole.BUYER
                 "ADMIN" -> UserRole.ADMIN
-                "Agent" -> UserRole.AGENT
+                "STAFF" -> UserRole.STAFF
                 else -> UserRole.UNKNOWN
             }
 
@@ -213,6 +225,7 @@ class EncryptedTokenRepositoryImpl @Inject constructor(
         const val KEY_ACCESS_TOKEN = "access_token"
         const val KEY_REFRESH_TOKEN = "refresh_token"
         const val KEY_ACTIVE_ROLE = "active_role"
+        const val KEY_USER_ROLE = "user_role"
         const val KEY_REGISTERED_BUSINESS_ROLE = "registered_business_role"
         const val KEY_USER_EMAIL = "user_email"
     }

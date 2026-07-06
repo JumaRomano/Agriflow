@@ -15,7 +15,7 @@ fun StaffAccountScreen(
     onLogoutSuccess: () -> Unit,
     viewModel: StaffAccountViewModel = hiltViewModel()
 ) {
-    val user by viewModel.user.collectAsState()
+    val staff by viewModel.user.collectAsState()
 
     Column(modifier = Modifier.fillMaxSize()) {
         CenterAlignedTopAppBar(
@@ -31,11 +31,27 @@ fun StaffAccountScreen(
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text("Username", style = MaterialTheme.typography.labelMedium)
-                    Text(user?.username ?: "Staff Member", style = MaterialTheme.typography.bodyLarge)
-                    Spacer(modifier = Modifier.height(16.dp))
-                    
+                    Text(staff?.username ?: "Staff Member", style = MaterialTheme.typography.bodyLarge)
+
+
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(16.dp)) {
                     Text("Role", style = MaterialTheme.typography.labelMedium)
-                    Text(user?.role?.name ?: "AGENT", style = MaterialTheme.typography.bodyLarge)
+                    Text(staff?.role?.name ?: "STAFF", style = MaterialTheme.typography.bodyLarge)
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Card(modifier = Modifier.fillMaxWidth()){
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text("Region", style = MaterialTheme.typography.labelMedium)
+                    Text(staff?.region ?: "Region", style = MaterialTheme.typography.bodyLarge)
                 }
             }
             

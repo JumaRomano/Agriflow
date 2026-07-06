@@ -42,7 +42,7 @@ private fun String?.toUserRole(): UserRole {
         UserRole.BUYER.name -> UserRole.BUYER
         "BUYER" -> UserRole.BUYER
         UserRole.ADMIN.name -> UserRole.ADMIN
-        UserRole.AGENT.name -> UserRole.AGENT
+        UserRole.STAFF.name -> UserRole.STAFF
         else -> UserRole.UNKNOWN
     }
 }
@@ -56,7 +56,8 @@ fun User.toEntity(): UserEntity {
         role = role,
         firstName = firstName,
         middleName = middleName,
-        surName = surName
+        surName = surName,
+        profilePicture = profilePicture
     )
 }
 
@@ -69,6 +70,7 @@ fun CurrentUserResponseDto.toUser(): User {
         role = role.toUserRole(),
         firstName = firstName ?: "",
         middleName = middleName,
-        surName = surName ?: ""
+        surName = surName ?: "",
+        profilePicture = profilePicture
     )
 }

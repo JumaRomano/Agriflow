@@ -21,7 +21,7 @@ import java.util.Locale
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SellerRatingsScreen(
-    sellerId: String,
+    businessId: String,
     sellerName: String,
     viewModel: RatingsViewModel = hiltViewModel(),
     onNavigateBack: () -> Unit
@@ -29,8 +29,8 @@ fun SellerRatingsScreen(
     val uiState by viewModel.uiState.collectAsState()
     var showDialog by remember { mutableStateOf(false) }
 
-    LaunchedEffect(sellerId) {
-        viewModel.getRatingsForSeller(sellerId)
+    LaunchedEffect(businessId) {
+        viewModel.getRatingsForBusiness(businessId)
     }
 
     if (uiState.submitSuccess) {
@@ -89,10 +89,10 @@ fun SellerRatingsScreen(
 
         if (showDialog) {
             com.agriflow.app.features.ratings.ui.components.SubmitRatingDialog(
-                sellerName = sellerName,
+                itemName = sellerName,
                 onDismissRequest = { showDialog = false },
                 onSubmit = { rating, reviewText ->
-                    viewModel.submitRating(sellerId, rating, reviewText)
+                    viewModel.submitRating(businessId, rating, reviewText)
                 }
             )
         }

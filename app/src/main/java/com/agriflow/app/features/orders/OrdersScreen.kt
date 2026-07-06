@@ -83,7 +83,7 @@ import coil.compose.AsyncImage
 import com.agriflow.app.features.auth.UserRole
 import com.agriflow.app.features.marketplace.MarketplaceAction
 import com.agriflow.app.features.ratings.ui.RatingsViewModel
-import com.agriflow.app.features.ratings.ui.components.SubmitRatingDialog
+import com.agriflow.app.features.ratings.ui.components.OrderRatingHub
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -120,14 +120,10 @@ fun OrdersRoute(
 
     if (showRatingDialogForOrder != null) {
         val order = showRatingDialogForOrder!!
-        val sellerId = order.businessId ?: "unknown_seller"
-        SubmitRatingDialog(
-            sellerName = "Seller", // Could fetch specific seller name if needed
-            onDismissRequest = { showRatingDialogForOrder = null },
-            onSubmit = { ratingValue, reviewText ->
-                ratingsViewModel.submitRating(sellerId, ratingValue, reviewText)
-                showRatingDialogForOrder = null
-            }
+        OrderRatingHub(
+            order = order,
+            viewModel = ratingsViewModel,
+            onDismissRequest = { showRatingDialogForOrder = null }
         )
     }
 }
@@ -461,7 +457,7 @@ fun OrderCard(
                         ) {
                             Text("Update Shipment Status", fontWeight = FontWeight.Bold)
                         }
-                    } else if (order.status?.uppercase() == "DELIVERED" || order.status?.uppercase() == "COMPLETED") {
+                    } else if (order.status?.uppercase() == "DELIVERED") {
                         Button(
                             onClick = onRateSellerClicked,
                             shape = RoundedCornerShape(8.dp),
@@ -471,7 +467,7 @@ fun OrderCard(
                                 contentColor = MaterialTheme.colorScheme.onSecondary
                             )
                         ) {
-                            Text("Rate Seller", fontWeight = FontWeight.Bold)
+                            Text("Rate Order", fontWeight = FontWeight.Bold)
                         }
                     }
                 }

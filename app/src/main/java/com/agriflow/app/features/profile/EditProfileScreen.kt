@@ -43,6 +43,12 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.PickVisualMediaRequest
+import coil.compose.AsyncImage
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.graphics.Color
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -138,6 +144,16 @@ fun EditProfileScreen(
             ) {
                 Spacer(modifier = Modifier.height(16.dp))
 
+                // Photo Picker Launcher
+                val photoPickerLauncher = rememberLauncherForActivityResult(
+                    contract = ActivityResultContracts.PickVisualMedia(),
+                    onResult = { uri ->
+                        if (uri != null) {
+                            onAction(EditProfileAction.OnProfilePictureSelected(uri))
+                        }
+                    }
+                )
+
                 // Avatar
                 Box(
                     modifier = Modifier
@@ -153,13 +169,38 @@ fun EditProfileScreen(
                             ),
                         contentAlignment = Alignment.Center
                     ) {
-                        val initial = state.username.trim().firstOrNull()?.uppercase() ?: "U"
-                        Text(
-                            text = initial.toString(),
-                            style = MaterialTheme.typography.headlineLarge,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onPrimary
-                        )
+                        if (!state.profilePicture.isNullOrBlank()) {
+                            AsyncImage(
+                                model = state.profilePicture,
+                                contentDescription = "Profile Picture",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        } else {
+                            val initial = state.username.trim().firstOrNull()?.uppercase() ?: "U"
+                            Text(
+                                text = initial.toString(),
+                                style = MaterialTheme.typography.headlineLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                        }
+
+                        // Loader overlay
+                        if (state.isUploadingImage) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(Color.Black.copy(alpha = 0.4f)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(28.dp),
+                                    strokeWidth = 3.dp,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        }
                     }
 
                     //  edit photo
@@ -168,9 +209,10 @@ fun EditProfileScreen(
                             .size(36.dp)
                             .clip(CircleShape)
                             .background(MaterialTheme.colorScheme.primaryContainer)
-                            .clickable {
-                                // Add photo action goes here.
-
+                            .clickable(enabled = !state.isUploadingImage && !state.isLoading) {
+                                photoPickerLauncher.launch(
+                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                )
                             },
                         contentAlignment = Alignment.Center
                     ) {

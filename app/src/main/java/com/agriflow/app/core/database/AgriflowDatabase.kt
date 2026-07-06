@@ -35,8 +35,8 @@ import com.agriflow.app.features.MyStore.StoreInventoryEntity
         SupplierEntity::class,
         StoreInventoryEntity::class
     ],
-    version = 8,
-    exportSchema = true
+    version = 9,
+    exportSchema = false
 )
 @TypeConverters(DatabaseConverters::class)
 abstract class AgriflowDatabase : RoomDatabase() {

@@ -175,7 +175,7 @@ class AuthViewModel @Inject constructor(
 
     private fun validateLogin(state: AuthState): String? {
         return when {
-            state.loginEmail.isBlank() -> "Email or Username is required"
+            state.loginEmail.isBlank() -> "Email is required"
             state.loginPassword.isBlank() -> "Password is required"
             else -> null
         }

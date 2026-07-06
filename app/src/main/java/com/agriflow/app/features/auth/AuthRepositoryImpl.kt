@@ -42,7 +42,8 @@ class AuthRepositoryImpl @Inject constructor(
             tokenRepository.saveTokens(
                 accessToken = session.tokens.accessToken,
                 refreshToken = session.tokens.refreshToken,
-                email = email.trim()
+                email = email.trim(),
+                role = session.user.role
             )
             userDao.insertUser(session.user.toEntity())
         }
@@ -76,7 +77,8 @@ class AuthRepositoryImpl @Inject constructor(
             tokenRepository.saveTokens(
                 accessToken = session.tokens.accessToken,
                 refreshToken = session.tokens.refreshToken,
-                email = email.trim()
+                email = email.trim(),
+                role = session.user.role
             )
             userDao.insertUser(session.user.toEntity())
         }
@@ -168,7 +170,8 @@ class AuthRepositoryImpl @Inject constructor(
         middleName: String?,
         surName: String,
         phoneNumber: String,
-        email: String
+        email: String,
+        profilePicture: String?
     ): EmptyResult<DataError.Network> {
         val result = safeApiCall {
             authApi.updateProfile(
@@ -179,7 +182,8 @@ class AuthRepositoryImpl @Inject constructor(
                     middleName = middleName?.trim()?.takeIf(String::isNotBlank),
                     surName = surName.trim(),
                     phoneNumber = phoneNumber.trim(),
-                    email = email.trim()
+                    email = email.trim(),
+                    profilePicture = profilePicture
                 )
             )
         }
@@ -194,11 +198,18 @@ class AuthRepositoryImpl @Inject constructor(
                 role = currentRole,
                 firstName = firstName.trim(),
                 middleName = middleName?.trim()?.takeIf(String::isNotBlank),
-                surName = surName.trim()
+                surName = surName.trim(),
+                profilePicture = profilePicture
             )
             userDao.insertUser(updatedUser)
         }
         return result
+    }
+
+    override suspend fun uploadProfileImage(
+        file: okhttp3.MultipartBody.Part
+    ): Result<ProfileImageResponseDto, DataError.Network> {
+        return safeApiCall { authApi.uploadProfileImage(file) }
     }
 
     override suspend fun changePassword(

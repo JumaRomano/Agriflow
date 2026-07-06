@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.agriflow.app.core.security.TokenRepository
 import com.agriflow.app.core.util.DataError
+import com.agriflow.app.core.util.FileHelper
 import com.agriflow.app.core.util.Result
 import com.agriflow.app.features.auth.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,7 +23,8 @@ import javax.inject.Inject
 @HiltViewModel
 class EditProfileViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-    private val tokenRepository: TokenRepository
+    private val tokenRepository: TokenRepository,
+    private val fileHelper: FileHelper
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(EditProfileState())
@@ -50,7 +52,8 @@ class EditProfileViewModel @Inject constructor(
                                 phoneNumber = user.phoneNumber ?: "",
                                 firstName = user.firstName ?: "",
                                 middleName = user.middleName ?: "",
-                                surName = user.surName ?: ""
+                                surName = user.surName ?: "",
+                                profilePicture = user.profilePicture
                             )
                         }
                     }
@@ -69,7 +72,8 @@ class EditProfileViewModel @Inject constructor(
                             phoneNumber = user.phoneNumber ?: "",
                             firstName = user.firstName ?: "",
                             middleName = user.middleName ?: "",
-                            surName = user.surName ?: ""
+                            surName = user.surName ?: "",
+                            profilePicture = user.profilePicture
                         )
                     }
                 }
@@ -110,8 +114,45 @@ class EditProfileViewModel @Inject constructor(
             is EditProfileAction.OnConfirmNewPasswordChanged -> {
                 _state.update { it.copy(confirmNewPassword = action.confirmNewPassword, confirmNewPasswordError = null) }
             }
+            is EditProfileAction.OnProfilePictureSelected -> {
+                uploadProfilePicture(action.uri)
+            }
             EditProfileAction.OnSaveClicked -> saveProfile()
             EditProfileAction.OnChangePasswordClicked -> changePassword()
+        }
+    }
+
+    private fun uploadProfilePicture(uri: android.net.Uri) {
+        _state.update { it.copy(isUploadingImage = true) }
+        viewModelScope.launch {
+            val tempFile = fileHelper.uriToFile(uri)
+            if (tempFile == null) {
+                _state.update { it.copy(isUploadingImage = false) }
+                _events.send(EditProfileEvent.ShowMessage("Failed to process image file."))
+                return@launch
+            }
+
+            val part = fileHelper.fileToMultipartPart(tempFile)
+            val uploadResult = authRepository.uploadProfileImage(part)
+            
+            // Clean up cache file immediately
+            tempFile.delete()
+
+            _state.update { it.copy(isUploadingImage = false) }
+
+            when (uploadResult) {
+                is Result.Success -> {
+                    val url = uploadResult.data.url ?: uploadResult.data.imageUrl
+                    if (!url.isNullOrBlank()) {
+                        _state.update { it.copy(profilePicture = url) }
+                    } else {
+                        _events.send(EditProfileEvent.ShowMessage("Failed to upload image. Server returned empty URL."))
+                    }
+                }
+                is Result.Error -> {
+                    _events.send(EditProfileEvent.ShowMessage("Failed to upload image: ${uploadResult.error.name}"))
+                }
+            }
         }
     }
 
@@ -123,6 +164,7 @@ class EditProfileViewModel @Inject constructor(
         val surName = _state.value.surName
         val email = _state.value.email
         val currentPhoneNumber = _state.value.phoneNumber
+        val profilePicture = _state.value.profilePicture
 
         var hasError = false
 
@@ -175,7 +217,8 @@ class EditProfileViewModel @Inject constructor(
                 middleName = middleName.takeIf { it.isNotBlank() },
                 surName = surName,
                 phoneNumber = currentPhoneNumber,
-                email = email
+                email = email,
+                profilePicture = profilePicture
             )
             _state.update { it.copy(isLoading = false) }
 

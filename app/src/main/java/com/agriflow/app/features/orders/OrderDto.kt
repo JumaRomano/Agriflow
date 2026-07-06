@@ -8,7 +8,7 @@ import com.google.gson.annotations.SerializedName
 data class OrderDto(
     @SerializedName(value = "id", alternate = ["_id", "orderId"]) val id: String?,
     @SerializedName("userId") val userId: String?,
-    @SerializedName("businessId") val businessId: String?,
+    @SerializedName(value = "businessId", alternate = ["sellerId", "storeId", "vendorId", "supplierId", "farmerId", "business"]) val businessId: String?,
     @SerializedName("orderNumber") val orderNumber: String?,
     @SerializedName(value = "status", alternate = ["fulfillmentStatus"]) val status: String?,
     @SerializedName(value = "totalAmount", alternate = ["sellerTotal"]) val totalAmount: Double?,
@@ -28,7 +28,9 @@ data class OrderItemDto(
     @SerializedName("unit") val unit: String?,
     @SerializedName(value = "price", alternate = ["unitPrice"]) val price: Double?,
     @SerializedName("quantity") val quantity: Double?,
-    @SerializedName(value = "subtotal", alternate = ["totalPrice"]) val subtotal: Double?
+    @SerializedName(value = "subtotal", alternate = ["totalPrice"]) val subtotal: Double?,
+    @SerializedName(value = "businessId", alternate = ["sellerId", "storeId", "vendorId", "supplierId", "farmerId", "business"]) val businessId: String? = null,
+    @SerializedName(value = "businessName", alternate = ["sellerName", "storeName", "vendorName", "supplierName", "farmerName"]) val businessName: String? = null
 )
 
 data class ShipmentDto(

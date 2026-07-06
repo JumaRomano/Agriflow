@@ -15,6 +15,10 @@ import retrofit2.http.POST
 import retrofit2.http.GET
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Multipart
+import retrofit2.http.Part
+import okhttp3.MultipartBody
+import com.google.gson.annotations.SerializedName
 
 interface AuthApi {
     @POST("auth/login")
@@ -63,6 +67,12 @@ interface AuthApi {
 
     @GET("users/me")
     suspend fun getCurrentUser(): Response<CurrentUserResponseDto>
+
+    @Multipart
+    @POST("users/upload-image")
+    suspend fun uploadProfileImage(
+        @Part file: MultipartBody.Part
+    ): Response<ProfileImageResponseDto>
 }
 
 data class CurrentUserResponseDto(
@@ -73,7 +83,13 @@ data class CurrentUserResponseDto(
     val surName: String?,
     val phoneNumber: String?,
     val role: String?,
-    val email: String
+    val email: String,
+    val profilePicture: String? = null
+)
+
+data class ProfileImageResponseDto(
+    @SerializedName("imageUrl") val imageUrl: String? = null,
+    @SerializedName("url") val url: String? = null
 )
 
 data class ChangePasswordRequestDto(

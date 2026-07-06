@@ -60,8 +60,13 @@ interface AuthRepository {
         middleName: String?,
         surName: String,
         phoneNumber: String,
-        email: String
+        email: String,
+        profilePicture: String?
     ): EmptyResult<DataError.Network>
+
+    suspend fun uploadProfileImage(
+        file: okhttp3.MultipartBody.Part
+    ): Result<ProfileImageResponseDto, DataError.Network>
 
     suspend fun changePassword(
         oldPassword: String,

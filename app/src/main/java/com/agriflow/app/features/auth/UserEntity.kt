@@ -12,5 +12,7 @@ data class UserEntity(
     val role: UserRole,
     val firstName: String? = null,
     val middleName: String? = null,
-    val surName: String? = null
+    val surName: String? = null,
+    val region: String? = null,
+    val profilePicture: String? = null
 )

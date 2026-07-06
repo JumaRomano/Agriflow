@@ -8,7 +8,7 @@ import com.agriflow.app.features.auth.UserRole
 import kotlinx.coroutines.flow.Flow
 
 interface TokenRepository {
-    fun saveTokens(accessToken: String, refreshToken: String, email: String? = null)
+    fun saveTokens(accessToken: String, refreshToken: String, email: String? = null, role: UserRole = UserRole.UNKNOWN)
     fun getAccessToken(): String?
     fun getRefreshToken(): String?
     fun clearTokens()
