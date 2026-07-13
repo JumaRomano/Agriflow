@@ -42,6 +42,7 @@ suspend inline fun <reified T> safeApiCall(
 
 fun Int.toNetworkError(): DataError.Network {
     return when (this) {
+        404 -> DataError.Network.NOT_FOUND
         408 -> DataError.Network.REQUEST_TIMEOUT
         401, 403 -> DataError.Network.UNAUTHORIZED
         409 -> DataError.Network.CONFLICT

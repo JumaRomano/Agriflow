@@ -5,6 +5,7 @@ package com.agriflow.app.core.di
 
 import com.agriflow.app.BuildConfig
 import com.agriflow.app.core.network.AuthInterceptor
+import com.agriflow.app.core.network.TokenAuthenticator
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -37,6 +38,7 @@ object NetworkModule {
     @Singleton
     fun provideOkHttpClient(
         authInterceptor: AuthInterceptor,
+        tokenAuthenticator: TokenAuthenticator,
         loggingInterceptor: HttpLoggingInterceptor
     ): OkHttpClient {
         return OkHttpClient.Builder()
@@ -44,6 +46,7 @@ object NetworkModule {
             .readTimeout(NETWORK_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .writeTimeout(NETWORK_TIMEOUT_SECONDS, TimeUnit.SECONDS)
             .addInterceptor(authInterceptor)
+            .authenticator(tokenAuthenticator)
             .addInterceptor(loggingInterceptor)
             .build()
     }

@@ -351,12 +351,21 @@ fun ProductDetailsScreen(
                                 .background(MaterialTheme.colorScheme.primaryContainer),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(
-                                text = product.farmerName.take(1).uppercase(),
-                                style = MaterialTheme.typography.titleMedium,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer,
-                                fontWeight = FontWeight.Bold
-                            )
+                            if (!state.supplierLogoUrl.isNullOrBlank()) {
+                                AsyncImage(
+                                    model = state.supplierLogoUrl,
+                                    contentDescription = "Supplier Logo",
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            } else {
+                                Text(
+                                    text = product.farmerName.take(1).uppercase(),
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
                         }
                         Spacer(modifier = Modifier.width(12.dp))
                         Column(modifier = Modifier.weight(1f)) {
@@ -372,17 +381,19 @@ fun ProductDetailsScreen(
                                 color = MaterialTheme.colorScheme.primary
                             )
                         }
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            Text(text = "⭐", style = MaterialTheme.typography.bodyMedium)
-                            Text(
-                                text = "4.8",//dummy info
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
+                        if (state.supplierRating != null) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                Text(text = "⭐", style = MaterialTheme.typography.bodyMedium)
+                                Text(
+                                    text = state.supplierRating.toString(),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                            }
                         }
                     }
 

@@ -11,6 +11,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.Box
+import androidx.compose.animation.AnimatedContent
+import com.agriflow.app.features.auth.ui.AuthBackgroundOrnaments
+import com.agriflow.app.features.auth.ui.StaggeredEntrance
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -100,52 +104,69 @@ fun ForgotPasswordScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         modifier = modifier
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(horizontal = 24.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.Start
         ) {
-            Text(
-                text = "Forgot Password?",
-                style = MaterialTheme.typography.headlineMedium
-            )
-            Text(
-                text = "Enter your email address and we will send you an OTP code to verify your identity.",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            AuthBackgroundOrnaments()
 
-            Spacer(modifier = Modifier.height(32.dp))
-
-            OutlinedTextField(
-                value = state.email,
-                onValueChange = { onAction(ForgotPasswordAction.OnEmailChanged(it)) },
-                label = { Text("Email Address") },
-                singleLine = true,
-                enabled = !state.isLoading,
-                isError = state.emailError != null,
-                supportingText = state.emailError?.let { { Text(it) } },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Button(
-                onClick = { onAction(ForgotPasswordAction.SendOtpClicked) },
-                enabled = !state.isLoading && state.email.isNotBlank(),
-                modifier = Modifier.fillMaxWidth()
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 24.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.Start
             ) {
-                if (state.isLoading) {
-                    CircularProgressIndicator(
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        modifier = Modifier.size(20.dp)
+                StaggeredEntrance(index = 0) {
+                    Column {
+                        Text(
+                            text = "Forgot Password?",
+                            style = MaterialTheme.typography.headlineMedium
+                        )
+                        Text(
+                            text = "Enter your email address and we will send you an OTP code to verify your identity.",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                StaggeredEntrance(index = 1, modifier = Modifier.fillMaxWidth()) {
+                    OutlinedTextField(
+                        value = state.email,
+                        onValueChange = { onAction(ForgotPasswordAction.OnEmailChanged(it)) },
+                        label = { Text("Email Address") },
+                        singleLine = true,
+                        enabled = !state.isLoading,
+                        isError = state.emailError != null,
+                        supportingText = state.emailError?.let { { Text(it) } },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                        modifier = Modifier.fillMaxWidth()
                     )
-                } else {
-                    Text("Send OTP Verification")
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                StaggeredEntrance(index = 2, modifier = Modifier.fillMaxWidth()) {
+                    Button(
+                        onClick = { onAction(ForgotPasswordAction.SendOtpClicked) },
+                        enabled = !state.isLoading && state.email.isNotBlank(),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        AnimatedContent(targetState = state.isLoading, label = "ForgotLoading") { isLoading ->
+                            if (isLoading) {
+                                CircularProgressIndicator(
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            } else {
+                                Text("Send OTP Verification")
+                            }
+                        }
+                    }
                 }
             }
         }

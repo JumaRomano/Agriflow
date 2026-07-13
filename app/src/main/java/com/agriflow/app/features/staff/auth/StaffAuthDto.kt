@@ -7,5 +7,10 @@ data class StaffLoginRequestDto(
     @SerializedName("password") val password: String
 )
 
-// We can reuse the normal AuthResponseDto if the server returns the same token structure.
-// Let's assume the backend returns the standard AuthResponseDto with token and user info.
+data class VerifyAssignmentRequest(
+    @SerializedName("evidencePhotos") val evidencePhotos: List<String>,
+    @SerializedName("latitude") val latitude: Double,
+    @SerializedName("longitude") val longitude: Double
+)
+
+

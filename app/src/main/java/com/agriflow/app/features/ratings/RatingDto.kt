@@ -23,9 +23,9 @@ data class SubmitRatingRequestDto(
 
 @Serializable
 data class BusinessRatingSummaryDto(
-    val businessId: String,
-    val averageRating: Double,
-    val totalRatings: Int
+    @SerializedName("businessId") val businessId: String? = null,
+    @SerializedName("averageRating") val averageRating: Double? = null,
+    @SerializedName("totalRatings") val totalRatings: Int? = null
 )
 
 @Serializable

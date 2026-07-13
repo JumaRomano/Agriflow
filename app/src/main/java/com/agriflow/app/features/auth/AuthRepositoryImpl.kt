@@ -16,6 +16,7 @@ import com.agriflow.app.features.auth.otp.SendOtpRequestDto
 import com.agriflow.app.features.auth.otp.VerifyOtpRequestDto
 import com.agriflow.app.features.auth.otp.VerifyOtpResponseDto
 import com.agriflow.app.features.auth.register.RegisterRequestDto
+import okhttp3.MultipartBody
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
@@ -45,6 +46,7 @@ class AuthRepositoryImpl @Inject constructor(
                 email = email.trim(),
                 role = session.user.role
             )
+            userDao.clearUser()
             userDao.insertUser(session.user.toEntity())
         }
         return result
@@ -80,6 +82,7 @@ class AuthRepositoryImpl @Inject constructor(
                 email = email.trim(),
                 role = session.user.role
             )
+            userDao.clearUser()
             userDao.insertUser(session.user.toEntity())
         }
         return result
@@ -89,7 +92,9 @@ class AuthRepositoryImpl @Inject constructor(
         role: UserRole,
         businessName: String,
         businessEmail: String,
-        businessPhone: String
+        businessPhone: String,
+        county: String,
+        businessProfile: String?
     ): Result<BusinessDetailsResponseDto, DataError.Network> {
         return safeApiCall {
             authApi.upgradeRole(
@@ -97,16 +102,22 @@ class AuthRepositoryImpl @Inject constructor(
                     role = role.name,
                     businessName = businessName.trim(),
                     businessEmail = businessEmail.trim(),
-                    phoneNumber = businessPhone.trim()
+                    businessPhone = businessPhone.trim(),
+                    county = county.trim(),
+                    businessProfile = businessProfile
                 )
             )
         }
     }
 
-    override suspend fun logout(): EmptyResult<DataError.Local> {
+    override suspend fun logout(): EmptyResult<DataError.Network> {
+        val refreshToken = tokenRepository.getRefreshToken() ?: ""
+        val result = safeApiCall {
+            authApi.logout(LogoutRequestDto(refreshToken))
+        }
         tokenRepository.clearTokens()
         userDao.clearUser()
-        return Result.Success(Unit)
+        return result
     }
 
     override suspend fun getBusinessDetails(): Result<BusinessDetailsResponseDto, DataError.Network> {
@@ -189,7 +200,10 @@ class AuthRepositoryImpl @Inject constructor(
         }
 
         if (result is Result.Success) {
-            val currentRole = tokenRepository.getUserFlow().firstOrNull()?.role ?: UserRole.UNKNOWN
+            val existingUser = userDao.getUserById(userId)
+            val currentRole = existingUser?.role ?: tokenRepository.getUserFlow().firstOrNull()?.role ?: UserRole.UNKNOWN
+            val currentStatus = existingUser?.status
+
             val updatedUser = UserEntity(
                 id = userId,
                 username = username.trim(),
@@ -199,15 +213,17 @@ class AuthRepositoryImpl @Inject constructor(
                 firstName = firstName.trim(),
                 middleName = middleName?.trim()?.takeIf(String::isNotBlank),
                 surName = surName.trim(),
-                profilePicture = profilePicture
+                profilePicture = profilePicture,
+                status = currentStatus
             )
+            userDao.clearUser()
             userDao.insertUser(updatedUser)
         }
         return result
     }
 
     override suspend fun uploadProfileImage(
-        file: okhttp3.MultipartBody.Part
+        file: MultipartBody.Part
     ): Result<ProfileImageResponseDto, DataError.Network> {
         return safeApiCall { authApi.uploadProfileImage(file) }
     }
@@ -233,12 +249,37 @@ class AuthRepositoryImpl @Inject constructor(
             authApi.getCurrentUser()
         }
         return when (result) {
-            is Result.Success -> Result.Success(result.data.toUser())
+            is Result.Success -> {
+                val user = result.data.toUser()
+                userDao.clearUser()
+                userDao.insertUser(user.toEntity())
+                Result.Success(user)
+            }
             is Result.Error -> Result.Error(result.error)
         }
     }
 
-    private fun Result<com.agriflow.app.features.auth.AuthResponseDto, DataError.Network>.toAuthSessionResult():
+    override suspend fun refreshToken(): Result<AuthSession, DataError.Network> {
+        val refreshToken = tokenRepository.getRefreshToken() ?: return Result.Error(DataError.Network.UNAUTHORIZED)
+        val result = safeApiCall {
+            authApi.refreshToken(RefreshTokenRequestDto(refreshToken))
+        }.toAuthSessionResult()
+
+        if (result is Result.Success) {
+            val session = result.data
+            tokenRepository.saveTokens(
+                accessToken = session.tokens.accessToken,
+                refreshToken = session.tokens.refreshToken,
+                email = null,
+                role = session.user.role
+            )
+            userDao.clearUser()
+            userDao.insertUser(session.user.toEntity())
+        }
+        return result
+    }
+
+    private fun Result<AuthResponseDto, DataError.Network>.toAuthSessionResult():
         Result<AuthSession, DataError.Network> {
         // DTO -> domain mapping happens here. If the backend response shape changes, update the mapper.
         return when (this) {

@@ -32,6 +32,7 @@ room = "2.8.0"
 # Firebase
 googleServices = "4.4.3"
 firebaseBom = "34.0.0"
+playServicesLocation = "21.3.0"
 
 # KSP
 ksp = "2.2.10-2.0.2"
@@ -94,6 +95,7 @@ firebase-auth = { group = "com.google.firebase", name = "firebase-auth" }
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore" }
 firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging" }
 firebase-storage = { group = "com.google.firebase", name = "firebase-storage" }
+play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 
 # Testing
 junit = { group = "junit", name = "junit", version.ref = "junit" }

@@ -40,6 +40,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.EaseOutCubic
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import com.agriflow.app.core.ui.SplashRoute
 import com.agriflow.app.features.auth.login.LoginRoute
 import com.agriflow.app.features.auth.register.RegisterRoute
@@ -166,7 +171,8 @@ private fun AgriflowNavContent(
     // Show the bottom navigation bar ONLY if the active destination is one of the top-level bottom nav items.
     // This automatically hides it on Splash, Auth screens, and nested detail screens.
     val showBottomBar = currentDestination?.let { dest ->
-        navItems.any { item -> dest.hasRoute(item.route::class) }
+        navItems.any { item -> dest.hasRoute(item.route::class) } ||
+                dest.hasRoute(Route.BusinessDetails::class)
     } == true
 
     Scaffold(
@@ -252,7 +258,33 @@ private fun AgriflowNavContent(
 
             // --- AUTH GRAPH ---
 
-            navigation<Route.AuthGraph>(startDestination = Route.Login) {
+            navigation<Route.AuthGraph>(
+                startDestination = Route.Login,
+                enterTransition = {
+                    slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Left,
+                        animationSpec = tween(350, easing = EaseOutCubic)
+                    ) + fadeIn(animationSpec = tween(350))
+                },
+                exitTransition = {
+                    slideOutOfContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Left,
+                        animationSpec = tween(350, easing = EaseOutCubic)
+                    ) + fadeOut(animationSpec = tween(350))
+                },
+                popEnterTransition = {
+                    slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Right,
+                        animationSpec = tween(350, easing = EaseOutCubic)
+                    ) + fadeIn(animationSpec = tween(350))
+                },
+                popExitTransition = {
+                    slideOutOfContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Right,
+                        animationSpec = tween(350, easing = EaseOutCubic)
+                    ) + fadeOut(animationSpec = tween(350))
+                }
+            ) {
                 composable<Route.Login> {
                     LoginRoute (
                         onLoginSuccess = {

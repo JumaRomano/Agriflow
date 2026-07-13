@@ -115,6 +115,7 @@ class OtpVerificationViewModel @Inject constructor(
             DataError.Network.SERVER_ERROR -> "The server is unavailable. Try again later."
             DataError.Network.SERIALIZATION -> "The server response was not in the expected format."
             DataError.Network.UNKNOWN -> "Something went wrong. Try again."
+            DataError.Network.NOT_FOUND -> "Not Found"
         }
     }
 }

@@ -11,5 +11,5 @@ data class PublicBusinessDto(
     @SerializedName("description") val description: String?,
     @SerializedName("rating") val rating: Double?,
     @SerializedName("reviewCount") val reviewCount: Int?,
-    @SerializedName("logoUrl") val logoUrl: String?
+    @SerializedName(value = "businessProfile", alternate = ["logoUrl", "business_profile"]) val businessProfile: String?
 )

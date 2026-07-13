@@ -8,7 +8,7 @@ data class Distributor(
     val brandName: String,
     val tagline: String,
     val logoUrl: String? = null,
-    val rating: Double = 5.0,
+    val rating: Double? = null,
     val reviewCount: Int = 0,
     val isVerified: Boolean = true,
     val emoji: String = "🏢"

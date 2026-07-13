@@ -8,9 +8,11 @@ import com.agriflow.app.features.profile.roleUpgrade.RoleUpgradeAction
 import com.agriflow.app.features.profile.roleUpgrade.RoleUpgradeEvent
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,7 +27,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -40,7 +45,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,6 +55,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.result.PickVisualMediaRequest
+import coil.compose.AsyncImage
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.graphics.Color
+import androidx.compose.material.icons.filled.PhotoCamera
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -85,6 +99,19 @@ fun FarmerUpgradeScreen(
     onNavigateBack: () -> Unit
 ) {
     val scrollState = rememberScrollState()
+
+    val photoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { uri ->
+            if (uri != null) {
+                onAction(RoleUpgradeAction.BusinessProfileSelected(uri))
+            }
+        }
+    )
+
+    // Dropdown state and data
+    var expanded by remember { mutableStateOf(false) }
+    val counties = listOf("Baringo", "Bomet", "Bungoma", "Busia", "Elgeyo-Marakwet", "Embu", "Garissa", "Homa Bay", "Isiolo", "Kajiado", "Kakamega", "Kericho", "Kiambu", "Kilifi", "Kirinyaga", "Kisii", "Kisumu", "Kitui", "Kwale", "Laikipia", "Lamu", "Machakos", "Makueni", "Mandera", "Marsabit", "Meru", "Migori", "Mombasa", "Murang'a", "Nairobi", "Nakuru", "Nandi", "Narok", "Nyamira", "Nyandarua", "Nyeri", "Samburu", "Siaya", "Taita-Taveta", "Tana River", "Tharaka-Nithi", "Trans Nzoia", "Turkana", "Uasin Gishu", "Vihiga", "Wajir", "West Pokot")
 
     Scaffold(
         topBar = {
@@ -129,7 +156,7 @@ fun FarmerUpgradeScreen(
 
                     val isApproved = state.approvalStatus.equals("APPROVED", ignoreCase = true)
                     val isRejected = state.approvalStatus.equals("REJECTED", ignoreCase = true)
-                    
+
                     val statusText = when {
                         isApproved -> "Approved"
                         isRejected -> "Rejected"
@@ -183,6 +210,37 @@ fun FarmerUpgradeScreen(
                             modifier = Modifier.padding(20.dp),
                             verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
+                            if (!state.businessProfile.isNullOrBlank()) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    AsyncImage(
+                                        model = state.businessProfile,
+                                        contentDescription = "Farm Logo",
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier
+                                            .size(72.dp)
+                                            .clip(RoundedCornerShape(12.dp))
+                                    )
+                                    Column {
+                                        Text(
+                                            text = "Farm Logo",
+                                            style = MaterialTheme.typography.labelSmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                        Text(
+                                            text = "Verified Profile Photo",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.primary,
+                                            fontWeight = FontWeight.Medium
+                                        )
+                                    }
+                                }
+                                Spacer(modifier = Modifier.height(8.dp))
+                            }
+
                             Column {
                                 Text(
                                     text = "Farm Name",
@@ -282,13 +340,95 @@ fun FarmerUpgradeScreen(
                         modifier = Modifier.padding(vertical = 8.dp)
                     )
 
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Photo selector
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(140.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+                            .clickable(enabled = !state.isLoading && !state.isUploadingImage) {
+                                photoPickerLauncher.launch(
+                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                )
+                            },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (!state.businessProfile.isNullOrBlank()) {
+                            AsyncImage(
+                                model = state.businessProfile,
+                                contentDescription = "Farm Logo",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                            // Overlay to edit photo
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(Color.Black.copy(alpha = 0.3f)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.PhotoCamera,
+                                        contentDescription = "Edit photo",
+                                        tint = Color.White
+                                    )
+                                    Text(
+                                        text = "Change Photo",
+                                        color = Color.White,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            }
+                        } else {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.PhotoCamera,
+                                    contentDescription = "Upload Photo",
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(36.dp)
+                                )
+                                Text(
+                                    text = "Upload Farm  Logo",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.primary,
+                                    fontWeight = FontWeight.Medium
+                                )
+
+                            }
+                        }
+
+                        if (state.isUploadingImage) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(Color.Black.copy(alpha = 0.4f)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator(
+                                    color = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(32.dp)
+                                )
+                            }
+                        }
+                    }
+
                     Spacer(modifier = Modifier.height(24.dp))
 
                     OutlinedTextField(
                         value = state.businessName,
                         onValueChange = { onAction(RoleUpgradeAction.BusinessNameChanged(it)) },
-                        label = { Text("Farm / Business Name") },
-                        placeholder = { Text("e.g. Green Valley Farm") },
+                        label = { Text("Farm Name") },
+                        placeholder = { Text("e.g. Agri Farm") },
                         singleLine = true,
                         enabled = !state.isLoading,
                         modifier = Modifier.fillMaxWidth()
@@ -300,7 +440,7 @@ fun FarmerUpgradeScreen(
                         value = state.businessEmail,
                         onValueChange = { onAction(RoleUpgradeAction.BusinessEmailChanged(it)) },
                         label = { Text("Farm Email Address") },
-                        placeholder = { Text("e.g. contact@greenvalley.com") },
+                        placeholder = { Text("e.g. Agriflow@gmail.com") },
                         singleLine = true,
                         enabled = !state.isLoading,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
@@ -319,6 +459,48 @@ fun FarmerUpgradeScreen(
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
                         modifier = Modifier.fillMaxWidth()
                     )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // The new Dropdown Menu
+                    ExposedDropdownMenuBox(
+                        expanded = expanded,
+                        onExpandedChange = {
+                            if (!state.isLoading) expanded = !expanded
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        OutlinedTextField(
+                            value = state.businessCounty,
+                            onValueChange = {},
+                            readOnly = true,
+                            label = { Text("Farm Location") },
+                            singleLine = true,
+                            enabled = !state.isLoading,
+                            trailingIcon = {
+                                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                            },
+                            colors = ExposedDropdownMenuDefaults.outlinedTextFieldColors(),
+                            modifier = Modifier
+                                .menuAnchor()
+                                .fillMaxWidth()
+                        )
+
+                        ExposedDropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false }
+                        ) {
+                            counties.forEach { county ->
+                                DropdownMenuItem(
+                                    text = { Text(county) },
+                                    onClick = {
+                                        onAction(RoleUpgradeAction.BusinessCountyChanged(county))
+                                        expanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
 
                     Spacer(modifier = Modifier.height(40.dp))
 

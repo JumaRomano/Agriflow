@@ -34,19 +34,46 @@ class ProductDetailsViewModel @Inject constructor(
     private val productId = routeArgs.productId
 
     private val _selectedQuantity = MutableStateFlow(1)
+    private val _supplierLogoUrl = MutableStateFlow<String?>(null)
+    private val _supplierRating = MutableStateFlow<Double?>(null)
     private val _events = Channel<ProductDetailsEvent>()
     val events = _events.receiveAsFlow()
+
+    init {
+        viewModelScope.launch {
+            var lastFetchedBusinessId: String? = null
+            marketplaceRepository.getProductById(productId).collect { product ->
+                val businessId = product?.businessId
+                if (!businessId.isNullOrEmpty() && businessId != lastFetchedBusinessId) {
+                    lastFetchedBusinessId = businessId
+                    when (val result = marketplaceRepository.getBusinessPublicDetails(businessId)) {
+                        is Result.Success -> {
+                            _supplierLogoUrl.value = result.data.businessProfile
+                            _supplierRating.value = result.data.rating
+                        }
+                        is Result.Error -> {
+                            // Fallback/ignore if API fails
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     val state = combine(
         marketplaceRepository.getProductById(productId),
         _selectedQuantity,
-        tokenRepository.getUserRoleFlow()
-    ) { product, quantity, role ->
+        tokenRepository.getUserRoleFlow(),
+        _supplierLogoUrl,
+        _supplierRating
+    ) { product, quantity, role, logoUrl, rating ->
         ProductDetailsState(
             product = product,
             selectedQuantity = quantity,
             isLoading = product == null,
-            userRole = role
+            userRole = role,
+            supplierLogoUrl = logoUrl,
+            supplierRating = rating
         )
     }.stateIn(
         scope = viewModelScope,

@@ -15,5 +15,8 @@ data class RoleUpgradeState(
     val availableBalance: Double = 0.0,
     val pendingBalance: Double = 0.0,
     val isLoading: Boolean = false,
-    val errorMessage: String? = null
+    val isUploadingImage: Boolean = false,
+    val errorMessage: String? = null,
+    val businessCounty: String = "",
+    val businessProfile: String? = null
 )

@@ -35,7 +35,7 @@ import com.agriflow.app.features.MyStore.StoreInventoryEntity
         SupplierEntity::class,
         StoreInventoryEntity::class
     ],
-    version = 9,
+    version = 11,
     exportSchema = false
 )
 @TypeConverters(DatabaseConverters::class)
@@ -48,4 +48,5 @@ abstract class AgriflowDatabase : RoomDatabase() {
     abstract fun notificationDao(): NotificationDao
     abstract fun supplierDao(): SupplierDao
     abstract fun storeInventoryDao(): StoreInventoryDao
+
 }

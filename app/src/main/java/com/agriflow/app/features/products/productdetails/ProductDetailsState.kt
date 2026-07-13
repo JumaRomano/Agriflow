@@ -9,5 +9,7 @@ data class ProductDetailsState(
     val product: Product? = null,
     val selectedQuantity: Int = 1,
     val isLoading: Boolean = true,
-    val userRole: UserRole = UserRole.BUYER
+    val userRole: UserRole = UserRole.BUYER,
+    val supplierLogoUrl: String? = null,
+    val supplierRating: Double? = null
 )

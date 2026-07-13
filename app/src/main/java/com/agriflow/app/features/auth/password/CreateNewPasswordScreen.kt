@@ -11,6 +11,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.Box
+import androidx.compose.animation.AnimatedContent
+import com.agriflow.app.features.auth.ui.AuthBackgroundOrnaments
+import com.agriflow.app.features.auth.ui.StaggeredEntrance
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -101,73 +105,94 @@ fun CreateNewPasswordScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         modifier = modifier
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(horizontal = 24.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.Start
         ) {
-            Text(
-                text = "New Password",
-                style = MaterialTheme.typography.headlineMedium
-            )
-            Text(
-                text = "Please enter your new secure password to reset your login credentials.",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            AuthBackgroundOrnaments()
 
-            Spacer(modifier = Modifier.height(32.dp))
-
-            OutlinedTextField(
-                value = state.newPassword,
-                onValueChange = { onAction(CreateNewPasswordAction.OnNewPasswordChanged(it)) },
-                label = { Text("New Password") },
-                singleLine = true,
-                enabled = !state.isLoading,
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            OutlinedTextField(
-                value = state.confirmPassword,
-                onValueChange = { onAction(CreateNewPasswordAction.OnConfirmPasswordChanged(it)) },
-                label = { Text("Confirm Password") },
-                singleLine = true,
-                enabled = !state.isLoading,
-                visualTransformation = PasswordVisualTransformation(),
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            state.error?.let { error ->
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(
-                    text = error,
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Button(
-                onClick = { onAction(CreateNewPasswordAction.SubmitClicked) },
-                enabled = !state.isLoading && state.newPassword.isNotBlank() && state.confirmPassword.isNotBlank(),
-                modifier = Modifier.fillMaxWidth()
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 24.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.Start
             ) {
-                if (state.isLoading) {
-                    CircularProgressIndicator(
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        modifier = Modifier.size(20.dp)
+                StaggeredEntrance(index = 0) {
+                    Column {
+                        Text(
+                            text = "New Password",
+                            style = MaterialTheme.typography.headlineMedium
+                        )
+                        Text(
+                            text = "Please enter your new secure password to reset your login credentials.",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                StaggeredEntrance(index = 1, modifier = Modifier.fillMaxWidth()) {
+                    OutlinedTextField(
+                        value = state.newPassword,
+                        onValueChange = { onAction(CreateNewPasswordAction.OnNewPasswordChanged(it)) },
+                        label = { Text("New Password") },
+                        singleLine = true,
+                        enabled = !state.isLoading,
+                        visualTransformation = PasswordVisualTransformation(),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                        modifier = Modifier.fillMaxWidth()
                     )
-                } else {
-                    Text("Reset Password")
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                StaggeredEntrance(index = 2, modifier = Modifier.fillMaxWidth()) {
+                    OutlinedTextField(
+                        value = state.confirmPassword,
+                        onValueChange = { onAction(CreateNewPasswordAction.OnConfirmPasswordChanged(it)) },
+                        label = { Text("Confirm Password") },
+                        singleLine = true,
+                        enabled = !state.isLoading,
+                        visualTransformation = PasswordVisualTransformation(),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
+                state.error?.let { error ->
+                    Spacer(modifier = Modifier.height(12.dp))
+                    StaggeredEntrance(index = 3) {
+                        Text(
+                            text = error,
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                StaggeredEntrance(index = 3, modifier = Modifier.fillMaxWidth()) {
+                    Button(
+                        onClick = { onAction(CreateNewPasswordAction.SubmitClicked) },
+                        enabled = !state.isLoading && state.newPassword.isNotBlank() && state.confirmPassword.isNotBlank(),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        AnimatedContent(targetState = state.isLoading, label = "ResetLoading") { isLoading ->
+                            if (isLoading) {
+                                CircularProgressIndicator(
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            } else {
+                                Text("Reset Password")
+                            }
+                        }
+                    }
                 }
             }
         }

@@ -40,7 +40,8 @@ class AuthInterceptor @Inject constructor(
         const val BEARER_PREFIX = "Bearer"
         val PUBLIC_AUTH_PATHS = setOf(
             "/api/auth/login",
-            "/api/auth/register"
+            "/api/auth/register",
+            "/api/auth/refresh"
         )
     }
 }

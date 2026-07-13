@@ -66,7 +66,7 @@ class RatingsRepositoryImpl @Inject constructor(
 
     override suspend fun getBusinessRatingSummary(businessId: String): Result<BusinessRatingSummary, DataError.Network> {
         return when (val result = safeApiCall { api.getBusinessRatingSummary(businessId) }) {
-            is Result.Success -> Result.Success(result.data.toBusinessRatingSummary())
+            is Result.Success -> Result.Success(result.data.toBusinessRatingSummary(businessId))
             is Result.Error -> Result.Error(result.error)
         }
     }

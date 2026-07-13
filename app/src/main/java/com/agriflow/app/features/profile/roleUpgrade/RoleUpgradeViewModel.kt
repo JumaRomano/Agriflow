@@ -42,6 +42,12 @@ class RoleUpgradeViewModel @Inject constructor(
             is RoleUpgradeAction.BusinessPhoneChanged -> {
                 _state.update { it.copy(businessPhone = action.phone, errorMessage = null) }
             }
+            is RoleUpgradeAction.BusinessCountyChanged -> {
+                _state.update { it.copy(businessCounty = action.county, errorMessage = null) }
+            }
+            is RoleUpgradeAction.BusinessProfileSelected -> {
+                _state.update { it.copy(businessProfile = action.uri.toString(), errorMessage = null) }
+            }
             RoleUpgradeAction.SubmitClicked -> submitUpgrade()
             RoleUpgradeAction.SwitchToActiveRole -> {}
         }
@@ -65,7 +71,9 @@ class RoleUpgradeViewModel @Inject constructor(
                     role = currentState.selectedRole,
                     businessName = currentState.businessName,
                     businessEmail = currentState.businessEmail,
-                    businessPhone = currentState.businessPhone
+                    businessPhone = currentState.businessPhone,
+                    county = currentState.businessCounty,
+                    businessProfile = currentState.businessProfile
                 )
             ) {
                 is Result.Success -> {
@@ -90,6 +98,7 @@ class RoleUpgradeViewModel @Inject constructor(
             state.businessEmail.isBlank() -> "Business email is required"
             !state.businessEmail.contains("@") -> "Enter a valid business email address"
             state.businessPhone.isBlank() -> "Business phone number is required"
+            state.businessCounty.isBlank() -> "County is required"
             else -> null
         }
     }

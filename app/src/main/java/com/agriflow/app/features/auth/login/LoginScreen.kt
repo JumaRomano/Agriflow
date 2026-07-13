@@ -11,6 +11,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.Box
+import androidx.compose.animation.AnimatedContent
+import com.agriflow.app.features.auth.ui.AuthBackgroundOrnaments
+import com.agriflow.app.features.auth.ui.StaggeredEntrance
+import com.agriflow.app.features.auth.ui.LoginWelcomeHeaderAnimation
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -96,104 +101,122 @@ fun LoginScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         modifier = modifier
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(horizontal = 24.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.Start
         ) {
-            Text(
-                text = "Welcome to Agriflow",
-                style = MaterialTheme.typography.headlineMedium
-            )
-            Text(
-                text = "Join the future of Agriculture.",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            AuthBackgroundOrnaments()
 
-            Spacer(modifier = Modifier.height(32.dp))
-
-            OutlinedTextField(
-                value = state.loginEmail,
-                onValueChange = { onAction(AuthAction.LoginEmailChanged(it)) },
-                label = { Text("Email") },
-                singleLine = true,
-                enabled = !state.isLoading,
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            OutlinedTextField(
-                value = state.loginPassword,
-                onValueChange = { onAction(AuthAction.LoginPasswordChanged(it)) },
-                label = { Text("Password") },
-                singleLine = true,
-                enabled = !state.isLoading,
-                modifier = Modifier.fillMaxWidth(),
-                trailingIcon = {
-                    val image = if (isPasswordVisible) {
-                        Icons.Default.Visibility
-                    } else {
-                        Icons.Default.VisibilityOff
-                    }
-
-                    val description = if (isPasswordVisible) "Hide password" else "Show password"
-
-                    IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
-                        Icon(imageVector = image, contentDescription = description)
-                    }
-                },
-                visualTransformation = if (isPasswordVisible) {
-                    VisualTransformation.None
-                } else {
-                    PasswordVisualTransformation()
-                },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
-            )
-
-            state.errorMessage?.let { message ->
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(
-                    text = message,
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Button(
-                onClick = { onAction(AuthAction.LoginSubmitted) },
-                enabled = !state.isLoading,
-                modifier = Modifier.fillMaxWidth()
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 24.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.Start
             ) {
-                if (state.isLoading) {
-                    CircularProgressIndicator(modifier = Modifier.size(20.dp))
-                } else {
-                    Text("Sign in")
+                LoginWelcomeHeaderAnimation(
+                    title = "Welcome to Agriflow",
+                    subtitle = "Join the future of Agriculture."
+                )
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                StaggeredEntrance(index = 1, modifier = Modifier.fillMaxWidth()) {
+                    OutlinedTextField(
+                        value = state.loginEmail,
+                        onValueChange = { onAction(AuthAction.LoginEmailChanged(it)) },
+                        label = { Text("Email") },
+                        singleLine = true,
+                        enabled = !state.isLoading,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                StaggeredEntrance(index = 2, modifier = Modifier.fillMaxWidth()) {
+                    OutlinedTextField(
+                        value = state.loginPassword,
+                        onValueChange = { onAction(AuthAction.LoginPasswordChanged(it)) },
+                        label = { Text("Password") },
+                        singleLine = true,
+                        enabled = !state.isLoading,
+                        modifier = Modifier.fillMaxWidth(),
+                        trailingIcon = {
+                            val image = if (isPasswordVisible) {
+                                Icons.Default.Visibility
+                            } else {
+                                Icons.Default.VisibilityOff
+                            }
+
+                            val description = if (isPasswordVisible) "Hide password" else "Show password"
+
+                            IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
+                                Icon(imageVector = image, contentDescription = description)
+                            }
+                        },
+                        visualTransformation = if (isPasswordVisible) {
+                            VisualTransformation.None
+                        } else {
+                            PasswordVisualTransformation()
+                        },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password)
+                    )
+                }
+
+                state.errorMessage?.let { message ->
+                    Spacer(modifier = Modifier.height(12.dp))
+                    StaggeredEntrance(index = 3) {
+                        Text(
+                            text = message,
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                StaggeredEntrance(index = 4, modifier = Modifier.fillMaxWidth()) {
+                    Button(
+                        onClick = { onAction(AuthAction.LoginSubmitted) },
+                        enabled = !state.isLoading,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        AnimatedContent(targetState = state.isLoading, label = "LoginLoading") { isLoading ->
+                            if (isLoading) {
+                                CircularProgressIndicator(
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            } else {
+                                Text("Sign in")
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                StaggeredEntrance(index = 5, modifier = Modifier.align(Alignment.CenterHorizontally)) {
+                    TextButton(
+                        onClick = onRegisterClick,
+                        enabled = !state.isLoading
+                    ) {
+                        Text("Create an account")
+                    }
+                }
+
+                StaggeredEntrance(index = 6, modifier = Modifier.align(Alignment.CenterHorizontally)) {
+                    TextButton(
+                        onClick = onForgotClick,
+                        enabled = !state.isLoading
+                    ) {
+                        Text("Forgot Password ?")
+                    }
                 }
             }
-
-            TextButton(
-                onClick = onRegisterClick,
-                enabled = !state.isLoading,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            ) {
-                Text("Create an account")
-            }
-
-            TextButton(
-                onClick = onForgotClick,
-                enabled = !state.isLoading,
-                modifier =  Modifier.align(Alignment.CenterHorizontally)
-            ) {
-                Text("Forgot Password ?")
-            }
-
         }
     }
 }

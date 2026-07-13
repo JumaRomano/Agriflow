@@ -66,7 +66,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.compose.runtime.remember as remember
-
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.gestures.animateScrollBy
+import androidx.compose.foundation.lazy.rememberLazyListState
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import androidx.compose.foundation.interaction.collectIsDraggedAsState
+import androidx.compose.runtime.getValue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -311,7 +318,36 @@ fun HomeScreen(
 
             if (homeProducts.isNotEmpty()) {
                 item {
+                    val listState = rememberLazyListState()
+                    // 1. Listen for the user's finger!
+                    val isDragged by listState.interactionSource.collectIsDraggedAsState()
+
+                    // 2. Restart the loop based on drag state
+                    LaunchedEffect(isDragged) {
+
+                        if (!isDragged) {
+
+                            delay(1500)
+
+                            while (isActive) {
+                                if (listState.canScrollForward) {
+                                    listState.animateScrollBy(
+                                        value = 40f,
+                                        animationSpec = tween(
+                                            durationMillis = 1000,
+                                            easing = LinearEasing
+                                        )
+                                    )
+                                } else {
+                                    delay(1500)
+                                    listState.scrollToItem(0)
+                                }
+                            }
+                        }
+                    }
+
                     LazyRow(
+                        state = listState,
                         horizontalArrangement = Arrangement.spacedBy(16.dp),
                         contentPadding = PaddingValues(horizontal = 4.dp),
                         modifier = Modifier.fillMaxWidth()
@@ -345,6 +381,8 @@ fun HomeScreen(
                     }
                 }
             }
+
+
 
         }
     }

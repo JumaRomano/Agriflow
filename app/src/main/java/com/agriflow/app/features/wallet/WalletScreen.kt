@@ -2,6 +2,8 @@ package com.agriflow.app.features.wallet
 
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -104,36 +106,47 @@ fun WalletScreen(
                     .fillMaxSize()
                     .padding(horizontal = 16.dp)
             ) {
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-                // Balance Card with Available and Pending Balances
-                BalanceCard(
-                    balance = state.balance,
-                    pendingBalance = state.pendingBalance,
-                    onWithdrawClick = { onAction(WalletAction.ShowWithdrawDialog(true)) }
-                )
+                // Available Balance Card
+                AvailableBalanceCard(balance = state.balance)
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // "Withdraw Funds" primary action button
+                Button(
+                    onClick = { onAction(WalletAction.ShowWithdrawDialog(true)) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text(
+                        text = "Withdraw Funds",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(24.dp))
 
+                // Pending Balance Section
+                PendingBalanceSection(pendingBalance = state.pendingBalance)
+
+                Spacer(modifier = Modifier.height(32.dp))
+
                 // Transactions Header
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.History,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "Transaction History",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onBackground
-                    )
-                }
+                Text(
+                    text = "Transaction History",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.padding(horizontal = 4.dp)
+                )
 
                 Spacer(modifier = Modifier.height(12.dp))
 
@@ -156,11 +169,14 @@ fun WalletScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(1f),
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
                         contentPadding = PaddingValues(bottom = 16.dp)
                     ) {
                         items(state.transactions) { transaction ->
                             TransactionItem(transaction = transaction)
+                            HorizontalDivider(
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.06f),
+                                modifier = Modifier.padding(horizontal = 4.dp)
+                            )
                         }
                     }
                 }
@@ -186,117 +202,88 @@ fun WalletScreen(
 }
 
 @Composable
-fun BalanceCard(
-    balance: Double,
-    pendingBalance: Double,
-    onWithdrawClick: () -> Unit
-) {
+fun AvailableBalanceCard(balance: Double) {
     val formattedBalance = remember(balance) {
         "KES %,.2f".format(Locale.US, balance)
-    }
-    val formattedPending = remember(pendingBalance) {
-        "KES %,.2f".format(Locale.US, pendingBalance)
     }
 
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isSystemInDarkTheme()) {
+                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f)
+            } else {
+                MaterialTheme.colorScheme.primary.copy(alpha = 0.05f)
+            }
+        ),
+        border = BorderStroke(
+            width = 1.dp,
+            color = if (isSystemInDarkTheme()) {
+                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.08f)
+            } else {
+                MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
+            }
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
-        // Beautiful Green-to-Emerald Gradient Dashboard Card
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(
-                    Brush.linearGradient(
-                        colors = listOf(
-                            Color(0xFF4CAF50), // Deep forest green
-                            Color(0xFF4CAF50)  // Rich emerald green
-                        )
-                    )
-                )
                 .padding(24.dp)
         ) {
-            // Available Balance
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "AVAILABLE BALANCE",
-                    color = Color.White.copy(alpha = 0.8f),
-                    style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.Bold
-                )
-                Icon(
-                    imageVector = Icons.Default.AccountBalanceWallet,
-                    contentDescription = null,
-                    tint = Color.White.copy(alpha = 0.9f),
-                    modifier = Modifier.size(24.dp)
-                )
-
-            }
-
-            Spacer(modifier = Modifier.height(4.dp))
-
             Text(
-                text = formattedBalance,
-                color = Color.White,
-                style = MaterialTheme.typography.headlineLarge.copy(fontSize = 32.sp),
-                fontWeight = FontWeight.ExtraBold
+                text = "Available Balance",
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Medium
             )
-            Button(
-                onClick = onWithdrawClick,
-                colors = ButtonDefaults.buttonColors(containerColor = Color.White),
-                shape = RoundedCornerShape(10.dp),
-                contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp)
-            ) {
-                Text(
-                    text = "Withdraw",
-                    color = Color(0xFF1B4332),
-                    fontWeight = FontWeight.Bold,
-                    style = MaterialTheme.typography.labelLarge
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-            HorizontalDivider(color = Color.White.copy(alpha = 0.15f))
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Pending Balance
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column {
-                    Text(
-                        text = "PENDING RELEASE",
-                        color = Color.White.copy(alpha = 0.7f),
-                        style = MaterialTheme.typography.labelSmall,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Spacer(modifier = Modifier.height(2.dp))
-                    Text(
-                        text = formattedPending,
-                        color = Color.White.copy(alpha = 0.95f),
-                        style = MaterialTheme.typography.titleLarge,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-
-
-            }
-
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "*Funds are released to available balance once products are successfully delivered.",
-                color = Color.White.copy(alpha = 0.6f),
-                style = MaterialTheme.typography.bodySmall,
-                fontSize = 10.sp
+                text = formattedBalance,
+                color = MaterialTheme.colorScheme.onSurface,
+                style = MaterialTheme.typography.headlineLarge.copy(fontSize = 32.sp),
+                fontWeight = FontWeight.Bold
             )
         }
+    }
+}
+
+@Composable
+fun PendingBalanceSection(pendingBalance: Double) {
+    val formattedPending = remember(pendingBalance) {
+        "KES %,.2f".format(Locale.US, pendingBalance)
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 4.dp)
+    ) {
+        Text(
+            text = "Pending Balance",
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+            style = MaterialTheme.typography.titleSmall,
+            fontWeight = FontWeight.SemiBold
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = formattedPending,
+            color = MaterialTheme.colorScheme.onSurface,
+            style = MaterialTheme.typography.headlineMedium.copy(fontSize = 22.sp),
+            fontWeight = FontWeight.Bold
+        )
+        Spacer(modifier = Modifier.height(6.dp))
+        Text(
+            text = "Funds are released to available balance once products are successfully delivered.",
+            color = if (isSystemInDarkTheme()) {
+                Color.Gray
+            } else {
+                Color(0xFF757575)
+            },
+            style = MaterialTheme.typography.bodySmall,
+            lineHeight = 16.sp
+        )
     }
 }
 
@@ -306,82 +293,80 @@ fun TransactionItem(transaction: WalletTransaction) {
     val locale = remember(configuration) { configuration.locales[0] }
 
     val formattedDate = remember(transaction.timestamp, locale) {
-        SimpleDateFormat("MMM dd, yyyy - hh:mm a", locale).format(Date(transaction.timestamp))
+        SimpleDateFormat("MMM dd, yyyy • hh:mm a", locale).format(Date(transaction.timestamp))
     }
 
+    val isRevenue = transaction.type == TransactionType.REVENUE
+
     val formattedAmount = remember(transaction.amount, transaction.type) {
-        if (transaction.type == TransactionType.REVENUE) {
+        if (isRevenue) {
             "+KES %,.2f".format(Locale.US, transaction.amount)
         } else {
             "-KES %,.2f".format(Locale.US, transaction.amount)
         }
     }
 
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f)
-        )
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.weight(1f)
-            ) {
-                // Color-coded Icon badge
-                val badgeIcon = Icons.Filled.ArrowCircleDown
-                val badgeColor = Color(0xFFD32F2F)
-                Box(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(badgeColor.copy(alpha = 0.15f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = badgeIcon,
-                        contentDescription = null,
-                        tint = badgeColor,
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-                Spacer(modifier = Modifier.width(12.dp))
-                Column {
-                    Text(
-                        text = transaction.description,
-                        style = MaterialTheme.typography.bodyLarge,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                    Spacer(modifier = Modifier.height(2.dp))
-                    Text(
-                        text = formattedDate,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
+    val badgeColor = if (isRevenue) {
+        Color(0xFF2E7D32) // Professional green for positive inflow
+    } else {
+        Color(0xFFC62828) // Professional red for negative outflow
+    }
 
-            Text(
-                text = formattedAmount,
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Bold,
-                color = if (transaction.type == TransactionType.REVENUE) {
-                    Color(0xFF2D6A4F)
-                } else {
-                    Color(0xFFD32F2F)
-                }
+    val badgeIcon = if (isRevenue) {
+        Icons.AutoMirrored.Filled.TrendingUp
+    } else {
+        Icons.AutoMirrored.Filled.TrendingDown
+    }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 14.dp, horizontal = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Icon Badge with subtle tint background
+        Box(
+            modifier = Modifier
+                .size(40.dp)
+                .clip(RoundedCornerShape(10.dp))
+                .background(badgeColor.copy(alpha = 0.08f)),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = badgeIcon,
+                contentDescription = null,
+                tint = badgeColor,
+                modifier = Modifier.size(20.dp)
             )
         }
+
+        Spacer(modifier = Modifier.width(16.dp))
+
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(
+                text = transaction.description,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = formattedDate,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+            )
+        }
+
+        Text(
+            text = formattedAmount,
+            style = MaterialTheme.typography.bodyLarge,
+            fontWeight = FontWeight.Bold,
+            color = badgeColor
+        )
     }
 }
 

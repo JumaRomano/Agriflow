@@ -8,10 +8,12 @@ import com.google.gson.annotations.SerializedName
 data class BusinessDetailsResponseDto(
     @SerializedName("id") val id: String?,
     @SerializedName("userId") val userId: String?,
+    @SerializedName(value = "businessProfile", alternate = ["logoUrl", "business_profile"]) val businessProfile: String?,
     @SerializedName("businessName") val businessName: String?,
     @SerializedName("businessEmail") val businessEmail: String?,
     @SerializedName("businessPhone") val businessPhone: String?,
     @SerializedName("approvalStatus") val approvalStatus: String?, // "APPROVED", "PENDING", etc.
+    @SerializedName("county") val county: String?,
     @SerializedName("joinDate") val joinDate: String?,
     @SerializedName("walletBalance") val walletBalance: Double?,
     @SerializedName("pendingBalance") val pendingBalance: Double?

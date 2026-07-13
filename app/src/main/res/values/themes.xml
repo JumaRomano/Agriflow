@@ -2,4 +2,9 @@
 <resources>
 
     <style name="Theme.Agriflow" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <!-- A launch theme that instantly renders our splash background during app startup -->
+    <style name="Theme.Agriflow.Launch" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@drawable/splash_background</item>
+    </style>
 </resources>

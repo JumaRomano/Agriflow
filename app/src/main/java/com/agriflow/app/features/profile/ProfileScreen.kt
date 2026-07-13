@@ -21,17 +21,21 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.HelpOutline
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.AccountBalanceWallet
+import androidx.compose.material.icons.filled.Business
 import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Phone
+import androidx.compose.material.icons.filled.Verified
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import com.agriflow.app.features.auth.UserRole
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -52,10 +56,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-
+import coil.compose.AsyncImage
+import com.agriflow.app.features.auth.UserRole
 
 
 @Composable
@@ -69,12 +76,21 @@ fun ProfileRoute(
     viewModel: ProfileViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsState()
+    val context = androidx.compose.ui.platform.LocalContext.current
+
+    // Trigger profile details refresh every time the user enters the screen
+    LaunchedEffect(Unit) {
+        viewModel.onAction(ProfileAction.OnRefreshProfile)
+    }
 
     LaunchedEffect(viewModel.events) {
         viewModel.events.collect { event ->
             when (event) {
                 ProfileEvent.MapsToLogin -> onLogoutSuccess()
                 is ProfileEvent.NavigateToRoleUpgrade -> onNavigateToUpgrade(event.role)
+                is ProfileEvent.ShowToast -> {
+                    android.widget.Toast.makeText(context, event.message, android.widget.Toast.LENGTH_LONG).show()
+                }
             }
         }
     }
@@ -89,6 +105,7 @@ fun ProfileRoute(
         onWalletClick = onNavigateToWallet
     )
 }
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
@@ -101,6 +118,7 @@ fun ProfileScreen(
     onWalletClick: () -> Unit
 ) {
     val scrollState = rememberScrollState()
+    val isBusinessRole = state.role == UserRole.FARMER || state.role == UserRole.SUPPLIER
 
     Scaffold(
         topBar = {
@@ -125,9 +143,9 @@ fun ProfileScreen(
                     .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Modern Header Section (Avatar, Name, Role)
                 Spacer(modifier = Modifier.height(16.dp))
-                
+
+                // ── Avatar / Business Logo ─────────────────────────────────
                 Box(
                     modifier = Modifier
                         .size(100.dp)
@@ -142,18 +160,30 @@ fun ProfileScreen(
                         ),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Person,
-                        contentDescription = "User Avatar",
-                        tint = MaterialTheme.colorScheme.onPrimary,
-                        modifier = Modifier.size(56.dp)
-                    )
+                    val logoToShow = if (isBusinessRole) state.businessLogoUrl else state.profilePicture
+                    if (!logoToShow.isNullOrBlank()) {
+                        AsyncImage(
+                            model = logoToShow,
+                            contentDescription = if (isBusinessRole) "Business Logo" else "User Profile Picture",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    } else {
+                        Icon(
+                            imageVector = if (isBusinessRole) Icons.Default.Business else Icons.Default.Person,
+                            contentDescription = "Avatar",
+                            tint = MaterialTheme.colorScheme.onPrimary,
+                            modifier = Modifier.size(56.dp)
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
+                // Display business name for business roles, otherwise personal name
                 Text(
-                    text = state.name,
+                    text = if (isBusinessRole && !state.businessName.isNullOrBlank())
+                        state.businessName else state.name,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onBackground
@@ -162,31 +192,76 @@ fun ProfileScreen(
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
-                    text = state.email,
+                    text = if (isBusinessRole && !state.businessEmail.isNullOrBlank())
+                        state.businessEmail else state.email,
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
 
-                // Role Badge
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(MaterialTheme.colorScheme.primaryContainer)
-                        .padding(horizontal = 12.dp, vertical = 4.dp)
+                // Role badge + approval status chip (for business roles)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Text(
-                        text = state.role.name,
-                        style = MaterialTheme.typography.labelMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(MaterialTheme.colorScheme.primaryContainer)
+                            .padding(horizontal = 12.dp, vertical = 4.dp)
+                    ) {
+                        Text(
+                            text = state.role.name,
+                            style = MaterialTheme.typography.labelMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    }
+
+                    if (isBusinessRole && !state.businessApprovalStatus.isNullOrBlank()) {
+                        val isApproved = state.businessApprovalStatus.equals("APPROVED", ignoreCase = true)
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(
+                                    if (isApproved) Color(0xFF1B5E20).copy(alpha = 0.15f)
+                                    else Color(0xFFE65100).copy(alpha = 0.15f)
+                                )
+                                .padding(horizontal = 12.dp, vertical = 4.dp)
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                if (isApproved) {
+                                    Icon(
+                                        imageVector = Icons.Default.Verified,
+                                        contentDescription = "Verified",
+                                        tint = Color(0xFF2E7D32),
+                                        modifier = Modifier.size(14.dp)
+                                    )
+                                }
+                                Text(
+                                    text = state.businessApprovalStatus.uppercase(),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = if (isApproved) Color(0xFF2E7D32) else Color(0xFFBF360C)
+                                )
+                            }
+                        }
+                    }
                 }
 
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
-                // Settings List
+                // ── Business Info Card (FARMER / SUPPLIER only) ────────────
+                if (isBusinessRole) {
+                    BusinessInfoCard(state = state)
+                    Spacer(modifier = Modifier.height(24.dp))
+                }
+
+                // ── Menu Items ─────────────────────────────────────────────
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -195,11 +270,14 @@ fun ProfileScreen(
                 ) {
                     val menuItems = remember(state.role) {
                         buildList {
-                            add(Triple("Edit Profile", Icons.Default.Edit, onEditProfileClick))
-                            add(Triple("Payment Methods", Icons.Default.CreditCard, onPaymentMethodsClick))
+                            // Edit Profile only for BUYER accounts
+                            if (!isBusinessRole) {
+                                add(Triple("Edit Profile", Icons.Default.Edit, onEditProfileClick))
+                            }
+                           // add(Triple("Payment Methods", Icons.Default.CreditCard, onPaymentMethodsClick))
                             add(Triple("Order History", Icons.Default.History, onOrdersClick))
-                            if (state.role == UserRole.FARMER || state.role == UserRole.SUPPLIER) {
-                                add(Triple("Wallet", Icons.Default.AccountBalanceWallet , onWalletClick))
+                            if (isBusinessRole) {
+                                add(Triple("Wallet", Icons.Default.AccountBalanceWallet, onWalletClick))
                             }
                         }
                     }
@@ -222,7 +300,7 @@ fun ProfileScreen(
                                 )
                             },
                             colors = ListItemDefaults.colors(
-                                containerColor = androidx.compose.ui.graphics.Color.Transparent
+                                containerColor = Color.Transparent
                             ),
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -231,18 +309,16 @@ fun ProfileScreen(
                         if (index < menuItems.lastIndex) {
                             HorizontalDivider(
                                 color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
-                thickness = 1.dp,
-                modifier = Modifier.padding(horizontal = 16.dp)
-                )
-            }
-        }
-    }
+                                thickness = 1.dp,
+                                modifier = Modifier.padding(horizontal = 16.dp)
+                            )
+                        }
+                    }
+                }
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-
-                val isUpgraded = state.role == UserRole.FARMER || state.role == UserRole.SUPPLIER
-                val buttonText = if (isUpgraded) "Switch to Buyer " else "Switch Account"
+                val buttonText = if (isBusinessRole) "Switch to Buyer" else "Switch Account"
 
                 OutlinedButton(
                     onClick = { onAction(ProfileAction.OnSwitchAccountClicked) },
@@ -278,7 +354,6 @@ fun ProfileScreen(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-
                 OutlinedButton(
                     onClick = { onAction(ProfileAction.OnLogoutClicked) },
                     modifier = Modifier.fillMaxWidth(),
@@ -310,7 +385,7 @@ fun ProfileScreen(
                         )
                     }
                 }
-                
+
                 Spacer(modifier = Modifier.height(24.dp))
             }
 
@@ -319,12 +394,130 @@ fun ProfileScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.3f)),
+                        .background(Color.Black.copy(alpha = 0.3f)),
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
                 }
             }
+        }
+    }
+}
+
+/**
+ * Card showing live business info from /api/businesses/me.
+ * Rendered only for FARMER and SUPPLIER roles.
+ */
+@Composable
+private fun BusinessInfoCard(state: ProfileState) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f)
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Text(
+                text = "Business Profile",
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+
+            if (!state.businessPhone.isNullOrBlank()) {
+                BusinessInfoRow(
+                    icon = {
+                        Icon(
+                            Icons.Default.Phone,
+                            contentDescription = "Phone",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    },
+                    label = "Phone",
+                    value = state.businessPhone
+                )
+            }
+            if (!state.businessEmail.isNullOrBlank()) {
+                BusinessInfoRow(
+                    icon = {
+                        Icon(
+                            Icons.Default.Email,
+                            contentDescription = "Email",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    },
+                    label = "Email",
+                    value = state.businessEmail
+                )
+            }
+            if (!state.businessCounty.isNullOrBlank()) {
+                BusinessInfoRow(
+                    icon = {
+                        Icon(
+                            Icons.Default.LocationOn,
+                            contentDescription = "County",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    },
+                    label = "County",
+                    value = state.businessCounty
+                )
+            }
+            if (!state.businessJoinDate.isNullOrBlank()) {
+
+                val displayDate = state.businessJoinDate.substringBefore("T").ifBlank { state.businessJoinDate }
+                BusinessInfoRow(
+                    icon = {
+                        Icon(
+                            Icons.Default.Business,
+                            contentDescription = "Joined",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    },
+                    label = "Joined",
+                    value = displayDate
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun BusinessInfoRow(
+    icon: @Composable () -> Unit,
+    label: String,
+    value: String
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        icon()
+        Column {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Text(
+                text = value,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Medium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
         }
     }
 }

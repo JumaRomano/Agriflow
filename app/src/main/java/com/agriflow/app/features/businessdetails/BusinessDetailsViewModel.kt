@@ -43,9 +43,9 @@ class BusinessDetailsViewModel @Inject constructor(
                                 description = dto.description ?: "Verified distributor offering high quality agri-products and services in our network.",
                                 email = dto.email ?: "info@${dto.name?.lowercase()?.replace(" ", "") ?: "agriflow"}.com",
                                 phone = dto.phone ?: "+254 700 000 000",
-                                rating = dto.rating ?: 4.8,
-                                reviewCount = dto.reviewCount ?: 24,
-                                logoUrl = dto.logoUrl
+                                rating = dto.rating,
+                                reviewCount = dto.reviewCount ?: 0,
+                                businessProfile = dto.businessProfile
                             )
                         }
                     }
@@ -58,8 +58,8 @@ class BusinessDetailsViewModel @Inject constructor(
                                 description = "Verified distributor offering high quality agri-products and services in our network.",
                                 email = "info@agriflow.com",
                                 phone = "+254 700 000 000",
-                                rating = 4.8,
-                                reviewCount = 24
+                                rating = null,
+                                reviewCount = 0
                             )
                         }
                     }

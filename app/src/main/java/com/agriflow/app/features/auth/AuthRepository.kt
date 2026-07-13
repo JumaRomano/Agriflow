@@ -28,12 +28,14 @@ interface AuthRepository {
         role: UserRole,
         businessName: String,
         businessEmail: String,
-        businessPhone: String
+        businessPhone: String,
+        county: String,
+        businessProfile: String?
     ): Result<BusinessDetailsResponseDto, DataError.Network>
 
     suspend fun getBusinessDetails(): Result<BusinessDetailsResponseDto, DataError.Network>
 
-    suspend fun logout(): EmptyResult<DataError.Local>
+    suspend fun logout(): EmptyResult<DataError.Network>
 
     suspend fun sendOtp(
         email: String,
@@ -75,4 +77,6 @@ interface AuthRepository {
     ): EmptyResult<DataError.Network>
 
     suspend fun getCurrentUser(): Result<User, DataError.Network>
+
+    suspend fun refreshToken(): Result<AuthSession, DataError.Network>
 }

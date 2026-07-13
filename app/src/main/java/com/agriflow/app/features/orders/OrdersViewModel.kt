@@ -21,6 +21,7 @@ import javax.inject.Inject
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.toRoute
 import com.agriflow.app.core.navigation.Route
+import com.agriflow.app.core.util.DataError
 
 @HiltViewModel
 class OrdersViewModel @Inject constructor(
@@ -72,6 +73,9 @@ class OrdersViewModel @Inject constructor(
 
     private fun loadOrdersForActiveRole() {
         val currentRole = _state.value.activeRole
+        if (currentRole == UserRole.UNKNOWN) {
+            return
+        }
         if (currentRole == UserRole.FARMER || currentRole == UserRole.SUPPLIER) {
             loadBusinessOrders()
         } else {
@@ -96,13 +100,23 @@ class OrdersViewModel @Inject constructor(
                     }
                 }
                 is Result.Error -> {
-                    _state.update {
-                        it.copy(
-                            isLoading = false,
-                            errorMessage = "Failed to load orders: ${result.error.name}"
-                        )
+                    if (result.error == DataError.Network.NOT_FOUND) {
+                        _state.update {
+                            it.copy(
+                                isLoading = false,
+                                orders = emptyList(),
+                                errorMessage = null
+                            )
+                        }
+                    } else {
+                        _state.update {
+                            it.copy(
+                                isLoading = false,
+                                errorMessage = "Failed to load orders: ${result.error.name}"
+                            )
+                        }
+                        _events.send(OrdersEvent.ShowSnackbar("Error loading orders: ${result.error.name}"))
                     }
-                    _events.send(OrdersEvent.ShowSnackbar("Error loading orders: ${result.error.name}"))
                 }
             }
         }
@@ -126,13 +140,23 @@ class OrdersViewModel @Inject constructor(
                     }
                 }
                 is Result.Error -> {
-                    _state.update {
-                        it.copy(
-                            isLoading = false,
-                            errorMessage = "Failed to load store orders: ${result.error.name}"
-                        )
+                    if (result.error == DataError.Network.NOT_FOUND) {
+                        _state.update {
+                            it.copy(
+                                isLoading = false,
+                                orders = emptyList(),
+                                errorMessage = null
+                            )
+                        }
+                    } else {
+                        _state.update {
+                            it.copy(
+                                isLoading = false,
+                                errorMessage = "Failed to load store orders: ${result.error.name}"
+                            )
+                        }
+                        _events.send(OrdersEvent.ShowSnackbar("Error loading store orders: ${result.error.name}"))
                     }
-                    _events.send(OrdersEvent.ShowSnackbar("Error loading store orders: ${result.error.name}"))
                 }
             }
         }

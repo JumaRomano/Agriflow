@@ -21,11 +21,11 @@ fun PendingReviewDto.toPendingReview(): PendingReview {
     )
 }
 
-fun BusinessRatingSummaryDto.toBusinessRatingSummary(): BusinessRatingSummary {
+fun BusinessRatingSummaryDto.toBusinessRatingSummary(fallbackBusinessId: String = ""): BusinessRatingSummary {
     return BusinessRatingSummary(
-        businessId = businessId,
-        averageRating = averageRating,
-        totalRatings = totalRatings
+        businessId = businessId ?: fallbackBusinessId,
+        averageRating = averageRating ?: 0.0,
+        totalRatings = totalRatings ?: 0
     )
 }
 

@@ -38,6 +38,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import coil.compose.AsyncImage
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -265,13 +267,22 @@ fun SupplierCard(
                             ),
                         contentAlignment = Alignment.Center
                     ) {
-                        val initial = supplier.name.trim().firstOrNull()?.uppercase() ?: "B"
-                        Text(
-                            text = initial.toString(),
-                            style = MaterialTheme.typography.headlineLarge,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onPrimary
-                        )
+                        if (!supplier.logoUrl.isNullOrBlank()) {
+                            AsyncImage(
+                                model = supplier.logoUrl,
+                                contentDescription = "Supplier Logo",
+                                contentScale = ContentScale.Crop,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        } else {
+                            val initial = supplier.name.trim().firstOrNull()?.uppercase() ?: "B"
+                            Text(
+                                text = initial.toString(),
+                                style = MaterialTheme.typography.headlineLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onPrimary
+                            )
+                        }
                     }
                     Column {
                         Row(

@@ -10,9 +10,9 @@ data class BusinessDetailsState(
     val description: String = "",
     val email: String = "",
     val phone: String = "",
-    val rating: Double = 5.0,
+    val rating: Double? = null,
     val reviewCount: Int = 0,
-    val logoUrl: String? = null,
+    val businessProfile: String? = "",
     val products: List<Product> = emptyList(),
     val errorMessage: String? = null
 )

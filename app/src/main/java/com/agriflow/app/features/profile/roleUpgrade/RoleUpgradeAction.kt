@@ -12,4 +12,6 @@ sealed interface RoleUpgradeAction {
     data class BusinessPhoneChanged(val phone: String) : RoleUpgradeAction
     data object SubmitClicked : RoleUpgradeAction
     data object SwitchToActiveRole : RoleUpgradeAction
+    data class BusinessCountyChanged(val county: String) : RoleUpgradeAction
+    data class BusinessProfileSelected(val uri: android.net.Uri) : RoleUpgradeAction
 }

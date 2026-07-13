@@ -22,8 +22,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Agriculture
 import androidx.compose.material.icons.filled.Business
-import androidx.compose.material.icons.filled.Landscape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -142,9 +142,9 @@ fun RoleUpgradeScreen(
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.Landscape,
+                                    imageVector = Icons.Default.Agriculture,
                                     contentDescription = "Farmer",
-                                    tint = MaterialTheme.colorScheme.primary,
+                                    tint = MaterialTheme.colorScheme.secondary,
                                     modifier = Modifier.size(32.dp)
                                 )
                             }
@@ -188,7 +188,7 @@ fun RoleUpgradeScreen(
                                 modifier = Modifier
                                     .size(56.dp)
                                     .clip(RoundedCornerShape(12.dp))
-                                    .background(MaterialTheme.colorScheme.secondaryContainer),
+                                    .background(MaterialTheme.colorScheme.primaryContainer),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Icon(

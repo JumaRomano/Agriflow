@@ -73,6 +73,16 @@ interface AuthApi {
     suspend fun uploadProfileImage(
         @Part file: MultipartBody.Part
     ): Response<ProfileImageResponseDto>
+
+    @POST("auth/logout")
+    suspend fun logout(
+        @Body request: LogoutRequestDto
+    ): Response<Unit>
+
+    @POST("auth/refresh")
+    suspend fun refreshToken(
+        @Body request: RefreshTokenRequestDto
+    ): Response<AuthResponseDto>
 }
 
 data class CurrentUserResponseDto(
@@ -102,5 +112,15 @@ data class UpgradeRoleRequestDto(
     val role: String,
     val businessName: String,
     val businessEmail: String,
-    val phoneNumber: String
+    val businessPhone: String,
+    val county: String,
+    val businessProfile: String? = null
+)
+
+data class LogoutRequestDto(
+    val refreshToken: String
+)
+
+data class RefreshTokenRequestDto(
+    @SerializedName("refreshToken") val refreshToken: String
 )

@@ -11,6 +11,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.Box
+import androidx.compose.animation.AnimatedContent
+import com.agriflow.app.features.auth.ui.AuthBackgroundOrnaments
+import com.agriflow.app.features.auth.ui.StaggeredEntrance
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -108,77 +112,95 @@ fun OtpVerificationScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         modifier = modifier
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(horizontal = 24.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.Start
         ) {
-            Text(
-                text = "Verify OTP",
-                style = MaterialTheme.typography.headlineMedium
-            )
-            Text(
-                text = "We have sent a verification code to $email. Please enter the code below.",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+            AuthBackgroundOrnaments()
 
-            Spacer(modifier = Modifier.height(32.dp))
-
-            OutlinedTextField(
-                value = state.otpCode,
-                onValueChange = { onAction(OtpAction.OnOtpChanged(it)) },
-                label = { Text("Verification Code") },
-                singleLine = true,
-                enabled = !state.isLoading,
-                isError = state.error != null,
-                supportingText = state.error?.let { { Text(it) } },
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Button(
-                onClick = { onAction(OtpAction.VerifyClicked) },
-                enabled = !state.isLoading && state.otpCode.isNotBlank(),
-                modifier = Modifier.fillMaxWidth()
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 24.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.Start
             ) {
-                if (state.isLoading) {
-                    CircularProgressIndicator(
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        modifier = Modifier.size(20.dp)
+                StaggeredEntrance(index = 0) {
+                    Column {
+                        Text(
+                            text = "Verify OTP",
+                            style = MaterialTheme.typography.headlineMedium
+                        )
+                        Text(
+                            text = "We have sent a verification code to $email. Please enter the code below.",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                StaggeredEntrance(index = 1, modifier = Modifier.fillMaxWidth()) {
+                    OutlinedTextField(
+                        value = state.otpCode,
+                        onValueChange = { onAction(OtpAction.OnOtpChanged(it)) },
+                        label = { Text("Verification Code") },
+                        singleLine = true,
+                        enabled = !state.isLoading,
+                        isError = state.error != null,
+                        supportingText = state.error?.let { { Text(it) } },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        modifier = Modifier.fillMaxWidth()
                     )
-                } else {
-                    Text("Verify")
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                StaggeredEntrance(index = 2, modifier = Modifier.fillMaxWidth()) {
+                    Button(
+                        onClick = { onAction(OtpAction.VerifyClicked) },
+                        enabled = !state.isLoading && state.otpCode.isNotBlank(),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        AnimatedContent(targetState = state.isLoading, label = "OtpLoading") { isLoading ->
+                            if (isLoading) {
+                                CircularProgressIndicator(
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            } else {
+                                Text("Verify")
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                StaggeredEntrance(index = 3) {
+                    Text(
+                        text = "The OTP expires in 5 minutes",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                StaggeredEntrance(index = 4, modifier = Modifier.align(Alignment.CenterHorizontally)) {
+                    TextButton(
+                        onClick = { onAction(OtpAction.ResendClicked) },
+                        enabled = !state.isLoading
+                    ) {
+                        Text(
+                            text = "Didn't receive code? Resend",
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
             }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = "The OTP expires in 5 minutes",
-                style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            TextButton(
-                onClick = { onAction(OtpAction.ResendClicked) },
-                enabled = !state.isLoading,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            ) {
-                Text(
-                    text = "Didn't receive code? Resend",
-                    textAlign = TextAlign.Center
-                )
-            }
-
-
         }
     }
 }

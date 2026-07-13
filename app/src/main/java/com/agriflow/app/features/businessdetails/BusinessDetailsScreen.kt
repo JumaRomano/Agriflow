@@ -28,6 +28,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.agriflow.app.features.marketplace.ProductGridItem
+import coil.compose.AsyncImage
+import androidx.compose.ui.layout.ContentScale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -136,13 +138,22 @@ fun BusinessDetailsScreen(
                                         ),
                                     contentAlignment = Alignment.Center
                                 ) {
-                                    val initial = state.name.trim().firstOrNull()?.uppercase() ?: "B"
-                                    Text(
-                                        text = initial.toString(),
-                                        style = MaterialTheme.typography.headlineLarge,
-                                        fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.onPrimary
-                                    )
+                                    if (!state.businessProfile.isNullOrBlank()) {
+                                        AsyncImage(
+                                            model = state.businessProfile,
+                                            contentDescription = "Business Logo",
+                                            contentScale = ContentScale.Crop,
+                                            modifier = Modifier.fillMaxSize()
+                                        )
+                                    } else {
+                                        val initial = state.name.trim().firstOrNull()?.uppercase() ?: "B"
+                                        Text(
+                                            text = initial.toString(),
+                                            style = MaterialTheme.typography.headlineLarge,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.onPrimary
+                                        )
+                                    }
                                 }
 
                                 Spacer(modifier = Modifier.height(12.dp))
@@ -176,27 +187,29 @@ fun BusinessDetailsScreen(
 
                                 Spacer(modifier = Modifier.height(8.dp))
 
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Star,
-                                        contentDescription = "Rating",
-                                        tint = Color(0xFFFFB300),
-                                        modifier = Modifier.size(16.dp)
-                                    )
+                                if (state.rating != null) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Star,
+                                            contentDescription = "Rating",
+                                            tint = Color(0xFFFFB300),
+                                            modifier = Modifier.size(16.dp)
+                                        )
 
-                                    Text(
-                                        text = "${state.rating}",
-                                        fontWeight = FontWeight.Bold,
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
-                                    Text(
-                                        text = "(${state.reviewCount} reviews)",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
+                                        Text(
+                                            text = String.format(java.util.Locale.US, "%.1f", state.rating),
+                                            fontWeight = FontWeight.Bold,
+                                            style = MaterialTheme.typography.bodyMedium
+                                        )
+                                        Text(
+                                            text = "(${state.reviewCount} reviews)",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
                                 }
                             }
                         }

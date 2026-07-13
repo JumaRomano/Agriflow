@@ -37,6 +37,7 @@ class MainActivity : ComponentActivity() {
     lateinit var notificationsRepository: NotificationsRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.Theme_Agriflow)
         super.onCreate(savedInstanceState)
         requestNotificationPermission()
         

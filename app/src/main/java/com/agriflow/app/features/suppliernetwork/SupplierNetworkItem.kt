@@ -8,7 +8,7 @@ data class SupplierNetworkItem(
     val type: SupplierType,
     val tagline: String,
     val logoUrl: String? = null,
-    val rating: Double,
+    val rating: Double? = null,
     val reviewCount: Int,
     val emoji: String,
     val isVerified: Boolean = true

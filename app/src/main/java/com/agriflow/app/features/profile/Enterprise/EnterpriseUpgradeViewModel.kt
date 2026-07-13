@@ -21,13 +21,15 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import com.agriflow.app.core.util.FileHelper
 import javax.inject.Inject
 
 @HiltViewModel
 class EnterpriseUpgradeViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val tokenRepository: TokenRepository,
-    private val walletRepository: WalletRepository
+    private val walletRepository: WalletRepository,
+    private val fileHelper: FileHelper
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(RoleUpgradeState(selectedRole = UserRole.SUPPLIER))
@@ -73,7 +75,8 @@ class EnterpriseUpgradeViewModel @Inject constructor(
                             approvalStatus = result.data.approvalStatus,
                             walletBalance = available,
                             availableBalance = available,
-                            pendingBalance = pending
+                            pendingBalance = pending,
+                            businessProfile = result.data.businessProfile
                         )
                     }
                 }
@@ -86,6 +89,7 @@ class EnterpriseUpgradeViewModel @Inject constructor(
 
     fun onAction(action: RoleUpgradeAction) {
         when (action) {
+            is RoleUpgradeAction.RoleSelected -> {}
             is RoleUpgradeAction.BusinessNameChanged -> {
                 _state.update { it.copy(businessName = action.name, errorMessage = null) }
             }
@@ -95,10 +99,48 @@ class EnterpriseUpgradeViewModel @Inject constructor(
             is RoleUpgradeAction.BusinessPhoneChanged -> {
                 _state.update { it.copy(businessPhone = action.phone, errorMessage = null) }
             }
-
+            is RoleUpgradeAction.BusinessCountyChanged -> {
+                _state.update { it.copy(businessCounty = action.county, errorMessage = null) }
+            }
+            is RoleUpgradeAction.BusinessProfileSelected -> {
+                uploadBusinessProfile(action.uri)
+            }
             RoleUpgradeAction.SubmitClicked -> submitUpgrade()
             RoleUpgradeAction.SwitchToActiveRole -> switchToActiveRole()
-            else -> {}
+        }
+    }
+
+    private fun uploadBusinessProfile(uri: android.net.Uri) {
+        _state.update { it.copy(isUploadingImage = true) }
+        viewModelScope.launch {
+            val tempFile = fileHelper.uriToFile(uri)
+            if (tempFile == null) {
+                _state.update { it.copy(isUploadingImage = false) }
+                _events.send(RoleUpgradeEvent.ShowError("Failed to process image file."))
+                return@launch
+            }
+
+            val part = fileHelper.fileToMultipartPart(tempFile)
+            val uploadResult = authRepository.uploadProfileImage(part)
+            
+            // Clean up cache file immediately
+            tempFile.delete()
+
+            _state.update { it.copy(isUploadingImage = false) }
+
+            when (uploadResult) {
+                is Result.Success -> {
+                    val url = uploadResult.data.url ?: uploadResult.data.imageUrl
+                    if (!url.isNullOrBlank()) {
+                        _state.update { it.copy(businessProfile = url) }
+                    } else {
+                        _events.send(RoleUpgradeEvent.ShowError("Failed to upload image. Server returned empty URL."))
+                    }
+                }
+                is Result.Error -> {
+                    _events.send(RoleUpgradeEvent.ShowError("Failed to upload image: ${uploadResult.error.name}"))
+                }
+            }
         }
     }
 
@@ -120,7 +162,9 @@ class EnterpriseUpgradeViewModel @Inject constructor(
                     role = UserRole.SUPPLIER,
                     businessName = currentState.businessName,
                     businessEmail = currentState.businessEmail,
-                    businessPhone = currentState.businessPhone
+                    businessPhone = currentState.businessPhone,
+                    county = currentState.businessCounty,
+                    businessProfile = currentState.businessProfile
                 )
             ) {
                 is Result.Success -> {
@@ -131,7 +175,9 @@ class EnterpriseUpgradeViewModel @Inject constructor(
                             businessName = businessDetails.businessName.orEmpty(),
                             businessEmail = businessDetails.businessEmail.orEmpty(),
                             businessPhone = businessDetails.businessPhone.orEmpty(),
-                            approvalStatus = businessDetails.approvalStatus
+                            businessCounty = businessDetails.county.orEmpty(),
+                            approvalStatus = businessDetails.approvalStatus,
+                            businessProfile = businessDetails.businessProfile
                         )
                     }
                     tokenRepository.saveRegisteredBusinessRole(UserRole.SUPPLIER)
@@ -151,6 +197,7 @@ class EnterpriseUpgradeViewModel @Inject constructor(
             state.businessEmail.isBlank() -> "Enterprise Email is required"
             !state.businessEmail.contains("@") -> "Enter a valid email address"
             state.businessPhone.isBlank() -> "A Phone Number is required"
+            state.businessCounty.isBlank() -> "Enterprise County is required"
             else -> null
         }
     }

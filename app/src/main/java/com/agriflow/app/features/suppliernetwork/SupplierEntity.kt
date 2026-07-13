@@ -11,7 +11,7 @@ data class SupplierEntity(
     @PrimaryKey val supplierId: String,
     val name: String,
     val farmLocation: String,
-    val rating: Double,
+    val rating: Double?,
     val contactInfo: String,
     val type: String, // "FARMER" or "SUPPLIER"
     val logoUrl: String?,
