@@ -56,12 +56,12 @@ class SupplierNetworkViewModel @Inject constructor(
                     SupplierNetworkItem(
                         id = entity.supplierId,
                         name = entity.name,
-                        type = if (entity.type.equals("FARMER", ignoreCase = true)) SupplierType.FARMER else SupplierType.SUPPLIER,
+                        type = if (entity.type.equals("FARMER", ignoreCase = true) || entity.type.equals("FARM", ignoreCase = true)) SupplierType.FARMER else SupplierType.SUPPLIER,
                         tagline = entity.farmLocation.takeIf { it.isNotBlank() } ?: "Verified partner in the AgriFlow network",
                         logoUrl = entity.logoUrl,
                         rating = entity.rating,
                         reviewCount = entity.reviewCount,
-                        emoji = if (entity.type.equals("FARMER", ignoreCase = true)) "🌾" else "🏢",
+                        emoji = if (entity.type.equals("FARMER", ignoreCase = true) || entity.type.equals("FARM", ignoreCase = true)) "🌾" else "🏢",
                         isVerified = entity.isVerified
                     )
                 }

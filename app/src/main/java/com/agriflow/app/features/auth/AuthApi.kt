@@ -109,11 +109,11 @@ data class ChangePasswordRequestDto(
 )
 
 data class UpgradeRoleRequestDto(
-    val role: String,
     val businessName: String,
     val businessEmail: String,
     val businessPhone: String,
     val county: String,
+    val businessType: String,
     val businessProfile: String? = null
 )
 

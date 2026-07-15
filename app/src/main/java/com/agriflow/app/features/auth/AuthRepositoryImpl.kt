@@ -96,14 +96,19 @@ class AuthRepositoryImpl @Inject constructor(
         county: String,
         businessProfile: String?
     ): Result<BusinessDetailsResponseDto, DataError.Network> {
+        val businessType = when (role) {
+            UserRole.FARMER -> "FARM"
+            UserRole.SUPPLIER -> "ENTERPRISE"
+            else -> role.name
+        }
         return safeApiCall {
             authApi.upgradeRole(
                 request = UpgradeRoleRequestDto(
-                    role = role.name,
                     businessName = businessName.trim(),
                     businessEmail = businessEmail.trim(),
                     businessPhone = businessPhone.trim(),
                     county = county.trim(),
+                    businessType = businessType,
                     businessProfile = businessProfile
                 )
             )

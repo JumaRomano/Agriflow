@@ -197,7 +197,7 @@ class HomeViewModel @Inject constructor(
                             rating = dto.rating ?: 5.0,
                             reviewCount = dto.reviewCount ?: 0,
                             isVerified = dto.isVerified ?: true,
-                            emoji = if (dto.type?.equals("FARMER", ignoreCase = true) == true) "🌾" else "🏢"
+                            emoji = if (dto.type?.equals("FARMER", ignoreCase = true) == true || dto.type?.equals("FARM", ignoreCase = true) == true) "🌾" else "🏢"
                         )
                     }
                     _state.update { currentState ->

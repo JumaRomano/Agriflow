@@ -12,6 +12,6 @@ data class BusinessDto(
     val rating: Double?,
     @SerializedName("reviewCount") val reviewCount: Int?,
     @SerializedName("isVerified") val isVerified: Boolean?,
-    val type: String?, // "FARMER" or "SUPPLIER"
+    @SerializedName(value = "businessType", alternate = ["type"]) val type: String?, // "FARMER" or "SUPPLIER"
     @SerializedName(value = "businessProfile", alternate = ["logoUrl", "business_profile"]) val logoUrl: String?
 )
