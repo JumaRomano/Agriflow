@@ -47,6 +47,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.autofill.ContentType
+import androidx.compose.ui.semantics.contentType
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -221,7 +224,9 @@ fun PaymentScreen(
                         isError = state.deliveryAddressError != null,
                         supportingText = state.deliveryAddressError?.let { { Text(it) } },
                         enabled = !state.isProcessing && !state.isVerifyingPayment,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .semantics { contentType = ContentType.PostalAddress }
                     )
 
                     Spacer(modifier = Modifier.height(4.dp))
@@ -282,7 +287,9 @@ fun PaymentScreen(
                         isError = state.phoneNumberError != null,
                         supportingText = state.phoneNumberError?.let { { Text(it) } },
                         enabled = !state.isProcessing && !state.isVerifyingPayment,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .semantics { contentType = ContentType.PhoneNumber }
                     )
                 }
 

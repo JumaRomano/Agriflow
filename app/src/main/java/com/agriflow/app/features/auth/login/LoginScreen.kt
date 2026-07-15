@@ -34,6 +34,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.autofill.ContentType
+import androidx.compose.ui.semantics.contentType
+import androidx.compose.ui.semantics.semantics
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.agriflow.app.features.auth.AuthAction
 import com.agriflow.app.features.auth.AuthEvent
@@ -129,7 +132,9 @@ fun LoginScreen(
                         label = { Text("Email") },
                         singleLine = true,
                         enabled = !state.isLoading,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .semantics { contentType = ContentType.EmailAddress + ContentType.Username }
                     )
                 }
 
@@ -142,7 +147,9 @@ fun LoginScreen(
                         label = { Text("Password") },
                         singleLine = true,
                         enabled = !state.isLoading,
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .semantics { contentType = ContentType.Password },
                         trailingIcon = {
                             val image = if (isPasswordVisible) {
                                 Icons.Default.Visibility

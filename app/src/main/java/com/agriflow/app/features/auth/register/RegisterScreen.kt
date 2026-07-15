@@ -40,6 +40,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.autofill.ContentType
+import androidx.compose.ui.semantics.contentType
+import androidx.compose.ui.semantics.semantics
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.agriflow.app.features.auth.AuthAction
 import com.agriflow.app.features.auth.AuthEvent
@@ -128,7 +131,9 @@ fun RegisterScreen(
                         label = { Text("Username") },
                         singleLine = true,
                         enabled = !state.isLoading,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .semantics { contentType = ContentType.Username }
                     )
                 }
 
@@ -141,7 +146,9 @@ fun RegisterScreen(
                         label = { Text("First name") },
                         singleLine = true,
                         enabled = !state.isLoading,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .semantics { contentType = ContentType.PersonFirstName }
                     )
                 }
 
@@ -154,7 +161,9 @@ fun RegisterScreen(
                         label = { Text("Surname") },
                         singleLine = true,
                         enabled = !state.isLoading,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .semantics { contentType = ContentType.PersonLastName }
                     )
                 }
 
@@ -168,7 +177,9 @@ fun RegisterScreen(
                         singleLine = true,
                         enabled = !state.isLoading,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .semantics { contentType = ContentType.EmailAddress }
                     )
                 }
 
@@ -182,7 +193,9 @@ fun RegisterScreen(
                         singleLine = true,
                         enabled = !state.isLoading,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .semantics { contentType = ContentType.PhoneNumber }
                     )
                 }
 
@@ -197,7 +210,9 @@ fun RegisterScreen(
                         enabled = !state.isLoading,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                         visualTransformation = PasswordVisualTransformation(),
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .semantics { contentType = ContentType.NewPassword }
                     )
                 }
 

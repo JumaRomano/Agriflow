@@ -47,6 +47,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.autofill.ContentType
+import androidx.compose.ui.semantics.contentType
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -444,7 +447,9 @@ fun FarmerUpgradeScreen(
                         singleLine = true,
                         enabled = !state.isLoading,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .semantics { contentType = ContentType.EmailAddress }
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -457,7 +462,9 @@ fun FarmerUpgradeScreen(
                         singleLine = true,
                         enabled = !state.isLoading,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .semantics { contentType = ContentType.PhoneNumber }
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
@@ -484,6 +491,7 @@ fun FarmerUpgradeScreen(
                             modifier = Modifier
                                 .menuAnchor()
                                 .fillMaxWidth()
+                                .semantics { contentType = ContentType.PostalAddress }
                         )
 
                         ExposedDropdownMenu(

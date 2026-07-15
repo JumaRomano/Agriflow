@@ -58,8 +58,8 @@ class AuthViewModelTest {
 
         viewModel.events.test {
             viewModel.onAction(AuthAction.LoginSubmitted)
-            assertEquals("Email or Username is required", viewModel.state.value.errorMessage)
-            assertEquals(AuthEvent.ShowMessage("Email or Username is required"), awaitItem())
+            assertEquals("Email is required", viewModel.state.value.errorMessage)
+            assertEquals(AuthEvent.ShowMessage("Email is required"), awaitItem())
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -441,7 +441,7 @@ class AuthViewModelTest {
         viewModel.onAction(AuthAction.LoginEmailChanged(""))
         viewModel.onAction(AuthAction.LoginPasswordChanged("password123"))
         viewModel.onAction(AuthAction.LoginSubmitted)
-        assertEquals("Email or Username is required", viewModel.state.value.errorMessage)
+        assertEquals("Email is required", viewModel.state.value.errorMessage)
 
         // 2. Clear login error by changing email
         viewModel.onAction(AuthAction.LoginEmailChanged("user@example.com"))
