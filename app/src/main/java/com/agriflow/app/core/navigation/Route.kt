@@ -16,6 +16,9 @@ sealed interface Route {
     @Serializable
     data object Splash : Route
 
+    @Serializable
+    data object Onboarding : Route
+
     // --- GRAPHS ---
     // Graphs represent a collection of screens.
     @Serializable

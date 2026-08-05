@@ -23,4 +23,7 @@ interface TokenRepository {
 
     fun getRegisteredBusinessRole(): UserRole
     fun saveRegisteredBusinessRole(role: UserRole)
+
+    fun hasCompletedOnboarding(): Boolean
+    fun setCompletedOnboarding(completed: Boolean)
 }

@@ -19,6 +19,8 @@ interface MarketplaceRepository {
 
     suspend fun refreshProducts(): EmptyResult<DataError.Network>
 
+    suspend fun refreshProductDetails(id: String): Result<Product, DataError.Network>
+
     suspend fun getCategories(): Result<List<CategoryDto>, DataError.Network>
 
     suspend fun getVerifiedBusinesses(): Result<List<BusinessDto>, DataError.Network>

@@ -49,23 +49,25 @@ class NavigationViewModel @Inject constructor(
             val isLoggedIn = !tokenRepository.getAccessToken().isNullOrBlank()
             val actualRole = tokenRepository.getActualRole()
             
-            Log.d("RouteDebug", "Loaded Role: $actualRole")
-
-            val startDest = when {
-                !isLoggedIn -> Route.AuthGraph
-                actualRole == UserRole.STAFF -> Route.StaffGraph
-                else -> Route.MainGraph
-            }
+            Log.d("RouteDebug", "Loaded Role: $actualRole, OnboardingCompleted: ${tokenRepository.hasCompletedOnboarding()}")
 
             _navigationState.value = NavigationState(
                 isLoading = false,
-                startDestination = startDest
+                startDestination = Route.Splash
             )
         }
     }
 
     fun isUserLoggedIn(): Boolean {
         return !tokenRepository.getAccessToken().isNullOrBlank()
+    }
+
+    fun hasCompletedOnboarding(): Boolean {
+        return tokenRepository.hasCompletedOnboarding()
+    }
+
+    fun completeOnboarding() {
+        tokenRepository.setCompletedOnboarding(true)
     }
 
     fun isUserStaff(): Boolean {

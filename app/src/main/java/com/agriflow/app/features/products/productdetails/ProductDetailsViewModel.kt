@@ -41,6 +41,10 @@ class ProductDetailsViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
+            marketplaceRepository.refreshProductDetails(productId)
+        }
+
+        viewModelScope.launch {
             var lastFetchedBusinessId: String? = null
             marketplaceRepository.getProductById(productId).collect { product ->
                 val businessId = product?.businessId
@@ -84,7 +88,8 @@ class ProductDetailsViewModel @Inject constructor(
     fun onAction(action: ProductDetailsAction) {
         when (action) {
             ProductDetailsAction.OnIncrementQuantity -> {
-                val available = state.value.product?.availableQuantity?.toInt() ?: 1
+                val stock = state.value.product?.availableStock ?: state.value.product?.availableQuantity ?: 1.0
+                val available = stock.toInt()
                 if (_selectedQuantity.value < available) {
                     _selectedQuantity.value += 1
                 }
@@ -98,7 +103,8 @@ class ProductDetailsViewModel @Inject constructor(
                 viewModelScope.launch {
                     val product = state.value.product
                     if (product != null) {
-                        if (product.availableQuantity <= 0) {
+                        val stock = product.availableStock ?: product.availableQuantity
+                        if (stock <= 0 || product.stockStatus?.equals("OUT_OF_STOCK", ignoreCase = true) == true) {
                             _events.send(ProductDetailsEvent.ShowSnackbar("This item is out of stock."))
                             return@launch
                         }

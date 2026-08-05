@@ -28,5 +28,7 @@ data class ProductEntity(
     val updatedAtMillis: Long,
     val companyName: String,
     val description: String,
-    val businessId: String?
+    val businessId: String?,
+    val availableStock: Double? = null,
+    val stockStatus: String? = null
 )

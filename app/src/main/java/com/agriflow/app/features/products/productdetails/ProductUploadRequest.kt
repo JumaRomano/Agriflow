@@ -10,5 +10,6 @@ data class ProductUploadRequest(
     val quantity: Int,
     val unit: String,
     val categoryId: String,
-    val images: List<String>
+    val images: List<String>,
+    val availableStock: Int = quantity
 )

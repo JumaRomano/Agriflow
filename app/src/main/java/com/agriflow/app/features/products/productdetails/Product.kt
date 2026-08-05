@@ -15,5 +15,7 @@ data class Product(
     val availableQuantity: Double,
     val quantityUnit: String,
     val description: String,
-    val businessId: String? = null
+    val businessId: String? = null,
+    val availableStock: Double? = null,
+    val stockStatus: String? = null
 )

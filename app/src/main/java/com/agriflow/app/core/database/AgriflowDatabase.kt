@@ -35,7 +35,7 @@ import com.agriflow.app.features.MyStore.StoreInventoryEntity
         SupplierEntity::class,
         StoreInventoryEntity::class
     ],
-    version = 11,
+    version = 12,
     exportSchema = false
 )
 @TypeConverters(DatabaseConverters::class)

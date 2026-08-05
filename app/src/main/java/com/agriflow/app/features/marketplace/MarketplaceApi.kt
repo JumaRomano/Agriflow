@@ -25,6 +25,11 @@ interface MarketplaceApi {
         @Query("size") size: Int
     ): Response<List<ProductDto>>
 
+    @GET("products/{id}")
+    suspend fun getProductDetails(
+        @Path("id") id: String
+    ): Response<ProductDto>
+
     @GET("categories")
     suspend fun getCategories(): Response<List<CategoryDto>>
 

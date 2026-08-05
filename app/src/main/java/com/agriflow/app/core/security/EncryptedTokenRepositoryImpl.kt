@@ -160,6 +160,16 @@ class EncryptedTokenRepositoryImpl @Inject constructor(
             .apply()
     }
 
+    override fun hasCompletedOnboarding(): Boolean {
+        return sharedPreferences.getBoolean(KEY_HAS_COMPLETED_ONBOARDING, false)
+    }
+
+    override fun setCompletedOnboarding(completed: Boolean) {
+        sharedPreferences.edit()
+            .putBoolean(KEY_HAS_COMPLETED_ONBOARDING, completed)
+            .apply()
+    }
+
     private fun decodeUserFromToken(token: String?): User? {
         if (token.isNullOrBlank()) return null
         return try {
@@ -228,5 +238,6 @@ class EncryptedTokenRepositoryImpl @Inject constructor(
         const val KEY_USER_ROLE = "user_role"
         const val KEY_REGISTERED_BUSINESS_ROLE = "registered_business_role"
         const val KEY_USER_EMAIL = "user_email"
+        const val KEY_HAS_COMPLETED_ONBOARDING = "has_completed_onboarding"
     }
 }

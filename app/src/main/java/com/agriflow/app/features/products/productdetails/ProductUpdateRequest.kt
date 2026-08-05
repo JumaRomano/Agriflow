@@ -9,5 +9,6 @@ data class ProductUpdateRequest(
     val price: Double,
     val quantity: Int,
     val unit: String,
-    val categoryId: String
+    val categoryId: String,
+    val availableStock: Int = quantity
 )

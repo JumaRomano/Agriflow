@@ -142,7 +142,9 @@ fun ProductDetailsScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         if (state.userRole == UserRole.BUYER) {
-                            if (product.availableQuantity <= 0) {
+                            val currentStock = product.availableStock ?: product.availableQuantity
+                            val isOutOfStock = currentStock <= 0 || product.stockStatus?.equals("OUT_OF_STOCK", ignoreCase = true) == true
+                            if (isOutOfStock) {
                                 Button(
                                     onClick = {},
                                     enabled = false,
@@ -178,7 +180,7 @@ fun ProductDetailsScreen(
                                             fontWeight = FontWeight.Bold,
                                             color = MaterialTheme.colorScheme.onSurface
                                         )
-                                        val availableLimit = product.availableQuantity.toInt()
+                                        val availableLimit = currentStock.toInt()
                                         OutlinedIconButton(
                                             onClick = { onAction(ProductDetailsAction.OnIncrementQuantity) },
                                             enabled = state.selectedQuantity < availableLimit,
@@ -301,13 +303,26 @@ fun ProductDetailsScreen(
                                                 modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
                                             )
                                         }
-                                        if (product.availableQuantity <= 0) {
+                                        val currentStock = product.availableStock ?: product.availableQuantity
+                                        val isOutOfStock = currentStock <= 0 || product.stockStatus?.equals("OUT_OF_STOCK", ignoreCase = true) == true
+                                        if (isOutOfStock) {
                                             Badge(
                                                 containerColor = MaterialTheme.colorScheme.errorContainer,
                                                 contentColor = MaterialTheme.colorScheme.onErrorContainer
                                             ) {
                                                 Text(
                                                     text = "Out of Stock",
+                                                    style = MaterialTheme.typography.labelSmall,
+                                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                                )
+                                            }
+                                        } else {
+                                            Badge(
+                                                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                                            ) {
+                                                Text(
+                                                    text = "In stock: ${currentStock.toInt()} ${product.quantityUnit}",
                                                     style = MaterialTheme.typography.labelSmall,
                                                     modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
                                                 )

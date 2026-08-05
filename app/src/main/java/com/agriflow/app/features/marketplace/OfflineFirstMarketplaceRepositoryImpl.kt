@@ -43,7 +43,21 @@ class OfflineFirstMarketplaceRepositoryImpl @Inject constructor(
     override fun getProductById(id: String): Flow<Product?> {
         return productDao.observeProductById(id).map { it?.toDomain() }
     }
-    
+
+    override suspend fun refreshProductDetails(id: String): Result<Product, DataError.Network> {
+        return safeApiCall {
+            marketplaceApi.getProductDetails(id)
+        }.map { dto ->
+            val now = timeProvider.currentTimeMillis()
+            val entity = dto.toEntity(now)
+            if (entity != null) {
+                productDao.upsertProducts(listOf(entity))
+                entity.toDomain()
+            } else {
+                throw IllegalStateException("Failed to parse product details")
+            }
+        }
+    }
 
     override suspend fun refreshProducts(): EmptyResult<DataError.Network> {
         return safeApiCall {

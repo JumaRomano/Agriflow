@@ -46,6 +46,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import com.agriflow.app.core.ui.SplashRoute
+import com.agriflow.app.features.onboarding.OnboardingScreen
 import com.agriflow.app.features.auth.login.LoginRoute
 import com.agriflow.app.features.auth.register.RegisterRoute
 import com.agriflow.app.features.marketplace.MarketplaceRoute
@@ -236,18 +237,39 @@ private fun AgriflowNavContent(
             composable<Route.Splash> {
                 SplashRoute(
                     onSplashFinished = {
-                        val startDestination = if (viewModel.isUserLoggedIn()){
+                        val startDestination = if (!viewModel.hasCompletedOnboarding()) {
+                            Route.Onboarding
+                        } else if (viewModel.isUserLoggedIn()) {
                             if (viewModel.isUserStaff()) {
                                 Route.StaffGraph
                             } else {
                                 Route.MainGraph
                             }
-                        }else{
+                        } else {
                             Route.AuthGraph
                         }
 
                         navController.navigate(startDestination) {
                             popUpTo<Route.Splash> {
+                                inclusive = true
+                            }
+                            launchSingleTop = true
+                        }
+                    }
+                )
+            }
+
+            composable<Route.Onboarding> {
+                OnboardingScreen(
+                    onFinishOnboarding = {
+                        viewModel.completeOnboarding()
+                        val targetDestination = if (viewModel.isUserLoggedIn()) {
+                            if (viewModel.isUserStaff()) Route.StaffGraph else Route.MainGraph
+                        } else {
+                            Route.AuthGraph
+                        }
+                        navController.navigate(targetDestination) {
+                            popUpTo<Route.Onboarding> {
                                 inclusive = true
                             }
                             launchSingleTop = true

@@ -8,13 +8,13 @@ fun ProductDto.toEntity(nowMillis: Long): ProductEntity? {
     val name = name?.takeIf(String::isNotBlank) ?: return null
     val category = category?.takeIf(String::isNotBlank) ?: return null
     
-    val priceDouble = price ?: return null
+    val priceDouble = price ?: 0.0
     val priceCents = (priceDouble * 100).toLong()
 
     val companyName = companyName?.takeIf(String::isNotBlank) ?: "Independent Seller"
     val farmerName = companyName // Fallback to companyName as businessName holds the farmer's branding
 
-    val availableQuantity = availableQuantity ?: return null
+    val stockVal = availableStock ?: availableQuantity ?: 0.0
     val imageUrl = images?.firstOrNull()?.replace("http://", "https://")
     val desc = description.orEmpty()
 
@@ -26,12 +26,14 @@ fun ProductDto.toEntity(nowMillis: Long): ProductEntity? {
         currencyCode = DEFAULT_CURRENCY_CODE,
         farmerName = farmerName,
         imageUrl = imageUrl?.takeIf(String::isNotBlank),
-        availableQuantity = availableQuantity,
+        availableQuantity = stockVal,
         quantityUnit = quantityUnit?.takeIf(String::isNotBlank) ?: DEFAULT_QUANTITY_UNIT,
         updatedAtMillis = nowMillis,
         companyName = companyName,
         description = desc,
-        businessId = businessId
+        businessId = businessId,
+        availableStock = availableStock ?: availableQuantity,
+        stockStatus = stockStatus
     )
 }
 
@@ -48,7 +50,9 @@ fun ProductEntity.toDomain(): Product {
         quantityUnit = quantityUnit,
         companyName = companyName,
         description = description,
-        businessId = businessId
+        businessId = businessId,
+        availableStock = availableStock ?: availableQuantity,
+        stockStatus = stockStatus
     )
 }
 
