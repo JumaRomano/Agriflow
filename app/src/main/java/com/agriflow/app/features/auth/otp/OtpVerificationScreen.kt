@@ -1,6 +1,3 @@
-/**
- * Jetpack Compose UI screen components for the OtpVerification screen.
- */
 package com.agriflow.app.features.auth.otp
 
 import androidx.compose.foundation.layout.Arrangement

@@ -1,6 +1,3 @@
-/**
- * Jetpack Compose UI screen components for the Login screen.
- */
 package com.agriflow.app.features.auth.login
 
 import androidx.compose.foundation.layout.Arrangement

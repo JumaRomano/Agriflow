@@ -1,6 +1,3 @@
-/**
- * Sealed interface representing user actions and UI events for the EditProduct flow.
- */
 package com.agriflow.app.features.products.editproduct
 
 import android.net.Uri

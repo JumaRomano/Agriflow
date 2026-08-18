@@ -1,15 +1,22 @@
-*.iml
-.gradle
-/local.properties
-/.idea/caches
-/.idea/libraries
-/.idea/modules.xml
-/.idea/workspace.xml
-/.idea/navEditor.xml
-/.idea/assetWizardSettings.xml
-.DS_Store
-/build
-/captures
-.externalNativeBuild
-.cxx
+# Built application files
+*.apk
+*.aar
+*.aab
+
+# Generated build files
+.gradle/
+/build/
 local.properties
+
+# Log files
+*.log
+crash.txt
+
+# IDE and Kotlin internal files
+.idea/
+.kotlin/
+*.iml
+.DS_Store
+.externalNativeBuild/
+.cxx/
+

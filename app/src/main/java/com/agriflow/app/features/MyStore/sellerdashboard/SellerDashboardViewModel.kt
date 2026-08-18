@@ -1,6 +1,3 @@
-/**
- * ViewModel managing the business logic and UI state for the SellerDashboard feature.
- */
 package com.agriflow.app.features.MyStore.sellerdashboard
 
 import androidx.lifecycle.ViewModel

@@ -1,6 +1,3 @@
-/**
- * Retrofit API interface defining network endpoints for the Marketplace service.
- */
 package com.agriflow.app.features.marketplace
 
 import com.agriflow.app.features.products.productdetails.ProductDto

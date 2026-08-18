@@ -1,6 +1,3 @@
-/**
- * Repository implementation of [EncryptedTokenRepository] managing remote and local data operations.
- */
 package com.agriflow.app.core.security
 
 import android.content.Context

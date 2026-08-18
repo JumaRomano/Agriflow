@@ -1,6 +1,3 @@
-/**
- * Core helper component: ProductMappers.
- */
 package com.agriflow.app.features.products.productdetails
 
 fun ProductDto.toEntity(nowMillis: Long): ProductEntity? {

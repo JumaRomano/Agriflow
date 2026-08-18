@@ -1,6 +1,3 @@
-/**
- * ViewModel managing the business logic and UI state for the Home feature.
- */
 package com.agriflow.app.homescreen
 
 import androidx.lifecycle.ViewModel
@@ -41,14 +38,12 @@ class HomeViewModel @Inject constructor(
     private val _searchQuery = MutableStateFlow("")
 
     init {
-        // Collect user role
         viewModelScope.launch {
             tokenRepository.getUserRoleFlow().collect { role ->
                 _state.update { it.copy(userRole = role) }
             }
         }
         
-        // Collect username
         viewModelScope.launch {
             tokenRepository.getUserFlow().collect { user ->
                 if (user != null) {
@@ -61,27 +56,23 @@ class HomeViewModel @Inject constructor(
             }
         }
 
-        // Observe marketplace products
         viewModelScope.launch {
             marketplaceRepository.observeProducts().collect { list ->
                 _state.update { it.copy(products = list) }
             }
         }
 
-        // Sync products from server
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
             marketplaceRepository.refreshProducts()
             _state.update { it.copy(isLoading = false) }
         }
 
-        // search
         viewModelScope.launch {
             _searchQuery.collect { query ->
                 _state.update { it.copy(searchQuery = query) }
             }
         }
-        // observe  filtered products
         
         fetchCategories()
         fetchVerifiedBusinesses()

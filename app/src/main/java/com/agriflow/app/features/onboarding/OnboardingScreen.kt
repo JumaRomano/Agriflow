@@ -1,6 +1,3 @@
-/**
- * Jetpack Compose UI screen component for the first-time installation Onboarding experience.
- */
 package com.agriflow.app.features.onboarding
 
 import androidx.compose.animation.AnimatedVisibility

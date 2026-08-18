@@ -1,6 +1,3 @@
-/**
- * ViewModel managing the business logic and UI state for the Orders feature.
- */
 package com.agriflow.app.features.orders
 
 import androidx.lifecycle.ViewModel

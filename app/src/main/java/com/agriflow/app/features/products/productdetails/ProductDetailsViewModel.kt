@@ -1,6 +1,3 @@
-/**
- * ViewModel managing the business logic and UI state for the ProductDetails feature.
- */
 package com.agriflow.app.features.products.productdetails
 
 import androidx.lifecycle.SavedStateHandle
@@ -56,7 +53,6 @@ class ProductDetailsViewModel @Inject constructor(
                             _supplierRating.value = result.data.rating
                         }
                         is Result.Error -> {
-                            // Fallback/ignore if API fails
                         }
                     }
                 }

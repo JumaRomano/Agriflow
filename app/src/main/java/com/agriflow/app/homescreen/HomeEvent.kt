@@ -1,6 +1,3 @@
-/**
- * Sealed interface representing one-shot UI events emitted by the Home ViewModel.
- */
 package com.agriflow.app.homescreen
 
 /**

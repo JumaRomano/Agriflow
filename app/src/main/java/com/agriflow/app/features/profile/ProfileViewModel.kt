@@ -1,6 +1,3 @@
-/**
- * ViewModel managing the business logic and UI state for the Profile feature.
- */
 package com.agriflow.app.features.profile
 
 import androidx.lifecycle.ViewModel

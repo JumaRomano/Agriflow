@@ -1,6 +1,3 @@
-/**
- * Jetpack Compose UI screen components for the Cart screen.
- */
 package com.agriflow.app.features.cart.presentation
 
 import androidx.compose.foundation.background
@@ -153,7 +150,6 @@ fun CartScreen(
             if (state.isFetchingCart) {
                 CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
             } else if (state.items.isEmpty()) {
-                // --- EMPTY STATE ---
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -177,7 +173,6 @@ fun CartScreen(
                     )
                 }
             } else {
-                // --- CART LIST CONTENT ---
                 Column(modifier = Modifier.fillMaxSize()) {
                     LazyColumn(
                         modifier = Modifier.weight(1f),
@@ -219,7 +214,6 @@ fun CartScreen(
                         }
                     }
 
-                    // --- SUMMARY FOOTER CARD ---
                     CartSummaryCard(
                         total = state.total,
                         onCheckout = { onAction(CartAction.Checkout) }
@@ -303,7 +297,6 @@ fun CartItemRow(
                     verticalArrangement = Arrangement.SpaceBetween,
                     modifier = Modifier.size(width = 110.dp, height = 76.dp)
                 ) {
-                    // Delete Button
                     IconButton(
                         onClick = onRemove,
                         modifier = Modifier.size(32.dp),

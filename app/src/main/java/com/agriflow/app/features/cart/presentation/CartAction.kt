@@ -1,6 +1,3 @@
-/**
- * Sealed interface representing user actions and UI events for the Cart flow.
- */
 package com.agriflow.app.features.cart.presentation
 
 sealed interface CartAction {

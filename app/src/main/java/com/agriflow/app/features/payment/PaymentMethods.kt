@@ -1,6 +1,3 @@
-/**
- * Core helper component: PaymentMethods.
- */
 package com.agriflow.app.features.payment
 
 import androidx.compose.runtime.Composable

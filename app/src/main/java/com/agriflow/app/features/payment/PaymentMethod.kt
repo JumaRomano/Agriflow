@@ -1,6 +1,3 @@
-/**
- * Represents the class [PaymentMethodType] providing core functionality within the application.
- */
 package com.agriflow.app.features.payment
 
 import kotlinx.serialization.Serializable

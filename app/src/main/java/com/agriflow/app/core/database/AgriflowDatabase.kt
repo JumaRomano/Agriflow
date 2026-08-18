@@ -1,6 +1,3 @@
-/**
- * Represents the class [AgriflowDatabase] providing core functionality within the application.
- */
 package com.agriflow.app.core.database
 
 import androidx.room.Database

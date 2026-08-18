@@ -1,6 +1,3 @@
-/**
- * Jetpack Compose UI screen components for the EnterpriseUpgrade screen.
- */
 package com.agriflow.app.features.profile.Enterprise
 
 import com.agriflow.app.features.profile.roleUpgrade.RoleUpgradeState

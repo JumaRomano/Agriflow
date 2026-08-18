@@ -1,6 +1,3 @@
-/**
- * Sealed interface representing one-shot UI events emitted by the SellerDashboard ViewModel.
- */
 package com.agriflow.app.features.MyStore.sellerdashboard
 
 sealed interface SellerDashboardEvent {

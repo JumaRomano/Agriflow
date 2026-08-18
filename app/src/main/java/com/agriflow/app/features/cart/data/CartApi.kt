@@ -1,6 +1,3 @@
-/**
- * Retrofit API interface defining network endpoints for the Cart service.
- */
 package com.agriflow.app.features.cart.data
 
 import retrofit2.Response

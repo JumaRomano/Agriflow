@@ -1,6 +1,3 @@
-/**
- * ViewModel managing the business logic and UI state for the OtpVerification feature.
- */
 package com.agriflow.app.features.auth.otp
 
 import androidx.lifecycle.SavedStateHandle

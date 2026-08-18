@@ -1,6 +1,3 @@
-/**
- * Jetpack Compose UI screen components for the CreateNewPassword screen.
- */
 package com.agriflow.app.features.auth.password
 
 import androidx.compose.foundation.layout.Arrangement

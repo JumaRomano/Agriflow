@@ -1,6 +1,3 @@
-/**
- * Jetpack Compose UI screen components for the Register screen.
- */
 package com.agriflow.app.features.auth.register
 
 import androidx.compose.foundation.layout.Arrangement

@@ -1,6 +1,3 @@
-/**
- * Jetpack Compose UI screen components for the ProductDetails screen.
- */
 package com.agriflow.app.features.products.productdetails
 
 import androidx.compose.foundation.background
@@ -158,7 +155,6 @@ fun ProductDetailsScreen(
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    // Quantity selector
                                     Row(
                                         verticalAlignment = Alignment.CenterVertically,
                                         horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -238,7 +234,6 @@ fun ProductDetailsScreen(
                 ) {
                     // Image and overlapping title card section
                     Box(modifier = Modifier.fillMaxWidth()) {
-                        // Product Image with Placeholder Fallback
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -263,7 +258,6 @@ fun ProductDetailsScreen(
                             }
                         }
 
-                        // Overlapping Card
                         Card(
                             modifier = Modifier
                                 .padding(top = 260.dp)
@@ -336,7 +330,6 @@ fun ProductDetailsScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Prominent Price text
                     Text(
                         text = "${product.currencyCode} ${product.priceCents / 100.0} / ${product.quantityUnit}",
                         style = MaterialTheme.typography.headlineMedium,
@@ -414,7 +407,6 @@ fun ProductDetailsScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
 
-                    // Description section
                     val mockDescription = when (product.category.lowercase()) {
                         "grains" -> "High-quality bulk grain sourced directly from fertile agricultural zones. Carefully processed and stored under optimal moisture conditions to preserve nutritional value and prevent spoilage. Ideal for wholesale distributors and milling processors."
                         "fruits" -> "Fresh, tree-ripened fruit harvested at peak maturity. Hand-selected for exceptional color, size, and sweetness. Packed with strict quality controls to ensure maximum shelf life during transit."

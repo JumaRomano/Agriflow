@@ -1,6 +1,3 @@
-/**
- * Sealed interface representing user actions and UI events for the Home flow.
- */
 package com.agriflow.app.homescreen
 
 import com.agriflow.app.features.products.productdetails.Product

@@ -1,6 +1,3 @@
-/**
- * Represents the class [Product] providing core functionality within the application.
- */
 package com.agriflow.app.features.products.productdetails
 
 data class Product(

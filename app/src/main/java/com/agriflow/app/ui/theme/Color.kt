@@ -1,6 +1,3 @@
-/**
- * Core helper component: Color.
- */
 package com.agriflow.app.ui.theme
 
 import androidx.compose.ui.graphics.Color

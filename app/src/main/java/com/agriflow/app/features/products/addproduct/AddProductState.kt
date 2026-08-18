@@ -1,6 +1,3 @@
-/**
- * UI State definition representing the screen state for AddProduct.
- */
 package com.agriflow.app.features.products.addproduct
 
 import android.net.Uri

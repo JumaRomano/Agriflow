@@ -1,6 +1,3 @@
-/**
- * UI State definition representing the screen state for RoleUpgrade.
- */
 package com.agriflow.app.features.profile.roleUpgrade
 
 import com.agriflow.app.features.auth.UserRole

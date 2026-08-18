@@ -1,6 +1,3 @@
- /**
- * Core helper component: Theme.
- */
 package com.agriflow.app.ui.theme
 
 import android.app.Activity

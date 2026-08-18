@@ -1,7 +1,3 @@
-/**
- * Jetpack Compose UI screen components for the EditProduct screen.
- * Features a dedicated edit form, horizontal image previews, and stock status alert shortcuts.
- */
 package com.agriflow.app.features.products.editproduct
 
 import android.net.Uri

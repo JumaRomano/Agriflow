@@ -1,6 +1,3 @@
-/**
- * Represents the object [DummyData] providing core functionality within the application.
- */
 package com.agriflow.app.features.marketplace
 
 import com.agriflow.app.features.products.productdetails.Product

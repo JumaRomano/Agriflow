@@ -1,6 +1,3 @@
-/**
- * Application navigation routing, graphs, and destination definitions.
- */
 package com.agriflow.app.core.navigation
 
 import kotlinx.serialization.Serializable
@@ -19,7 +16,6 @@ sealed interface Route {
     @Serializable
     data object Onboarding : Route
 
-    // --- GRAPHS ---
     // Graphs represent a collection of screens.
     @Serializable
     data object AuthGraph : Route
@@ -30,8 +26,6 @@ sealed interface Route {
     @Serializable
     data object StaffGraph : Route
 
-    // --- AUTH SCREENS ---
-    // We use 'data object' for screens that don't take any arguments.
     @Serializable
     data object Login : Route
 
@@ -41,11 +35,9 @@ sealed interface Route {
     @Serializable
     data object Forget : Route {
     }
-        // --- MAIN SCREENS ---
     @Serializable
     data object Home : Route
 
-        // --- STAFF SCREENS ---
     @Serializable
     data object StaffDashboard : Route
     @Serializable
@@ -74,8 +66,6 @@ sealed interface Route {
     @Serializable
     data object EnterpriseUpgrade : Route
 
-    // Notice this is a 'data class', not a 'data object'.
-    // This is the magic of type-safe navigation. We declare exactly what data this screen needs.
     @Serializable
     data class ProductDetails(val productId: String) : Route
 

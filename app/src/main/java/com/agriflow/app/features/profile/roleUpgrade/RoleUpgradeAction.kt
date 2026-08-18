@@ -1,6 +1,3 @@
-/**
- * Sealed interface representing user actions and UI events for the RoleUpgrade flow.
- */
 package com.agriflow.app.features.profile.roleUpgrade
 
 import com.agriflow.app.features.auth.UserRole

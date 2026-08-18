@@ -1,6 +1,3 @@
-/**
- * Retrofit API interface defining network endpoints for the Auth service.
- */
 package com.agriflow.app.features.auth
 
 import com.agriflow.app.features.auth.login.LoginRequestDto

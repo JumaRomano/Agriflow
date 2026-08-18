@@ -1,7 +1,3 @@
-/**
- * ViewModel managing the business logic and UI state for the EditProduct feature.
- * Coordinates product details loading, validation, saving via PATCH, and stock alert out-of-stock actions.
- */
 package com.agriflow.app.features.products.editproduct
 
 import android.net.Uri

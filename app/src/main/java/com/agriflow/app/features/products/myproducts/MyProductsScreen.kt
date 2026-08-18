@@ -1,6 +1,3 @@
-/**
- * Jetpack Compose UI screen components for the MyProducts screen.
- */
 package com.agriflow.app.features.products.myproducts
 
 import androidx.compose.foundation.background

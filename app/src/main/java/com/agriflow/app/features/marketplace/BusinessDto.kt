@@ -1,6 +1,3 @@
-/**
- * Data Transfer Object representing a Business/Supplier returned by the server.
- */
 package com.agriflow.app.features.marketplace
 
 import com.google.gson.annotations.SerializedName

@@ -1,6 +1,3 @@
-/**
- * Jetpack Compose UI screen components for the Splash screen.
- */
 package com.agriflow.app.core.ui
 
 import androidx.compose.animation.core.EaseOutCubic

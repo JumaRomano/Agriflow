@@ -1,6 +1,3 @@
-/**
- * UI State definition representing the screen state for EditProduct.
- */
 package com.agriflow.app.features.products.editproduct
 
 import android.net.Uri

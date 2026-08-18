@@ -1,6 +1,3 @@
-/**
- * Repository interface for managing data transactions related to Marketplace.
- */
 package com.agriflow.app.features.marketplace
 
 import com.agriflow.app.core.util.DataError

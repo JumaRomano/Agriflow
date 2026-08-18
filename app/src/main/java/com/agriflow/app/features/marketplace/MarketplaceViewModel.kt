@@ -1,6 +1,3 @@
-/**
- * ViewModel managing the business logic and UI state for the Marketplace feature.
- */
 package com.agriflow.app.features.marketplace
 
 import androidx.lifecycle.SavedStateHandle
@@ -51,42 +48,36 @@ class MarketplaceViewModel @Inject constructor(
     init {
         refreshProducts()
 
-        // 1. Observe filtered products list
         viewModelScope.launch {
             _filteredProducts.collect { list ->
                 _state.update { it.copy(products = list) }
             }
         }
 
-        // 2. Observe search query changes
         viewModelScope.launch {
             _searchQuery.collect { query ->
                 _state.update { it.copy(searchQuery = query) }
             }
         }
 
-        // 3. Observe category selection changes
         viewModelScope.launch {
             _selectedCategory.collect { category ->
                 _state.update { it.copy(selectedCategory = category) }
             }
         }
 
-        // 4. Observe refreshing state changes
         viewModelScope.launch {
             _isRefreshing.collect { refreshing ->
                 _state.update { it.copy(isRefreshing = refreshing) }
             }
         }
 
-        // 5. Observe error message changes
         viewModelScope.launch {
             _errorMessage.collect { error ->
                 _state.update { it.copy(errorMessage = error) }
             }
         }
 
-        // 6. Observe user role flow changes
         viewModelScope.launch {
             tokenRepository.getUserRoleFlow().collect { role ->
                 _state.update { it.copy(userRole = role) }

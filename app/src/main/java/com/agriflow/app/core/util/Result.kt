@@ -1,6 +1,3 @@
-/**
- * Represents the interface [Result] providing core functionality within the application.
- */
 package com.agriflow.app.core.util
 
 // Using 'out' for covariance so we can pass specific types up the chain

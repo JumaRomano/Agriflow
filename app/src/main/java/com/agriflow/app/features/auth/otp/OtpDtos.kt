@@ -1,6 +1,3 @@
-/**
- * Data Transfer Object (DTO) used for network request/response serialization.
- */
 package com.agriflow.app.features.auth.otp
 
 enum class OtpType {

@@ -1,6 +1,3 @@
-/**
- * ViewModel managing the business logic and UI state for the Cart feature.
- */
 package com.agriflow.app.features.cart.presentation
 
 import androidx.lifecycle.ViewModel

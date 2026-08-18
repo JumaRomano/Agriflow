@@ -1,6 +1,3 @@
-/**
- * Jetpack Compose UI screen components for the Orders screen.
- */
 package com.agriflow.app.features.orders
 
 import androidx.compose.animation.AnimatedVisibility

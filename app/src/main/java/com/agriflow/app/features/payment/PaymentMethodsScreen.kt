@@ -1,6 +1,3 @@
-/**
- * Jetpack Compose UI screen components for the PaymentMethods screen.
- */
 package com.agriflow.app.features.payment
 
 import androidx.compose.foundation.background

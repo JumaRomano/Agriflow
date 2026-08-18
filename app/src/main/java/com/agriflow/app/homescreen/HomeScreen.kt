@@ -1,6 +1,3 @@
-/**
- * Jetpack Compose UI screen components for the Home screen.
- */
 package com.agriflow.app.homescreen
 
 import androidx.compose.animation.animateContentSize

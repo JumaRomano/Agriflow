@@ -1,6 +1,3 @@
-/**
- * Sealed interface representing user actions and UI events for the ProductDetails flow.
- */
 package com.agriflow.app.features.products.productdetails
 
 sealed interface ProductDetailsAction {

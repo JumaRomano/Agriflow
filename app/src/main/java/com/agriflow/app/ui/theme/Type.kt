@@ -1,6 +1,3 @@
-/**
- * Core helper component: Type.
- */
 package com.agriflow.app.ui.theme
 
 import androidx.compose.material3.Typography

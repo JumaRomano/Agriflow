@@ -1,6 +1,3 @@
-/**
- * Repository implementation of [AuthRepository] managing remote and local data operations.
- */
 package com.agriflow.app.features.auth
 
 import com.agriflow.app.core.security.TokenRepository

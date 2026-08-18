@@ -1,6 +1,3 @@
-/**
- * ViewModel managing the business logic and UI state for the AddProduct feature.
- */
 package com.agriflow.app.features.products.addproduct
 
 import android.net.Uri
@@ -143,7 +140,6 @@ class AddProductViewModel @Inject constructor(
     private fun submitProduct() {
         val currentState = state.value
         
-        // Form field validations
         val isNameValid = currentState.name.isNotBlank()
         val isDescriptionValid = currentState.description.isNotBlank()
         
@@ -188,11 +184,9 @@ class AddProductViewModel @Inject constructor(
             return
         }
 
-        // Two-Step submission process flow
         viewModelScope.launch {
             _state.update { it.copy(isLoading = true) }
             
-            // uploads raw images to backend
 
             val (uploadedUrls, uploadFailed) = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
                 val urls = mutableListOf<String>()
@@ -236,10 +230,8 @@ class AddProductViewModel @Inject constructor(
                 return@launch
             }
 
-            // Log final collection of URLs
             android.util.Log.d("AddProductViewModel", "Uploaded image URLs: $uploadedUrls")
 
-            //  Submit final JSON payload to Product API ---
             val request = ProductUploadRequest(
                 productName = currentState.name,
                 description = currentState.description,

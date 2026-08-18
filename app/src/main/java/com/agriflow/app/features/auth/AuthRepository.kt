@@ -1,6 +1,3 @@
-/**
- * Repository interface for managing data transactions related to Auth.
- */
 package com.agriflow.app.features.auth
 
 import com.agriflow.app.core.util.DataError

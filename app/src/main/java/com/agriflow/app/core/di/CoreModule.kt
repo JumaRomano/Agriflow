@@ -1,6 +1,3 @@
-/**
- * Dagger Hilt dependency injection module providing component bindings and providers.
- */
 package com.agriflow.app.core.di
 
 import com.agriflow.app.core.util.DefaultTimeProvider

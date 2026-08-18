@@ -1,6 +1,3 @@
-/**
- * Jetpack Compose UI screen components for the Profile screen.
- */
 package com.agriflow.app.features.profile
 
 import androidx.compose.foundation.background

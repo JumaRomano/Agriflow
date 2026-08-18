@@ -32,7 +32,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     }
 
     private fun sendRegistrationToServer(token: String) {
-        // Log and send to backend
         Log.d(TAG, "Sending token to server: $token")
         CoroutineScope(Dispatchers.IO).launch {
             notificationsRepository.registerDeviceToken(token, "android")
@@ -43,7 +42,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         super.onMessageReceived(remoteMessage)
         Log.d(TAG, "From: ${remoteMessage.from}")
 
-        // Check if message contains a data payload.
         if (remoteMessage.data.isNotEmpty()) {
             Log.d(TAG, "Message data payload: ${remoteMessage.data}")
             val title = remoteMessage.data["title"] ?: "Agriflow Notification"

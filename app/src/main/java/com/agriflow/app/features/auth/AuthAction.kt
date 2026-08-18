@@ -1,11 +1,6 @@
-/**
- * Sealed interface representing user actions and UI events for the Auth flow.
- */
 package com.agriflow.app.features.auth
 
 import com.agriflow.app.features.auth.UserRole
-// User intents from the UI. The Composables do not mutate state directly;
-// they send one of these actions and AuthViewModel decides how state changes.
 sealed interface AuthAction {
     data class LoginEmailChanged(val email: String) : AuthAction
     data class LoginPasswordChanged(val password: String) : AuthAction

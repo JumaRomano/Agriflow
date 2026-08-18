@@ -1,6 +1,3 @@
-/**
- * Data Transfer Object (DTO) used for network request serialization when updating product details via PATCH.
- */
 package com.agriflow.app.features.products.productdetails
 
 data class ProductUpdateRequest(

@@ -1,6 +1,3 @@
-/**
- * ViewModel managing the business logic and UI state for the EnterpriseUpgrade feature.
- */
 package com.agriflow.app.features.profile.Enterprise
 
 import com.agriflow.app.features.profile.roleUpgrade.RoleUpgradeState

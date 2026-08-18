@@ -1,6 +1,3 @@
-/**
- * ViewModel managing the business logic and UI state for the Auth feature.
- */
 package com.agriflow.app.features.auth
 
 import androidx.lifecycle.ViewModel
@@ -23,12 +20,9 @@ class AuthViewModel @Inject constructor(
     private val staffAuthRepository: com.agriflow.app.features.staff.auth.StaffAuthRepository
 ) : ViewModel() {
 
-    // Mutable inside the ViewModel, read-only for the UI.
-    // This protects the state from being changed directly by Composables.
     private val _state = MutableStateFlow(AuthState())
     val state = _state.asStateFlow()
 
-    // Channel is used for one-time events like navigation and snackbars.
     // Regular StateFlow is not ideal for these because it replays the latest value.
     private val _events = Channel<AuthEvent>()
     val events = _events.receiveAsFlow()

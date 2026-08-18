@@ -1,6 +1,3 @@
-/**
- * ViewModel managing the business logic and UI state for the ForgotPassword feature.
- */
 package com.agriflow.app.features.auth.password
 
 import androidx.lifecycle.ViewModel

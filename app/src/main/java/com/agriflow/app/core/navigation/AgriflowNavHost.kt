@@ -1,6 +1,3 @@
-/**
- * Application navigation routing, graphs, and destination definitions.
- */
 package com.agriflow.app.core.navigation
 
 import androidx.compose.foundation.layout.Box
@@ -71,28 +68,11 @@ import com.agriflow.app.features.businessdetails.BusinessDetailsRoute
 import com.agriflow.app.features.notifications.NotificationScreen
 import com.agriflow.app.features.staff.dashboard.StaffDashboardRoute
 import com.agriflow.app.features.staff.auth.StaffChangePasswordRoute
-
-
-
-
-
-/**
- * Data class representing an item in the bottom navigation bar.
- * Tightly coupled to our type-safe Route interface.
- */
 data class BottomNavItem(
     val route: Route,
     val title: String,
     val icon: ImageVector
 )
-
-/**
- * AgriflowNavHost is the central navigation component.
- * It wraps our main NavHost inside a Scaffold to manage the bottom navigation bar.
- *
- * @param navController The stateful controller that manages back navigation.
- * @param startDestination The very first screen or graph the app should load.
- */
 @Composable
 fun AgriflowNavHost(
     navController: NavHostController,

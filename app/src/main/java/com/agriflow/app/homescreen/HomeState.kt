@@ -1,6 +1,3 @@
-/**
- * UI State definition representing the screen state for Home.
- */
 package com.agriflow.app.homescreen
 
 import com.agriflow.app.features.auth.UserRole

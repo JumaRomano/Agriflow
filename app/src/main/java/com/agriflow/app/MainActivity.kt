@@ -1,6 +1,3 @@
-/**
- * Represents the class [MainActivity] providing core functionality within the application.
- */
 package com.agriflow.app
 
 import android.os.Build
@@ -27,7 +24,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@AndroidEntryPoint // NEVER FORGET THIS! It tells Hilt to allow dependency injection here.
 class MainActivity : ComponentActivity() {
 
     @Inject
@@ -58,17 +54,13 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
-            // This applies your Material 3 colors and typography
             AgriflowTheme {
-                // A surface container uses the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    // We 'remember' the navController so it survives recompositions (screen rotations)
                     val navController = rememberNavController()
 
-                    // We drop our NavHost into the UI under app/core/presentation/navigation/NavHost
                     AgriflowNavHost(navController = navController)
 
                 }

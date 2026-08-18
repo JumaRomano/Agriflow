@@ -1,6 +1,3 @@
-/**
- * ViewModel managing the business logic and UI state for the Payment feature.
- */
 package com.agriflow.app.features.payment
 
 import androidx.lifecycle.SavedStateHandle

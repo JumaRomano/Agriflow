@@ -1,6 +1,3 @@
-/**
- * UI State definition representing the screen state for CreateNewPassword.
- */
 package com.agriflow.app.features.auth.password
 
 data class CreateNewPasswordState(
